@@ -1,0 +1,12 @@
+(function(){
+'use strict';
+var KEY='fonely_clean_v1';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}}
+function activePackage(pid){var d=load(),pkgs=(d.packages||[]).filter(function(p){return p.patientId===pid&&p.status!=='Encerrado'&&Number(p.used||0)<Number(p.sessions||0);});pkgs.sort(function(a,b){return (b.startDate||'').localeCompare(a.startDate||'');});return pkgs[0]||null;}
+function selectActivePackage(patientSelect,packageSelect){if(!patientSelect||!packageSelect)return;var pkg=activePackage(patientSelect.value);if(pkg){var opt=[].slice.call(packageSelect.options).find(function(o){return o.value===pkg.id;});if(opt)packageSelect.value=pkg.id;}}
+function enhanceAppointmentForm(){var form=document.getElementById('appointmentForm');if(!form||form.dataset.packageEnhanced==='1')return;form.dataset.packageEnhanced='1';var patientSelect=document.getElementById('appointmentPatient'),packageSelect=document.getElementById('appointmentPackage');selectActivePackage(patientSelect,packageSelect);if(patientSelect){patientSelect.addEventListener('change',function(){setTimeout(function(){selectActivePackage(patientSelect,packageSelect);},0);});}if(packageSelect&&activePackage(patientSelect&&patientSelect.value)){var note=document.createElement('small');note.className='package-auto-note';note.textContent='Pacote ativo selecionado automaticamente. A sessão será baixada quando o atendimento for marcado como atendido/realizado.';packageSelect.parentNode.appendChild(note);}}
+function enhanceStatus(){var select=document.getElementById('apStatus');if(!select||select.dataset.attendedEnhanced==='1')return;select.dataset.attendedEnhanced='1';[].slice.call(select.options).forEach(function(o){if(o.value==='Concluído'||o.textContent.trim()==='Concluído'){o.value='Concluído';o.textContent='Atendido / realizado';}});var note=document.createElement('small');note.className='package-auto-note';note.textContent='Ao salvar como Atendido / realizado, 1 sessão do pacote vinculado será descontada automaticamente.';select.parentNode.appendChild(note);}
+function run(){enhanceAppointmentForm();enhanceStatus();}
+new MutationObserver(run).observe(document.documentElement,{childList:true,subtree:true});
+document.addEventListener('DOMContentLoaded',run);setTimeout(run,100);setTimeout(run,500);
+})();
