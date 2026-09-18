@@ -65,3 +65,22 @@ Modelo híbrido com campos de seleção e campos livres de observação. A estru
 ## Princípio de desenvolvimento
 
 Este é um projeto independente. Não deve reutilizar, modificar ou depender do código do sistema de fisioterapia do proprietário.
+
+
+### Fonely CAA
+Módulo opcional de Comunicação Aumentativa e Alternativa, ativado individualmente por paciente e reservado ao **Fonely Pro**.
+
+A prévia implementada em `feat/fonely-caa` inclui:
+- ativação por paciente;
+- biblioteca de pictogramas vetoriais próprios, sem emojis como imagem principal;
+- seleção e ordenação de cartões;
+- cartões personalizados com foto/imagem;
+- gravação de voz personalizada quando o navegador permitir;
+- síntese de voz, escolha de voz disponível no dispositivo, volume e velocidade;
+- fala ao tocar e montagem de frases;
+- publicação de versões;
+- histórico de versões e uso;
+- link exclusivo para a prancha pública;
+- desativação sem apagar dados.
+
+Enquanto o login real do Fonely não estiver conectado ao Supabase, a prévia usa o armazenamento local do navegador. A migração `supabase/fonely-caa-v1.sql` prepara o modelo persistente, RLS, entitlement Pro e RPCs públicos limitados para a fase cloud.
