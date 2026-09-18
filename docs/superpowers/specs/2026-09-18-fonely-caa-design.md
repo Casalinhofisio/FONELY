@@ -350,17 +350,67 @@ Itens selecionados para a prancha atual.
 - Alterações de prancha exigem usuário profissional autenticado.
 - O paciente pelo link público não pode editar a prancha.
 
-## 13. Áudio
+## 13. Áudio e voz
 
-Primeira versão:
-- síntese de voz do navegador/dispositivo para palavras e frases;
-- opção de tocar áudio gravado quando existir;
-- botão Falar reproduz a frase montada.
+O áudio é parte central da experiência do Fonely CAA.
 
-Prioridade:
-1. áudio personalizado do cartão, se houver e se o modo permitir;
-2. texto falado configurado;
-3. rótulo visual como fallback.
+Recursos obrigatórios:
+- síntese de voz para palavras, expressões e frases;
+- fala opcional imediatamente ao tocar em um cartão;
+- botão Falar para reproduzir a frase completa;
+- controle de volume dentro do comunicador;
+- controle de velocidade da fala;
+- seleção de voz quando o dispositivo/navegador oferecer mais de uma voz compatível;
+- opção de voz masculina/feminina quando disponível no dispositivo;
+- áudio gravado personalizado por cartão;
+- pré-escuta da voz no painel profissional;
+- configuração individual por paciente.
+
+O sistema deve lidar com diferenças entre dispositivos: a disponibilidade exata de vozes de síntese depende do sistema operacional/navegador. O Fonely CAA deve listar apenas vozes realmente disponíveis e manter fallback funcional.
+
+Configurações por paciente:
+- volume entre 0 e 100%;
+- velocidade de fala;
+- voz selecionada;
+- falar ao tocar: ligado/desligado;
+- falar somente ao usar o botão Falar;
+- usar áudio personalizado quando existir.
+
+Prioridade de reprodução:
+1. áudio personalizado do cartão, quando configurado;
+2. texto falado do cartão pela voz selecionada;
+3. rótulo visual como fallback de texto.
+
+### Feedback sonoro e visual
+
+Ao tocar em um cartão:
+- o cartão deve responder visualmente ao toque;
+- opcionalmente emitir fala imediata;
+- adicionar o cartão à frase quando essa função estiver ativa;
+- evitar sons decorativos desnecessários que possam confundir o usuário.
+
+## 13.1 Imagens e pictogramas
+
+O Fonely CAA não usará emojis como representação visual principal dos cartões.
+
+A biblioteca deverá usar pictogramas/ilustrações próprios ou devidamente licenciados para uso comercial em SaaS.
+
+Direção visual:
+- desenho claro e reconhecível;
+- fundo limpo;
+- alta legibilidade;
+- contraste adequado;
+- estilo consistente entre categorias;
+- sem aparência infantil obrigatória;
+- apropriado também para adolescentes e adultos.
+
+Cada cartão poderá usar:
+- pictograma da biblioteca Fonely;
+- imagem personalizada enviada pelo profissional;
+- fotografia real;
+- ilustração personalizada criada para aquele conceito.
+
+Emojis podem aparecer apenas como elementos secundários de interface, nunca como substituto principal do pictograma de comunicação.
 
 ## 14. Estados do módulo
 
