@@ -10,31 +10,34 @@ function pick(settings){
   var name=settings&&settings.voiceName;
   return voices.find(function(v){return v.name===name;})||voices.find(function(v){return /^pt-BR/i.test(v.lang);})||voices[0];
 }
-function speak(text,settings){
+function normalized(settings){
   settings=settings||{};
+  return {
+    volume:Math.max(0,Math.min(1,Number(settings.volume==null?0.9:settings.volume))),
+    rate:Math.max(0.5,Math.min(1.6,Number(settings.rate||0.95)))
+  };
+}
+function speak(text,settings){
   if(!text)return Promise.resolve(false);
   if(!synth||typeof SpeechSynthesisUtterance==='undefined')return Promise.resolve(false);
   synth.cancel();
+  var n=normalized(settings);
   return new Promise(function(resolve){
     var u=new SpeechSynthesisUtterance(text);
-    var v=pick(settings);if(v)u.voice=v;
+    var v=pick(settings||{});if(v)u.voice=v;
     u.lang=(v&&v.lang)||'pt-BR';
-    u.volume=Math.max(0,Math.min(1,Number(settings.volume==null?0.9:settings.volume)));
-    u.rate=Math.max(.5,Math.min(1.6,Number(settings.rate||.95)));
-    u.pitch=1;
-    u.onend=function(){resolve(true);};
-    u.onerror=function(){resolve(false);};
+    u.volume=n.volume;u.rate=n.rate;u.pitch=1;
+    u.onend=function(){resolve(true);};u.onerror=function(){resolve(false);};
     synth.speak(u);
   });
 }
 function playAudio(dataUrl,settings){
   if(!dataUrl)return Promise.resolve(false);
+  var n=normalized(settings);
   return new Promise(function(resolve){
-    var a=new Audio(dataUrl);
-    a.volume=Math.max(0,Math.min(1,Number(settings&&settings.volume==null?.9:settings.volume)));
-    a.onended=function(){resolve(true);};
-    a.onerror=function(){resolve(false);};
-    a.play().catch(function(){resolve(false);});
+    var a=new Audio(dataUrl);a.volume=n.volume;
+    a.onended=function(){resolve(true);};a.onerror=function(){resolve(false);};
+    a.play().then(function(){}).catch(function(){resolve(false);});
   });
 }
 async function speakCard(card,settings){
