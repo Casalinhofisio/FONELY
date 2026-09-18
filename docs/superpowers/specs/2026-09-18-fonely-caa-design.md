@@ -25,7 +25,42 @@ O Fonely CAA não será obrigatório e não aparecerá como recurso ativo para t
   - configurações próprias de áudio e visual.
 - Desativar o CAA não apaga os dados. Apenas interrompe o acesso público e oculta o módulo até eventual reativação.
 
-## 3. Entrada no Fonely
+## 3. Planos e acesso
+
+O Fonely terá dois planos comerciais. O Fonely CAA será um recurso exclusivo do plano Pro, que será o plano com acesso completo aos recursos avançados.
+
+Regras de acesso:
+- somente contas no plano Pro podem ativar Fonely CAA para um paciente;
+- o plano não-Pro não pode criar, editar, publicar ou compartilhar pranchas CAA;
+- no plano não-Pro, o recurso pode aparecer de forma bloqueada com indicação de que está disponível no Pro;
+- pacientes que já possuem CAA ativo continuam vinculados ao profissional e à sua conta;
+- se uma conta Pro perder o entitlement do Pro, nenhuma prancha ou histórico será apagado;
+- em caso de downgrade, edição e novas ativações ficam bloqueadas até a reativação do Pro;
+- o comportamento do link público após downgrade deverá ser controlado por regra de produto configurável, sem exclusão de dados;
+- a permissão deve ser validada no backend e não apenas escondida na interface;
+- o sistema deverá usar uma feature/entitlement como `caa_enabled` ou equivalente para liberar o módulo;
+- o nome e preço do plano não-Pro poderão ser definidos futuramente sem alterar a lógica do CAA.
+
+### Experiência no plano não-Pro
+
+Quando o profissional tentar acessar o Fonely CAA:
+- mostrar uma apresentação curta do recurso;
+- informar que o CAA está incluído no plano Pro;
+- oferecer ação para conhecer/assinar o Pro quando a área de pagamentos estiver implementada;
+- não criar registros CAA no banco antes da confirmação do entitlement.
+
+### Experiência no Pro
+
+O profissional Pro pode:
+- ativar CAA por paciente;
+- criar e editar pranchas;
+- usar biblioteca e cartões personalizados;
+- publicar e atualizar;
+- gerar link exclusivo;
+- acompanhar histórico e uso;
+- desativar e reativar sem perda de dados.
+
+## 4. Entrada no Fonely
 
 ### No prontuário do paciente
 
@@ -43,7 +78,7 @@ Depois da ativação:
 - A tela CAA lista apenas pacientes com o módulo ativo.
 - Pacientes sem CAA continuam aparecendo apenas nas áreas normais do Fonely.
 
-## 4. Área profissional do CAA
+## 5. Área profissional do CAA
 
 Ao abrir um paciente com CAA ativo, o profissional terá as abas:
 
@@ -123,7 +158,7 @@ O profissional poderá:
 - escolher categoria;
 - deixar o cartão fixo ou dentro de uma categoria.
 
-## 5. Prancha do paciente
+## 6. Prancha do paciente
 
 O link do paciente abre somente o comunicador.
 
@@ -162,7 +197,7 @@ Configuração por paciente:
 Exemplo:
 EU + QUERO + ÁGUA -> botão Falar -> "Eu quero água."
 
-## 6. Link exclusivo
+## 7. Link exclusivo
 
 Cada paciente ativo recebe um identificador público aleatório e não previsível.
 
@@ -179,7 +214,7 @@ Regras:
 
 Nunca usar patientId sequencial ou informação pessoal no link público.
 
-## 7. Sincronização
+## 8. Sincronização
 
 A prancha publicada será armazenada no Supabase.
 
@@ -193,7 +228,7 @@ Fluxo:
 
 A sincronização não dependerá do localStorage do navegador.
 
-## 8. Histórico de versões
+## 9. Histórico de versões
 
 Cada publicação cria um registro imutável contendo:
 - data e hora;
@@ -210,7 +245,7 @@ O profissional poderá visualizar versões anteriores.
 
 Restaurar uma versão antiga não apaga o histórico; cria uma nova versão baseada nela.
 
-## 9. Histórico de uso
+## 10. Histórico de uso
 
 Registrar por paciente:
 - data e hora do uso;
@@ -231,7 +266,7 @@ A tela "Uso" apresentará:
 
 O registro de uso não será tratado como interpretação clínica automática. O sistema apresenta dados; a análise pertence ao profissional.
 
-## 10. Estrutura de dados proposta
+## 11. Estrutura de dados proposta
 
 Tabelas conceituais:
 
@@ -304,7 +339,7 @@ Itens selecionados para a prancha atual.
 - spoken
 - created_at
 
-## 11. Segurança
+## 12. Segurança
 
 - Todas as tabelas clínicas e administrativas usarão RLS.
 - Um profissional autenticado só poderá acessar pacientes vinculados à própria conta.
@@ -315,7 +350,7 @@ Itens selecionados para a prancha atual.
 - Alterações de prancha exigem usuário profissional autenticado.
 - O paciente pelo link público não pode editar a prancha.
 
-## 12. Áudio
+## 13. Áudio
 
 Primeira versão:
 - síntese de voz do navegador/dispositivo para palavras e frases;
@@ -327,7 +362,7 @@ Prioridade:
 2. texto falado configurado;
 3. rótulo visual como fallback.
 
-## 13. Estados do módulo
+## 14. Estados do módulo
 
 Por paciente:
 
@@ -343,20 +378,20 @@ Prancha disponível pelo link.
 ### Desativado
 Dados preservados e link temporariamente indisponível.
 
-## 14. Fluxo principal do profissional
+## 15. Fluxo principal do profissional
 
 Paciente -> Ativar Fonely CAA -> escolher cartões -> organizar prancha -> testar -> publicar -> copiar link.
 
 Depois:
 Paciente -> Fonely CAA -> editar -> publicar nova versão -> mesma URL recebe atualização.
 
-## 15. Fluxo principal do paciente
+## 16. Fluxo principal do paciente
 
 Abrir link -> escolher categoria/cartão -> ouvir palavra -> montar frase -> tocar Falar.
 
 Sem necessidade de conta profissional e sem acesso ao restante do Fonely.
 
-## 16. Escopo da primeira versão
+## 17. Escopo da primeira versão
 
 Incluir:
 - ativação por paciente;
@@ -383,9 +418,11 @@ Fora da primeira versão:
 - prescrição automática;
 - gamificação complexa.
 
-## 17. Critérios de sucesso
+## 18. Critérios de sucesso
 
 A primeira versão estará funcional quando:
+
+0. uma conta sem plano Pro não conseguir ativar ou administrar o CAA, enquanto uma conta Pro conseguir;
 
 1. um profissional puder ativar o CAA para um paciente já existente;
 2. outro paciente sem CAA permanecer totalmente inalterado;
@@ -400,7 +437,7 @@ A primeira versão estará funcional quando:
 11. o uso do paciente gerar eventos vinculados somente àquele paciente;
 12. desativar o módulo bloquear o link sem apagar o histórico.
 
-## 18. Integração com o Fonely atual
+## 19. Integração com o Fonely atual
 
 O módulo deverá seguir a identidade visual existente do Fonely e reutilizar:
 - patientId;
