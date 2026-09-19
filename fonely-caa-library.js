@@ -1,87 +1,111 @@
 (function(){
 'use strict';
-function svg(body,bg){
-  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" rx="26" fill="'+(bg||'#fff7f2')+'"/>'+body+'</svg>';
+function svg(body,bg,floor){
+  bg=bg||'#fffaf6';floor=floor||'#f3ece7';
+  var s='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160" role="img">'+
+  '<rect width="220" height="160" rx="24" fill="'+bg+'"/>'+
+  '<path d="M0 118h220v42H0z" fill="'+floor+'"/>'+
+  '<path d="M0 118h220" stroke="#e2d8d1" stroke-width="2"/>'+body+'</svg>';
   return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(s);
 }
-var stroke='stroke="#4a312b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"';
-var icons={
- check:svg('<circle cx="60" cy="60" r="34" fill="#e8f4e7"/><path d="M42 61l12 12 25-29" '+stroke+'/>','#f6fbf5'),
- no:svg('<circle cx="60" cy="60" r="34" fill="#f8e7e4"/><path d="M45 45l30 30M75 45L45 75" '+stroke+'/>','#fff8f7'),
- plus:svg('<circle cx="60" cy="60" r="34" fill="#e9f1f8"/><path d="M60 41v38M41 60h38" '+stroke+'/>','#f7fbff'),
- stop:svg('<rect x="34" y="34" width="52" height="52" rx="13" fill="#f7dfd8"/><path d="M45 60h30" '+stroke+'/>'),
- help:svg('<circle cx="60" cy="60" r="35" fill="#ece7f7"/><path d="M50 49c2-10 22-12 24 0 2 10-11 11-11 20M62 82h.1" '+stroke+'/>','#faf8ff'),
- want:svg('<path d="M36 73c10-8 14-25 20-26 7-1 8 8 5 16 8-9 13-13 18-9 6 5 0 14-7 22-7 9-13 13-22 12-9-1-17-6-22-12z" fill="#f4d6cb" stroke="#4a312b" stroke-width="5" stroke-linejoin="round"/>'),
- dont:svg('<path d="M36 73c10-8 14-25 20-26 7-1 8 8 5 16 8-9 13-13 18-9 6 5 0 14-7 22-7 9-13 13-22 12-9-1-17-6-22-12z" fill="#f4d6cb" stroke="#4a312b" stroke-width="5"/><path d="M31 31l58 58" '+stroke+'/>','#fff8f7'),
- water:svg('<path d="M60 24c15 22 27 36 27 52a27 27 0 0 1-54 0c0-16 12-30 27-52z" fill="#bfe0f4" stroke="#4a312b" stroke-width="5"/><path d="M46 78c3 8 9 12 17 12" '+stroke+'/>','#f5fbff'),
- eat:svg('<ellipse cx="60" cy="69" rx="34" ry="20" fill="#f7e0b8" stroke="#4a312b" stroke-width="5"/><path d="M34 59c14 10 38 10 52 0M27 39v30M21 39v15M33 39v15M95 38c-8 11-8 22 0 31V38z" '+stroke+'/>','#fffaf1'),
- toilet:svg('<path d="M38 27h30v28H38z" fill="#e9f3f7" stroke="#4a312b" stroke-width="5"/><path d="M35 57h48c0 23-8 33-24 33S38 80 35 57z" fill="#f6fbfd" stroke="#4a312b" stroke-width="5"/><path d="M55 90h20" '+stroke+'/>','#f8fcfd'),
- bed:svg('<path d="M24 72h73v18M28 72V46h31c13 0 21 7 21 18v8M24 90v8M97 90v8" '+stroke+'/><rect x="32" y="51" width="22" height="14" rx="7" fill="#f1dccf"/>','#fff9f6'),
- pain:svg('<path d="M65 20L43 60h18l-7 40 26-50H61z" fill="#f4b6ad" stroke="#4a312b" stroke-width="5" stroke-linejoin="round"/>','#fff7f6'),
- person:svg('<circle cx="60" cy="39" r="17" fill="#f3cdbb" stroke="#4a312b" stroke-width="5"/><path d="M29 94c4-22 17-33 31-33s27 11 31 33" fill="#e9d8f2" stroke="#4a312b" stroke-width="5"/>'),
- man:svg('<circle cx="60" cy="39" r="17" fill="#d9b19c" stroke="#4a312b" stroke-width="5"/><path d="M29 94c4-22 17-33 31-33s27 11 31 33" fill="#bed8eb" stroke="#4a312b" stroke-width="5"/>','#f8fbfd'),
- family:svg('<circle cx="38" cy="43" r="12" fill="#f3cdbb" stroke="#4a312b" stroke-width="4"/><circle cx="78" cy="43" r="12" fill="#d9b19c" stroke="#4a312b" stroke-width="4"/><circle cx="59" cy="62" r="10" fill="#f1c6b3" stroke="#4a312b" stroke-width="4"/><path d="M20 94c2-17 10-27 18-27 7 0 11 5 14 12M100 94c-2-17-10-27-18-27-7 0-11 5-14 12M43 96c2-16 8-24 16-24s14 8 17 24" '+stroke+'/>','#fff9f5'),
- teacher:svg('<rect x="26" y="26" width="68" height="48" rx="8" fill="#dcebd8" stroke="#4a312b" stroke-width="5"/><circle cx="47" cy="81" r="10" fill="#f3cdbb" stroke="#4a312b" stroke-width="4"/><path d="M47 92v8M59 80l22-18M39 41h28M39 52h36" '+stroke+'/>','#f9fcf8'),
- happy:svg('<circle cx="60" cy="60" r="37" fill="#ffe39c" stroke="#4a312b" stroke-width="5"/><circle cx="47" cy="52" r="3" fill="#4a312b"/><circle cx="73" cy="52" r="3" fill="#4a312b"/><path d="M44 68c8 13 24 13 32 0" '+stroke+'/>','#fffaf0'),
- sad:svg('<circle cx="60" cy="60" r="37" fill="#dceaf6" stroke="#4a312b" stroke-width="5"/><circle cx="47" cy="52" r="3" fill="#4a312b"/><circle cx="73" cy="52" r="3" fill="#4a312b"/><path d="M45 77c8-11 22-11 30 0" '+stroke+'/><path d="M79 61c8 8 5 17-2 18-7-1-9-10 2-18z" fill="#82bce4"/>','#f7fbff'),
- angry:svg('<circle cx="60" cy="60" r="37" fill="#f3b6aa" stroke="#4a312b" stroke-width="5"/><path d="M41 48l14 5M79 48l-14 5M46 76c8-7 20-7 28 0" '+stroke+'/>','#fff7f6'),
- scared:svg('<circle cx="60" cy="60" r="37" fill="#e4ddf2" stroke="#4a312b" stroke-width="5"/><circle cx="47" cy="51" r="5" fill="#4a312b"/><circle cx="73" cy="51" r="5" fill="#4a312b"/><ellipse cx="60" cy="74" rx="8" ry="11" fill="#fff" stroke="#4a312b" stroke-width="4"/>','#faf9ff'),
- tired:svg('<circle cx="60" cy="60" r="37" fill="#ebe2d6" stroke="#4a312b" stroke-width="5"/><path d="M40 53h15M65 53h15M48 75h24" '+stroke+'/><path d="M82 27l7-7M91 38l10-2" '+stroke+'/>','#fcfaf7'),
- play:svg('<rect x="29" y="56" width="27" height="27" rx="5" fill="#f6c66f" stroke="#4a312b" stroke-width="5"/><circle cx="74" cy="72" r="16" fill="#a8d6c1" stroke="#4a312b" stroke-width="5"/><path d="M58 45l12-20 12 20z" fill="#d7c5ef" stroke="#4a312b" stroke-width="5"/>','#fffaf4'),
- school:svg('<path d="M24 49l36-22 36 22-36 22z" fill="#d9e7f3" stroke="#4a312b" stroke-width="5"/><path d="M34 65v28h52V65M52 93V76h16v17" '+stroke+'/>','#f7fbff'),
- house:svg('<path d="M22 58l38-33 38 33" '+stroke+'/><path d="M31 54v42h58V54M52 96V72h16v24" fill="#f3dfcf" stroke="#4a312b" stroke-width="5"/>','#fff9f4'),
- out:svg('<rect x="27" y="29" width="42" height="62" rx="5" fill="#e8dfd7" stroke="#4a312b" stroke-width="5"/><path d="M53 60h44M82 45l15 15-15 15" '+stroke+'/>','#fbfaf8'),
- music:svg('<path d="M51 30v47c0 10-19 13-23 3-4-11 12-18 23-11M51 40l35-10v41c0 10-18 13-22 3-4-11 11-18 22-11" '+stroke+'/>','#faf7ff'),
- ball:svg('<circle cx="60" cy="60" r="36" fill="#f7e8c7" stroke="#4a312b" stroke-width="5"/><path d="M60 24v72M24 60h72M35 35c15 15 35 15 50 0M35 85c15-15 35-15 50 0" '+stroke+'/>','#fffaf2'),
- device:svg('<rect x="37" y="21" width="46" height="78" rx="9" fill="#dbe6ea" stroke="#4a312b" stroke-width="5"/><path d="M52 89h16" '+stroke+'/>','#f8fbfc'),
- bread:svg('<path d="M27 55c0-20 18-31 33-23 15-8 34 3 34 23v33H27z" fill="#e8c18a" stroke="#4a312b" stroke-width="5"/><path d="M48 46l7 8M69 43l8 9" '+stroke+'/>','#fffaf1'),
- rice:svg('<path d="M31 65h58c0 18-11 29-29 29S31 83 31 65z" fill="#f3d4b3" stroke="#4a312b" stroke-width="5"/><path d="M40 62c6-16 34-16 40 0" fill="#fff" stroke="#4a312b" stroke-width="5"/>','#fffaf6'),
- beans:svg('<path d="M37 45c13-11 30 1 23 15-5 10-18 14-26 6-7-7-4-16 3-21zM67 60c12-9 27 2 20 15-5 9-17 12-24 5-7-6-3-15 4-20z" fill="#9f6654" stroke="#4a312b" stroke-width="5"/>','#fff8f5'),
- apple:svg('<path d="M60 44c-20-17-37 2-31 24 6 22 20 31 31 22 11 9 25 0 31-22 6-22-11-41-31-24z" fill="#e98f82" stroke="#4a312b" stroke-width="5"/><path d="M60 43c0-11 8-19 18-20M63 31c-7-8-15-7-19-4" '+stroke+'/>','#fff8f6'),
- milk:svg('<path d="M39 31h35l9 13v50H39z" fill="#f4f8fa" stroke="#4a312b" stroke-width="5"/><path d="M39 31l10-10h25v10M74 31v63M48 54h17" '+stroke+'/>','#f9fcfd'),
- juice:svg('<path d="M38 41h44l-5 53H43z" fill="#f5c67e" stroke="#4a312b" stroke-width="5"/><path d="M69 42l10-19M59 23h22" '+stroke+'/>','#fffaf2')
+function P(x,y,shirt,skin,pose,scale){
+  scale=scale||1; skin=skin||'#e3b39a'; shirt=shirt||'#9fc8d9';
+  var arms='';
+  if(pose==='up') arms='<path d="M-15 48L-27 25M15 48l20 2" />';
+  else if(pose==='reach') arms='<path d="M-15 48l-19 10M15 48l29-7" />';
+  else if(pose==='open') arms='<path d="M-15 48l-24 6M15 48l24 6" />';
+  else if(pose==='stop') arms='<path d="M-15 48l-20 12M15 48l21-25" /><circle cx="38" cy="21" r="6" fill="'+skin+'"/>';
+  else if(pose==='drink') arms='<path d="M-15 48l-17 10M15 48l18-18 8 9" />';
+  else if(pose==='eat') arms='<path d="M-15 48l-17 10M15 48l20-16 10 4" />';
+  else if(pose==='point') arms='<path d="M-15 48l-20 10M15 48l31-8" />';
+  else arms='<path d="M-15 48l-19 16M15 48l19 16" />';
+  return '<g transform="translate('+x+' '+y+') scale('+scale+')" stroke="#4a3730" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">'+
+  '<circle cx="0" cy="18" r="15" fill="'+skin+'"/>'+
+  '<path d="M-14 12q14-16 28 0" fill="#5c443b"/>'+
+  '<rect x="-18" y="35" width="36" height="43" rx="14" fill="'+shirt+'"/>'+
+  arms+'<path d="M-8 78l-7 30M8 78l7 30" />'+
+  '</g>';
+}
+function speechBadge(x,y,textColor,bg,symbol){
+  return '<g transform="translate('+x+' '+y+')"><rect x="0" y="0" width="40" height="30" rx="12" fill="'+bg+'" stroke="#4a3730" stroke-width="3"/><path d="M8 30l-4 9 12-7" fill="'+bg+'" stroke="#4a3730" stroke-width="3"/>'+symbol+'</g>';
+}
+var art={
+  yes:svg(P(92,28,'#a9d6b5','#e2b399','open',.9)+speechBadge(145,25,'','#e4f4e8','<path d="M10 15l8 8 14-17" fill="none" stroke="#467957" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>'),'#f8fcf8','#eef5ee'),
+  no:svg(P(92,28,'#e8b2aa','#d9a589','stop',.9)+speechBadge(145,25,'','#f8e7e5','<path d="M11 8l18 14M29 8L11 22" fill="none" stroke="#a14d45" stroke-width="5" stroke-linecap="round"/>'),'#fff9f8','#f5eeee'),
+  more:svg(P(86,30,'#adc9e8','#e3b49c','point',.88)+'<g transform="translate(135 69)"><ellipse cx="26" cy="18" rx="31" ry="14" fill="#fff" stroke="#4a3730" stroke-width="4"/><circle cx="10" cy="15" r="6" fill="#efb269"/><circle cx="26" cy="18" r="6" fill="#8bc2a1"/><circle cx="41" cy="14" r="6" fill="#ef8e82"/></g>'+speechBadge(155,25,'','#e7f1fb','<path d="M20 7v16M12 15h16" stroke="#527ca3" stroke-width="5" stroke-linecap="round"/>'),'#f7fbff','#edf3f8'),
+  finished:svg(P(72,30,'#ddc9ae','#e3b49c','open',.88)+'<g transform="translate(123 71)"><ellipse cx="31" cy="18" rx="34" ry="15" fill="#fff" stroke="#4a3730" stroke-width="4"/><path d="M12 18h38" stroke="#c6b6ab" stroke-width="3"/></g>'+speechBadge(153,25,'','#f5e9e5','<path d="M11 15h18" stroke="#9a655a" stroke-width="5" stroke-linecap="round"/>'),'#fffaf7','#f4ede8'),
+  help:svg(P(72,30,'#c9b7e8','#e0ad94','up',.88)+P(148,38,'#a7d4c1','#d19c82','reach',.78)+'<path d="M103 82c15-10 29-13 41-10" fill="none" stroke="#6d5a52" stroke-width="3" stroke-dasharray="4 5"/>','#fbf9ff','#f1edf8'),
+  want:svg(P(72,30,'#f0c19b','#dfac91','reach',.88)+'<g transform="translate(132 72)"><rect x="0" y="0" width="50" height="32" rx="9" fill="#d5ebf7" stroke="#4a3730" stroke-width="4"/><circle cx="25" cy="16" r="7" fill="#77b6d7"/></g><path d="M111 71c11-10 20-11 28-8" fill="none" stroke="#c76d52" stroke-width="4" stroke-dasharray="5 5"/>','#fffaf7','#f5eee9'),
+  dont:svg(P(73,30,'#e8b7aa','#dda88e','stop',.88)+'<g transform="translate(135 72)"><ellipse cx="25" cy="14" rx="28" ry="13" fill="#fff" stroke="#4a3730" stroke-width="4"/><circle cx="25" cy="14" r="7" fill="#f0b56f"/></g><path d="M126 62l52 41" stroke="#a84d45" stroke-width="6" stroke-linecap="round"/>','#fff9f8','#f5eeee'),
+  water:svg(P(74,27,'#9ecfe7','#dfac92','drink',.9)+'<g transform="translate(126 54)"><path d="M4 20h30l-3 36H7z" fill="#d9f0fb" stroke="#4a3730" stroke-width="4"/><path d="M8 36h22" stroke="#77b7d8" stroke-width="8"/><rect x="39" y="12" width="18" height="46" rx="6" fill="#a9d7ee" stroke="#4a3730" stroke-width="4"/><path d="M43 8h10v8H43z" fill="#6faed0"/></g>','#f5fbff','#eaf4f8'),
+  eat:svg(P(68,24,'#efc58f','#dfab90','eat',.88)+'<g transform="translate(111 75)"><rect x="0" y="25" width="76" height="8" rx="4" fill="#a97b61"/><ellipse cx="37" cy="16" rx="27" ry="11" fill="#fff" stroke="#4a3730" stroke-width="4"/><circle cx="27" cy="15" r="7" fill="#8fc3a4"/><circle cx="43" cy="14" r="7" fill="#efb66f"/><path d="M66 3v27M61 3v10M71 3v10" stroke="#4a3730" stroke-width="3" stroke-linecap="round"/></g>','#fffaf4','#f2e8da'),
+  toilet:svg('<g transform="translate(23 30)"><rect x="0" y="0" width="62" height="65" rx="9" fill="#e9f5fa" stroke="#4a3730" stroke-width="4"/><rect x="10" y="10" width="42" height="22" rx="5" fill="#bfe2f1"/><path d="M9 47h43c0 20-9 31-22 31S10 67 9 47z" fill="#fff" stroke="#4a3730" stroke-width="4"/></g>'+P(145,35,'#b9d8c2','#dda88f','point',.8)+'<path d="M95 43h25" stroke="#86b6c9" stroke-width="4" stroke-dasharray="5 5"/>','#f8fcfd','#edf4f5'),
+  sleep:svg('<g transform="translate(25 55)"><rect x="0" y="18" width="112" height="42" rx="8" fill="#e9d7c9" stroke="#4a3730" stroke-width="4"/><rect x="8" y="5" width="44" height="24" rx="10" fill="#fff7ef" stroke="#4a3730" stroke-width="4"/><circle cx="31" cy="20" r="10" fill="#dfad94"/><path d="M44 22h52" stroke="#9dbed1" stroke-width="18" stroke-linecap="round"/></g><path d="M157 42c10-10 22-9 29 1-12-2-20 3-24 13 2-7 0-11-5-14z" fill="#d8c8ef" stroke="#4a3730" stroke-width="3"/><path d="M170 66h16M176 78h13" stroke="#8d76b0" stroke-width="3" stroke-linecap="round"/>','#fbf9ff','#f0ebf3'),
+  pain:svg(P(91,25,'#e8c0aa','#dfaa8f','open',.9)+'<circle cx="109" cy="79" r="16" fill="#f6bbb0" opacity=".9"/><path d="M106 64l7 11-8 6 9 13" fill="none" stroke="#b74c44" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M144 40c12 7 18 18 17 32" fill="none" stroke="#dc8076" stroke-width="4" stroke-dasharray="5 5"/>','#fff8f7','#f5ece9'),
+  mom:svg(P(110,24,'#dcb4d8','#e3b29a','open',1)+'<path d="M94 36q16-22 32 0" fill="#704c3f" stroke="#4a3730" stroke-width="3"/><circle cx="80" cy="96" r="8" fill="#f2d3c3"/><circle cx="140" cy="96" r="8" fill="#f2d3c3"/>','#fff9fc','#f5edf3'),
+  dad:svg(P(110,24,'#9fbfdf','#d7a187','open',1)+'<path d="M95 37q15-18 30 0" fill="#5a433a" stroke="#4a3730" stroke-width="3"/>','#f8fbff','#edf3f8'),
+  family:svg(P(62,37,'#dcb4d8','#e3b29a','open',.72)+P(111,34,'#9fbfdf','#d7a187','open',.78)+P(156,55,'#f3c894','#e8b79f','open',.58)+'<path d="M44 112q68 18 129 0" fill="none" stroke="#d7b9a9" stroke-width="5" stroke-linecap="round"/>','#fffaf9','#f5ece7'),
+  teacher:svg('<g transform="translate(20 23)"><rect x="0" y="0" width="96" height="67" rx="9" fill="#dcebd8" stroke="#4a3730" stroke-width="4"/><path d="M16 18h48M16 33h63M16 48h38" stroke="#6f946f" stroke-width="4" stroke-linecap="round"/></g>'+P(154,30,'#e9b9a2','#dda98f','point',.82)+'<path d="M125 67l20-9" stroke="#4a3730" stroke-width="4"/>','#f9fcf8','#eef5ec'),
+  happy:svg(P(110,27,'#f2c56f','#e0ac92','open',.96)+'<path d="M101 45q9 9 18 0" fill="none" stroke="#4a3730" stroke-width="3" stroke-linecap="round"/><path d="M48 43l7-10M172 42l7-10M54 73H39M166 73h15" stroke="#efc34c" stroke-width="5" stroke-linecap="round"/>','#fffaf0','#f7edc9'),
+  sad:svg(P(110,27,'#a9c9e7','#e0ac92','open',.96)+'<path d="M101 51q9-8 18 0" fill="none" stroke="#4a3730" stroke-width="3"/><path d="M128 46c7 8 4 17-2 18-7-2-8-10 2-18z" fill="#75b7df"/>','#f7fbff','#edf3f8'),
+  angry:svg(P(110,27,'#e89f94','#dda88e','open',.96)+'<path d="M96 39l10 4M124 39l-10 4M100 54q10-7 20 0" fill="none" stroke="#4a3730" stroke-width="3" stroke-linecap="round"/><path d="M55 38l12 10M165 38l-12 10" stroke="#d56d62" stroke-width="5" stroke-linecap="round"/>','#fff8f7','#f5ece9'),
+  afraid:svg(P(110,27,'#c8b8e6','#e0ac92','open',.96)+'<ellipse cx="104" cy="44" rx="3" ry="5" fill="#4a3730"/><ellipse cx="116" cy="44" rx="3" ry="5" fill="#4a3730"/><ellipse cx="110" cy="56" rx="5" ry="7" fill="#fff" stroke="#4a3730" stroke-width="2"/><path d="M56 46l-8-13M164 46l8-13" stroke="#8b76ac" stroke-width="4" stroke-linecap="round"/>','#faf9ff','#f1eef8'),
+  tired:svg(P(110,27,'#cfc3b5','#e0ac92','open',.96)+'<path d="M98 44h9M113 44h9M102 55h16" stroke="#4a3730" stroke-width="3" stroke-linecap="round"/><path d="M153 29h14M158 18h17M166 7h14" stroke="#a88e7f" stroke-width="4" stroke-linecap="round"/>','#fcfaf7','#f1ece5'),
+  play:svg(P(70,36,'#f0c17c','#dfab91','reach',.74)+'<g transform="translate(111 67)"><rect x="0" y="17" width="28" height="28" rx="5" fill="#f2c45f" stroke="#4a3730" stroke-width="4"/><circle cx="52" cy="31" r="17" fill="#9bd0bb" stroke="#4a3730" stroke-width="4"/><path d="M26 11l13-18 13 18z" fill="#c8b9e8" stroke="#4a3730" stroke-width="4"/></g>','#fffaf4','#f4eddf'),
+  school:svg('<path d="M42 62l68-38 68 38-68 37z" fill="#c9dded" stroke="#4a3730" stroke-width="4"/><path d="M58 78v44h104V78M96 122V92h28v30" fill="#f8f3e8" stroke="#4a3730" stroke-width="4"/><rect x="72" y="87" width="16" height="17" fill="#9ec3dc"/><rect x="134" y="87" width="16" height="17" fill="#9ec3dc"/><path d="M173 45v26" stroke="#4a3730" stroke-width="4"/><path d="M173 45l20 9-20 8z" fill="#d87e72" stroke="#4a3730" stroke-width="3"/>','#f7fbff','#eaf1f4'),
+  home:svg('<path d="M43 78l67-56 67 56" fill="#efc9b2" stroke="#4a3730" stroke-width="4"/><path d="M56 72v54h108V72" fill="#f6e2d3" stroke="#4a3730" stroke-width="4"/><rect x="96" y="91" width="28" height="35" rx="4" fill="#b58a73"/><rect x="69" y="86" width="20" height="20" fill="#bfe0ed" stroke="#4a3730" stroke-width="3"/><rect x="132" y="86" width="20" height="20" fill="#bfe0ed" stroke="#4a3730" stroke-width="3"/>','#fff9f5','#f3e9e1'),
+  out:svg(P(73,33,'#aad0bd','#dfab91','point',.78)+'<g transform="translate(119 32)"><rect x="0" y="0" width="54" height="84" rx="7" fill="#eadfd8" stroke="#4a3730" stroke-width="4"/><rect x="12" y="14" width="30" height="56" rx="4" fill="#fbfaf8"/><circle cx="42" cy="42" r="3" fill="#4a3730"/></g><path d="M158 72h37M181 57l14 15-14 15" fill="none" stroke="#c76d52" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>','#fbfaf8','#f2ece7'),
+  music:svg(P(70,38,'#c8b9e7','#dfab91','open',.72)+'<g transform="translate(124 31)" stroke="#4a3730" stroke-width="4" fill="none"><path d="M22 0v57c0 10-18 12-21 3-4-10 11-17 21-10M22 11l43-10v45c0 10-18 12-21 3-4-10 11-17 21-10"/></g><path d="M146 104q20 15 39 0" fill="none" stroke="#9d80bc" stroke-width="4" stroke-dasharray="4 5"/>','#faf8ff','#f0edf7'),
+  ball:svg(P(68,41,'#a9cde2','#dfab91','reach',.7)+'<g transform="translate(130 70)"><circle cx="28" cy="28" r="27" fill="#f2d08c" stroke="#4a3730" stroke-width="4"/><path d="M28 1v54M1 28h54M9 9c12 12 26 12 38 0M9 47c12-12 26-12 38 0" fill="none" stroke="#4a3730" stroke-width="3"/></g>','#fffaf3','#f3ece0'),
+  device:svg(P(70,39,'#a9d2c0','#dfab91','reach',.7)+'<g transform="translate(129 37)"><rect x="0" y="0" width="48" height="82" rx="9" fill="#dce7ec" stroke="#4a3730" stroke-width="4"/><rect x="7" y="10" width="34" height="54" rx="4" fill="#b8d9e7"/><circle cx="24" cy="73" r="3" fill="#4a3730"/></g>','#f8fbfc','#edf2f3'),
+  bread:svg('<g transform="translate(37 47)"><path d="M0 34C0 11 25-2 48 8c23-10 49 3 49 26v45H0z" fill="#e8bd82" stroke="#4a3730" stroke-width="4"/><path d="M26 24l10 12M53 20l10 12" stroke="#fff0cf" stroke-width="6" stroke-linecap="round"/></g>'+P(160,46,'#b9d5c0','#dfa98f','point',.65),'#fffaf1','#f3e8d8'),
+  rice:svg(P(68,42,'#a9cce2','#dfab91','point',.68)+'<g transform="translate(120 63)"><path d="M0 27h68c0 28-13 42-34 42S3 55 0 27z" fill="#f0d4b4" stroke="#4a3730" stroke-width="4"/><path d="M8 24c9-24 44-24 52 0" fill="#fff" stroke="#4a3730" stroke-width="4"/><path d="M18 16l5 4M31 11l4 5M44 14l5 4" stroke="#d9d0c8" stroke-width="3"/></g>','#fffaf7','#f2e9de'),
+  beans:svg(P(68,42,'#d3b1a6','#dfab91','point',.68)+'<g transform="translate(119 62)"><ellipse cx="36" cy="35" rx="35" ry="23" fill="#fff" stroke="#4a3730" stroke-width="4"/><path d="M14 31c12-13 27-2 21 10-5 8-17 9-22 2-4-5-3-9 1-12zM41 22c12-10 25 2 18 12-5 8-16 8-20 2-4-5-3-10 2-14z" fill="#9b6551" stroke="#4a3730" stroke-width="3"/></g>','#fff8f5','#f0e5df'),
+  fruit:svg(P(68,42,'#bdd3a6','#dfab91','point',.68)+'<g transform="translate(120 60)"><circle cx="24" cy="35" r="20" fill="#e78378" stroke="#4a3730" stroke-width="4"/><path d="M24 15c0-9 7-16 16-18M27 6c-7-6-14-5-18-1" fill="none" stroke="#4a3730" stroke-width="3"/><path d="M52 18c18 1 26 20 16 34-10 13-27 10-32-4 13-4 20-14 16-30z" fill="#f1c96d" stroke="#4a3730" stroke-width="4"/></g>','#fff9f2','#f3eadc'),
+  milk:svg(P(68,42,'#b7cfea','#dfab91','point',.68)+'<g transform="translate(128 47)"><path d="M0 17h45l10 13v67H0z" fill="#f7fbfd" stroke="#4a3730" stroke-width="4"/><path d="M0 17L14 1h31v16M45 17v80" fill="none" stroke="#4a3730" stroke-width="4"/><path d="M10 48h26" stroke="#9ec8dc" stroke-width="9"/></g>','#f9fcfd','#edf3f5'),
+  juice:svg(P(68,42,'#e8c08d','#dfab91','point',.68)+'<g transform="translate(127 50)"><path d="M0 20h50l-6 70H7z" fill="#f3c674" stroke="#4a3730" stroke-width="4"/><path d="M34 21L46 0M28 0h21" fill="none" stroke="#4a3730" stroke-width="4"/><circle cx="24" cy="54" r="11" fill="#f09a64"/></g>','#fffaf2','#f3e9da')
 };
-var C={core:'#fff6f0',needs:'#edf7fb',people:'#faf2f8',emotions:'#fff9e8',activities:'#f0f7ef',food:'#fff5e8'};
+var C={core:'#fffdfa',needs:'#f9fdff',people:'#fffafd',emotions:'#fffcf4',activities:'#fbfdf9',food:'#fffaf4'};
 var cards=[
-{id:'yes',label:'Sim',speech:'Sim',category:'Respostas',image:icons.check,color:C.core},
-{id:'no',label:'Não',speech:'Não',category:'Respostas',image:icons.no,color:C.core},
-{id:'more',label:'Mais',speech:'Mais',category:'Respostas',image:icons.plus,color:C.core},
-{id:'finished',label:'Acabou',speech:'Acabou',category:'Respostas',image:icons.stop,color:C.core},
-{id:'help',label:'Ajuda',speech:'Preciso de ajuda',category:'Respostas',image:icons.help,color:C.core},
-{id:'want',label:'Quero',speech:'Quero',category:'Ações',image:icons.want,color:C.core},
-{id:'dont-want',label:'Não quero',speech:'Não quero',category:'Ações',image:icons.dont,color:C.core},
-{id:'water',label:'Água',speech:'Água',category:'Necessidades',image:icons.water,color:C.needs},
-{id:'eat',label:'Comer',speech:'Quero comer',category:'Necessidades',image:icons.eat,color:C.needs},
-{id:'toilet',label:'Banheiro',speech:'Quero ir ao banheiro',category:'Necessidades',image:icons.toilet,color:C.needs},
-{id:'sleep',label:'Dormir',speech:'Quero dormir',category:'Necessidades',image:icons.bed,color:C.needs},
-{id:'pain',label:'Dor',speech:'Estou com dor',category:'Necessidades',image:icons.pain,color:C.needs},
-{id:'mom',label:'Mamãe',speech:'Mamãe',category:'Pessoas',image:icons.person,color:C.people},
-{id:'dad',label:'Papai',speech:'Papai',category:'Pessoas',image:icons.man,color:C.people},
-{id:'family',label:'Família',speech:'Família',category:'Pessoas',image:icons.family,color:C.people},
-{id:'teacher',label:'Professora',speech:'Professora',category:'Pessoas',image:icons.teacher,color:C.people},
-{id:'happy',label:'Feliz',speech:'Estou feliz',category:'Emoções',image:icons.happy,color:C.emotions},
-{id:'sad',label:'Triste',speech:'Estou triste',category:'Emoções',image:icons.sad,color:C.emotions},
-{id:'angry',label:'Bravo',speech:'Estou bravo',category:'Emoções',image:icons.angry,color:C.emotions},
-{id:'afraid',label:'Medo',speech:'Estou com medo',category:'Emoções',image:icons.scared,color:C.emotions},
-{id:'tired',label:'Cansado',speech:'Estou cansado',category:'Emoções',image:icons.tired,color:C.emotions},
-{id:'play',label:'Brincar',speech:'Quero brincar',category:'Atividades',image:icons.play,color:C.activities},
-{id:'school',label:'Escola',speech:'Escola',category:'Lugares',image:icons.school,color:C.activities},
-{id:'home',label:'Casa',speech:'Casa',category:'Lugares',image:icons.house,color:C.activities},
-{id:'go-out',label:'Sair',speech:'Quero sair',category:'Atividades',image:icons.out,color:C.activities},
-{id:'music',label:'Música',speech:'Quero ouvir música',category:'Atividades',image:icons.music,color:C.activities},
-{id:'ball',label:'Bola',speech:'Bola',category:'Atividades',image:icons.ball,color:C.activities},
-{id:'phone',label:'Celular',speech:'Quero o celular',category:'Objetos',image:icons.device,color:C.activities},
-{id:'bread',label:'Pão',speech:'Pão',category:'Alimentação',image:icons.bread,color:C.food},
-{id:'rice',label:'Arroz',speech:'Arroz',category:'Alimentação',image:icons.rice,color:C.food},
-{id:'beans',label:'Feijão',speech:'Feijão',category:'Alimentação',image:icons.beans,color:C.food},
-{id:'fruit',label:'Fruta',speech:'Quero fruta',category:'Alimentação',image:icons.apple,color:C.food},
-{id:'milk',label:'Leite',speech:'Leite',category:'Bebidas',image:icons.milk,color:C.food},
-{id:'juice',label:'Suco',speech:'Suco',category:'Bebidas',image:icons.juice,color:C.food}
+{id:'yes',label:'Sim',speech:'Sim',category:'Respostas',image:art.yes,color:C.core},
+{id:'no',label:'Não',speech:'Não',category:'Respostas',image:art.no,color:C.core},
+{id:'more',label:'Mais',speech:'Quero mais',category:'Respostas',image:art.more,color:C.core},
+{id:'finished',label:'Acabou',speech:'Acabou',category:'Respostas',image:art.finished,color:C.core},
+{id:'help',label:'Ajuda',speech:'Preciso de ajuda',category:'Respostas',image:art.help,color:C.core},
+{id:'want',label:'Quero',speech:'Quero',category:'Ações',image:art.want,color:C.core},
+{id:'dont-want',label:'Não quero',speech:'Não quero',category:'Ações',image:art.dont,color:C.core},
+{id:'water',label:'Água',speech:'Quero água',category:'Necessidades',image:art.water,color:C.needs},
+{id:'eat',label:'Comer',speech:'Quero comer',category:'Necessidades',image:art.eat,color:C.needs},
+{id:'toilet',label:'Banheiro',speech:'Quero ir ao banheiro',category:'Necessidades',image:art.toilet,color:C.needs},
+{id:'sleep',label:'Dormir',speech:'Quero dormir',category:'Necessidades',image:art.sleep,color:C.needs},
+{id:'pain',label:'Dor',speech:'Estou com dor',category:'Necessidades',image:art.pain,color:C.needs},
+{id:'mom',label:'Mamãe',speech:'Quero a mamãe',category:'Pessoas',image:art.mom,color:C.people},
+{id:'dad',label:'Papai',speech:'Quero o papai',category:'Pessoas',image:art.dad,color:C.people},
+{id:'family',label:'Família',speech:'Quero minha família',category:'Pessoas',image:art.family,color:C.people},
+{id:'teacher',label:'Professora',speech:'Quero a professora',category:'Pessoas',image:art.teacher,color:C.people},
+{id:'happy',label:'Feliz',speech:'Estou feliz',category:'Emoções',image:art.happy,color:C.emotions},
+{id:'sad',label:'Triste',speech:'Estou triste',category:'Emoções',image:art.sad,color:C.emotions},
+{id:'angry',label:'Bravo',speech:'Estou bravo',category:'Emoções',image:art.angry,color:C.emotions},
+{id:'afraid',label:'Medo',speech:'Estou com medo',category:'Emoções',image:art.afraid,color:C.emotions},
+{id:'tired',label:'Cansado',speech:'Estou cansado',category:'Emoções',image:art.tired,color:C.emotions},
+{id:'play',label:'Brincar',speech:'Quero brincar',category:'Atividades',image:art.play,color:C.activities},
+{id:'school',label:'Escola',speech:'Quero ir para a escola',category:'Lugares',image:art.school,color:C.activities},
+{id:'home',label:'Casa',speech:'Quero ir para casa',category:'Lugares',image:art.home,color:C.activities},
+{id:'go-out',label:'Sair',speech:'Quero sair',category:'Atividades',image:art.out,color:C.activities},
+{id:'music',label:'Música',speech:'Quero ouvir música',category:'Atividades',image:art.music,color:C.activities},
+{id:'ball',label:'Bola',speech:'Quero brincar com a bola',category:'Atividades',image:art.ball,color:C.activities},
+{id:'phone',label:'Celular',speech:'Quero o celular',category:'Objetos',image:art.device,color:C.activities},
+{id:'bread',label:'Pão',speech:'Quero pão',category:'Alimentação',image:art.bread,color:C.food},
+{id:'rice',label:'Arroz',speech:'Quero arroz',category:'Alimentação',image:art.rice,color:C.food},
+{id:'beans',label:'Feijão',speech:'Quero feijão',category:'Alimentação',image:art.beans,color:C.food},
+{id:'fruit',label:'Fruta',speech:'Quero fruta',category:'Alimentação',image:art.fruit,color:C.food},
+{id:'milk',label:'Leite',speech:'Quero leite',category:'Bebidas',image:art.milk,color:C.food},
+{id:'juice',label:'Suco',speech:'Quero suco',category:'Bebidas',image:art.juice,color:C.food}
 ];
 window.FonelyCAALibrary={
- cards:cards,
- categories:['Respostas','Ações','Necessidades','Pessoas','Emoções','Atividades','Lugares','Objetos','Alimentação','Bebidas'],
- byId:function(id){return cards.find(function(c){return c.id===id;})||null;},
- iconForCustom:function(){return icons.want;}
+  cards:cards,
+  categories:['Respostas','Ações','Necessidades','Pessoas','Emoções','Atividades','Lugares','Objetos','Alimentação','Bebidas'],
+  byId:function(id){return cards.find(function(c){return c.id===id;})||null;},
+  iconForCustom:function(){return art.want;}
 };
 })();
