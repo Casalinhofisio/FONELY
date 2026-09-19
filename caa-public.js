@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 var KEY='fonely_caa_v1',token=new URLSearchParams(location.search).get('token')||'',state={category:'Todas',volumeOverride:null};
-function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c];});}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{profiles:{}};}catch(e){return {profiles:{}};}}
 function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
 function findProfile(d){var keys=Object.keys(d.profiles||{});for(var i=0;i<keys.length;i++){var p=d.profiles[keys[i]];if(p&&p.token===token)return p;}return null;}
