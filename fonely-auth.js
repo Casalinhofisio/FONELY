@@ -189,6 +189,61 @@ function friendlyError(err){
   return 'Não foi possível continuar. '+m;
 }
 
+function accountDate(value){
+  if(!value)return 'Sem vencimento';
+  try{return new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return '—';}
+}
+function accountPlanLabel(tier){return tier==='pro'?'Fonely Pro':'Fonely Básico';}
+function accountStatusLabel(status){
+  return {active:'Ativo',trialing:'Período de teste',past_due:'Pagamento pendente',inactive:'Inativo'}[status]||'Ativo';
+}
+function accountStatusClass(status){
+  return status==='active'?'ok':status==='trialing'?'trial':status==='past_due'?'warn':'off';
+}
+function openAccountPanel(){
+  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{};
+  var old=document.getElementById('fonelyAccountOverlay');if(old)old.remove();
+  var expiry=access.status==='trialing'&&access.trial_ends_at?access.trial_ends_at:access.plan_ends_at;
+  var validity=expiry?accountDate(expiry):(access.plan_tier==='base'?'Sem vencimento':'Sem data definida');
+  var name=profile.full_name||String(user.email||'Profissional').split('@')[0]||'Profissional';
+  var joined=profile.created_at?accountDate(profile.created_at):'—';
+  var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
+  w.innerHTML='<div class="fe-account-panel">'+
+    '<div class="fe-account-top"><div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p></div><button type="button" data-account-close>×</button></div>'+
+    '<div class="fe-account-plan">'+
+      '<div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div>'+
+      '<mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark>'+
+    '</div>'+
+    '<div class="fe-account-grid">'+
+      '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
+      '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
+      '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
+      '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
+    '</div>'+
+    '<div class="fe-account-actions"><button type="button" class="soft-btn" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
+    '<div class="fe-account-message" data-account-message></div>'+
+  '</div>';
+  document.body.appendChild(w);
+  w.querySelector('[data-account-close]').onclick=function(){w.remove();};
+  w.onclick=function(e){if(e.target===w)w.remove();};
+  var logout=w.querySelector('[data-account-logout]');
+  logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';await sb.auth.signOut();location.replace(APP_URL);};
+  var pass=w.querySelector('[data-account-password]');
+  pass.onclick=async function(){
+    var msg=w.querySelector('[data-account-message]');pass.disabled=true;pass.textContent='Enviando...';
+    try{
+      var email=user.email||profile.email;
+      if(!email)throw new Error('E-mail da conta não encontrado.');
+      var result=await sb.auth.resetPasswordForEmail(email,{redirectTo:APP_URL});
+      if(result.error)throw result.error;
+      msg.className='fe-account-message show success';msg.textContent='Enviei o link para alterar a senha no seu e-mail.';
+    }catch(err){
+      msg.className='fe-account-message show error';msg.textContent=friendlyError(err);
+    }finally{pass.disabled=false;pass.textContent='Alterar senha';}
+  };
+}
+window.FonelyAccountUI={open:openAccountPanel};
+
 async function prepareWorkspace(user){
   window.FONELY_USER_ID=user.id;
   window.FONELY_STORAGE_KEY='fonely_clean_v1_'+user.id;
@@ -218,15 +273,22 @@ async function prepareWorkspace(user){
   var legacyCAA=localStorage.getItem('fonely_caa_v1');
   if(!localStorage.getItem(window.FONELY_CAA_KEY)&&legacyCAA)localStorage.setItem(window.FONELY_CAA_KEY,legacyCAA);
 
+  var profileData={full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email,created_at:user.created_at};
+  var accessData={plan_tier:'base',status:'active',plan_started_at:null,plan_ends_at:null,trial_ends_at:null,cancel_at_period_end:false};
   try{
-    var access=await sb.from('account_access').select('plan_tier,status').eq('user_id',user.id).maybeSingle();
-    var tier=access.data&&access.data.plan_tier||'base';
-    window.FONELY_PLAN_TIER=tier;
-    localStorage.setItem(window.FONELY_PLAN_KEY,tier);
+    var accountResults=await Promise.all([
+      sb.from('profiles').select('full_name,email,created_at,updated_at').eq('id',user.id).maybeSingle(),
+      sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,created_at,updated_at').eq('user_id',user.id).maybeSingle()
+    ]);
+    if(accountResults[0].data)profileData=Object.assign(profileData,accountResults[0].data);
+    if(accountResults[1].data)accessData=Object.assign(accessData,accountResults[1].data);
   }catch(e){
-    window.FONELY_PLAN_TIER='base';
-    localStorage.setItem(window.FONELY_PLAN_KEY,'base');
+    console.warn('Fonely: não foi possível carregar os dados da conta.',e);
   }
+
+  window.FONELY_PLAN_TIER=accessData.plan_tier||'base';
+  localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
+  window.FonelyAccount={user:user,profile:profileData,access:accessData};
 
   window.FonelyCloud={
     saveWorkspace:function(data){
@@ -259,27 +321,15 @@ async function loadApp(user){
 
 function mountAccount(user){
   function apply(){
-    var a=document.querySelector('.account');
-    if(!a)return false;
-    a.querySelectorAll('.fe-app-user,.fe-app-exit').forEach(function(x){x.remove();});
-    var info=document.createElement('div');
-    info.className='fe-app-user';
-    info.innerHTML='<small>'+esc(user.email||'')+'</small>';
-    a.appendChild(info);
-    var b=document.createElement('button');
-    b.className='fe-app-exit';
-    b.type='button';
-    b.textContent='Sair';
-    b.onclick=async function(){
-      b.disabled=true;
-      await sb.auth.signOut();
-      location.replace(APP_URL);
-    };
-    a.appendChild(b);
+    var button=document.getElementById('accountMenu');
+    if(!button)return false;
+    if(button.dataset.accountBound==='1')return true;
+    button.dataset.accountBound='1';
+    button.onclick=function(){openAccountPanel();};
     return true;
   }
-  if(apply())return;
-  var ob=new MutationObserver(function(){if(apply())ob.disconnect();});
+  apply();
+  var ob=new MutationObserver(function(){apply();});
   ob.observe(document.documentElement,{childList:true,subtree:true});
 }
 
