@@ -21,8 +21,9 @@ function load(){
     var d=JSON.parse(localStorage.getItem(KEY))||{};
     d.patients=Array.isArray(d.patients)?d.patients:[];
     d.assessments=Array.isArray(d.assessments)?d.assessments:[];
+    d.assessmentTemplates=Array.isArray(d.assessmentTemplates)?d.assessmentTemplates:[];
     return d;
-  }catch(e){return {patients:[],assessments:[]};}
+  }catch(e){return {patients:[],assessments:[],assessmentTemplates:[]};}
 }
 function save(d){
   localStorage.setItem(KEY,JSON.stringify(d));
