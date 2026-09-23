@@ -1,8 +1,8 @@
 (function(){
 'use strict';
-var KEY='fonely_clean_v1';
+var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};}}
-function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));if(window.FonelyCloud)window.FonelyCloud.saveWorkspace(d);}
 function isDone(status){return ['Concluído','Atendido','Realizado','Atendido / realizado'].indexOf(String(status||''))>=0;}
 function normalizeDone(status){return isDone(status)?'Concluído':status;}
 function byDateAsc(a,b){return ((a.date||'')+(a.time||'')).localeCompare((b.date||'')+(b.time||''));}

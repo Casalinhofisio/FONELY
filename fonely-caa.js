@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var APP_KEY='fonely_clean_v1',CAA_KEY='fonely_caa_v1',PLAN_KEY='fonely_plan_v1';
+var APP_KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1',CAA_KEY=window.FONELY_CAA_KEY||'fonely_caa_v1',PLAN_KEY=window.FONELY_PLAN_KEY||'fonely_plan_v1';
 var manager={patientId:null,tab:'board',search:'',category:'Todas',previewCategory:'Todas',customImage:null,customAudio:null,recording:false,recorder:null,chunks:[]};
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function id(){return (crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);}
@@ -8,7 +8,7 @@ function token(){var a=new Uint8Array(18);if(crypto&&crypto.getRandomValues)cryp
 function appData(){try{return JSON.parse(localStorage.getItem(APP_KEY))||{patients:[]};}catch(e){return {patients:[]};}}
 function caaData(){try{var d=JSON.parse(localStorage.getItem(CAA_KEY))||{profiles:{}};if(!d.profiles)d.profiles={};return d;}catch(e){return {profiles:{}};}}
 function saveCAA(d){localStorage.setItem(CAA_KEY,JSON.stringify(d));}
-function plan(){return localStorage.getItem(PLAN_KEY)||'pro';}
+function plan(){return localStorage.getItem(PLAN_KEY)||window.FONELY_PLAN_TIER||'base';}
 function isPro(){return plan()==='pro';}
 function patient(pid){return (appData().patients||[]).find(function(p){return p.id===pid;})||null;}
 function profile(pid){return caaData().profiles[pid]||null;}

@@ -1,14 +1,14 @@
 (function(){
 'use strict';
 var app=document.getElementById('app');
-var KEY='fonely_clean_v1';
+var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
 var state={page:'inicio',patient:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};
 var data=load();
 function blank(){return {patients:[],appointments:[],payments:[],packages:[],assessments:[],evolutions:[],reports:[],team:[]};}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY))||blank();return d;}catch(e){return blank();}}
 ['patients','appointments','payments','packages','assessments','evolutions','reports','team'].forEach(function(k){if(!Array.isArray(data[k]))data[k]=[];});
 data.patients.forEach(function(p){if(!Array.isArray(p.documents))p.documents=[];if(!p.anamnesis)p.anamnesis={};});
-function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));if(window.FonelyCloud)window.FonelyCloud.saveWorkspace(data);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}

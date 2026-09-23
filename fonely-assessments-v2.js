@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-var KEY='fonely_clean_v1';
+var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
 var DOMAIN_DEFS=[
   ['language','Comunicação e linguagem','Compreensão, expressão, pragmática e funcionalidade comunicativa.'],
   ['speech','Fala e fonologia','Inteligibilidade, produção dos sons, processos fonológicos e articulação.'],
@@ -10,7 +10,7 @@ var DOMAIN_DEFS=[
   ['hearing','Audição e percepção','Queixas auditivas, respostas sonoras e informações de exames/encaminhamentos.']
 ];
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY))||{};d.patients=Array.isArray(d.patients)?d.patients:[];d.assessments=Array.isArray(d.assessments)?d.assessments:[];return d;}catch(e){return {patients:[],assessments:[]};}}
-function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));if(window.FonelyCloud)window.FonelyCloud.saveWorkspace(d);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
