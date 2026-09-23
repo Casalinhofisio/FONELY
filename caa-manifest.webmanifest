@@ -1,0 +1,18 @@
+{
+  "name": "Fonely CAA",
+  "short_name": "Fonely CAA",
+  "description": "Prancha de Comunicação Aumentativa e Alternativa do Fonely",
+  "start_url": "./caa.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f4f1",
+  "theme_color": "#faf7f4",
+  "icons": [
+    {
+      "src": "fonely-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
