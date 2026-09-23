@@ -442,6 +442,18 @@ function readMap(obj){
 
 function detail(pid,aid){
   var d=load(),a=d.assessments.find(function(x){return x.id===aid;});if(!a)return;
+  if(a.customTemplateId||a.customMode){
+    var currentTemplate=(d.assessmentTemplates||[]).find(function(x){return x.id===a.customTemplateId;});
+    var t=normalizeTemplate(JSON.parse(JSON.stringify(a.customSnapshot||currentTemplate||{id:a.customTemplateId||uid(),name:a.customTemplateName||'Modelo personalizado',mode:a.customMode||'form',sections:[]})));
+    var wCustom=modal(
+      '<div class="assessment-v3-head"><div><small>AVALIAÇÃO PERSONALIZADA</small><h2>'+esc(a.customTemplateName||t.name)+'</h2><p>'+esc(pname(d,pid))+' · '+fmt(a.date)+(a.professional?' · '+esc(a.professional):'')+'</p></div><span>Meu modelo</span></div>'+
+      customAssessmentRead(a)+
+      section('Síntese / observações finais','FINALIZAÇÃO','<div class="assessment-custom-document-read">'+esc(a.summary||'—').replace(/\\n/g,'<br>')+'</div>',true)+
+      '<div class="assessment-v3-actions"><button class="primary" data-edit-custom-assessment>Editar avaliação</button></div>'
+    );
+    wCustom.querySelector('[data-edit-custom-assessment]').onclick=function(){customAssessmentForm(pid,t,a);};
+    return;
+  }
   a=normalize(a);
   var w=modal(
     '<div class="assessment-v3-head"><div><small>REGISTRO DE AVALIAÇÃO</small><h2>'+esc(a.kind||'Avaliação')+'</h2><p>'+esc(pname(d,pid))+' · '+fmt(a.date)+(a.professional?' · '+esc(a.professional):'')+'</p></div><span>'+esc(a.mainArea||a.area||'Geral')+'</span></div>'+
@@ -470,7 +482,7 @@ function cardsForPatient(d,pid){
 }
 function bindAssessmentButtons(host,pid){
   host.querySelectorAll('[data-assessment-view]').forEach(function(b){b.onclick=function(){detail(pid,b.getAttribute('data-assessment-view'));};});
-  var n=host.querySelector('[data-new-assessment]');if(n)n.onclick=function(){assessmentForm(pid);};
+  var n=host.querySelector('[data-new-assessment]');if(n)n.onclick=function(){chooseAssessmentType(pid);};
 }
 function renderPatientAssessments(pid){
   var d=load(),p=d.patients.find(function(x){return x.id===pid;});if(!p)return;
@@ -674,7 +686,7 @@ function templateBuilder(existing){
     var open=w.querySelector('[data-builder-file-open]');if(open)open.onclick=function(){openTemplateAttachment(t);};
     var remove=w.querySelector('[data-builder-file-remove]');if(remove)remove.onclick=async function(){await removeTemplateAttachment(t,w);rerender();};
   }
-  w.querySelector('[data-template-mode]').onchange=function(){syncBuilderFromDOM(w,t);t.mode=this.value;if(t.mode==='form'&&!t.sections.length)t.sections=[newTemplateSection()];rerender();};
+  w.querySelector('[data-template-mode]').onchange=function(){var next=this.value;this.value=t.mode;syncBuilderFromDOM(w,t);t.mode=next;this.value=next;if(t.mode==='form'&&!t.sections.length)t.sections=[newTemplateSection()];rerender();};
   w.querySelector('[data-builder-cancel]').onclick=function(){w.remove();};
   w.querySelector('[data-builder-save]').onclick=function(){
     syncBuilderFromDOM(w,t);
@@ -744,7 +756,21 @@ function customAssessmentForm(pid,t,existing){
   w.querySelector('[data-custom-cancel]').onclick=function(){w.remove();};
   form.onsubmit=function(e){
     e.preventDefault();
-    var fd=new FormData(form),obj={
+    var fd=new FormData(form);
+    if(t.mode==='form'){
+      var missing=[];
+      t.sections.forEach(function(sec){sec.questions.forEach(function(q){
+        if(!q.required)return;
+        var name='custom_'+q.id;
+        if(q.type==='multi'){
+          if(!form.querySelector('[name="'+name+'"]:checked'))missing.push(q.label);
+        }else{
+          var el=form.querySelector('[name="'+name+'"]');if(!el||!String(el.value||'').trim())missing.push(q.label);
+        }
+      });});
+      if(missing.length){alert('Preencha os campos obrigatórios: '+missing.join(', '));return;}
+    }
+    var obj={
       id:existing.id||uid(),patientId:pid,kind:fd.get('kind')||'Avaliação personalizada',date:fd.get('date'),professional:fd.get('professional'),
       mainArea:'Personalizada · '+t.name,customTemplateId:t.id,customTemplateName:t.name,customMode:t.mode,customSnapshot:snapshot,
       customAnswers:t.mode==='form'?collectCustomAnswers(form,t):{},customDocument:t.mode==='document'?fd.get('customDocument'):'',
@@ -800,21 +826,24 @@ function pageHTML(){
   d.assessments.forEach(function(x){patients[x.patientId]=1;});
   var latest=d.assessments.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
   return '<section class="fonely-assessment-v3">'+
-    '<div class="assessment-v3-page-hero"><div><small>AVALIAÇÃO CLÍNICA · FONELY</small><h2>Avaliação completa e adaptada à área</h2><p>A parte geral investiga comunicação, compreensão, expressão, família, rotina, audição e desenvolvimento. O módulo específico muda conforme o foco principal.</p></div><button class="primary" data-page-new>+ Nova avaliação</button></div>'+
+    '<div class="assessment-v3-page-hero"><div><small>AVALIAÇÃO CLÍNICA · FONELY</small><h2>Avaliação completa ou do seu jeito</h2><p>Use o modelo clínico do Fonely ou crie seus próprios formulários e documentos para reutilizar em qualquer paciente.</p></div><div class="assessment-v3-hero-actions"><button class="soft-btn" data-page-new-template>+ Criar meu modelo</button><button class="primary" data-page-new>+ Nova avaliação</button></div></div>'+
     '<div class="assessment-v3-stats"><div><b>'+total+'</b><span>Avaliações</span></div><div><b>'+re+'</b><span>Reavaliações</span></div><div><b>'+Object.keys(patients).length+'</b><span>Pacientes avaliados</span></div></div>'+
+    '<article class="panel assessment-template-panel"><div class="panel-title"><div><small>PERSONALIZAÇÃO</small><h3>Meus modelos</h3></div><button class="soft-btn" data-page-new-template>+ Novo modelo</button></div>'+templateCards(d)+'</article>'+
     '<article class="panel assessment-v3-page-panel"><div class="panel-title"><h3>Histórico de avaliações</h3><select data-assessment-filter><option value="">Todos os pacientes</option>'+d.patients.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('')+'</select></div><div data-assessment-page-list>'+pageList(d,latest)+'</div></article>'+
   '</section>';
 }
 function choosePatient(){
   var d=load();if(!d.patients.length){alert('Cadastre um paciente antes de criar uma avaliação.');return;}
-  var w=modal('<div class="assessment-v3-head"><div><small>NOVA AVALIAÇÃO</small><h2>Escolha o paciente</h2><p>O registro será salvo no prontuário clínico.</p></div></div><label>Paciente<select id="assessmentPatientSelect">'+d.patients.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('')+'</select></label><div class="assessment-v3-actions"><button class="primary" data-continue-assessment>Continuar</button></div>');
-  w.querySelector('[data-continue-assessment]').onclick=function(){assessmentForm(w.querySelector('#assessmentPatientSelect').value);};
+  var w=modal('<div class="assessment-v3-head"><div><small>NOVA AVALIAÇÃO</small><h2>Escolha o paciente</h2><p>Depois você escolhe o modelo que deseja usar.</p></div></div><label>Paciente<select id="assessmentPatientSelect">'+d.patients.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('')+'</select></label><div class="assessment-v3-actions"><button class="primary" data-continue-assessment>Continuar</button></div>');
+  w.querySelector('[data-continue-assessment]').onclick=function(){chooseAssessmentType(w.querySelector('#assessmentPatientSelect').value);};
 }
 function bindPageList(host){
   host.querySelectorAll('[data-page-open]').forEach(function(b){b.onclick=function(){var p=b.getAttribute('data-page-open').split('|');detail(p[0],p[1]);};});
 }
 function bindPage(host){
   var d=load(),newBtn=host.querySelector('[data-page-new]');if(newBtn)newBtn.onclick=choosePatient;
+  host.querySelectorAll('[data-page-new-template]').forEach(function(btn){btn.onclick=function(){templateBuilder();};});
+  bindTemplateCards(host);
   var filter=host.querySelector('[data-assessment-filter]');
   if(filter)filter.onchange=function(){
     var list=d.assessments.filter(function(a){return !filter.value||a.patientId===filter.value;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
