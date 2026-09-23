@@ -8,6 +8,15 @@ function token(){var a=new Uint8Array(18);if(crypto&&crypto.getRandomValues)cryp
 function appData(){try{return JSON.parse(localStorage.getItem(APP_KEY))||{patients:[]};}catch(e){return {patients:[]};}}
 function caaData(){try{var d=JSON.parse(localStorage.getItem(CAA_KEY))||{profiles:{}};if(!d.profiles)d.profiles={};return d;}catch(e){return {profiles:{}};}}
 function saveCAA(d){localStorage.setItem(CAA_KEY,JSON.stringify(d));}
+function cloud(){return window.FonelyCloud||{};}
+async function syncPublishedBoard(p){
+  var c=cloud(),sb=c.supabase;if(!sb||!p||!p.published)return;
+  var ownerId=c.workspaceOwnerId||window.FONELY_WORKSPACE_OWNER_ID||(c.user&&c.user.id);
+  if(!ownerId)return;
+  var row={token:p.token,owner_id:ownerId,patient_id:String(p.patientId||''),enabled:!!p.enabled,snapshot:p.published,published_at:p.published.publishedAt||new Date().toISOString(),updated_at:new Date().toISOString()};
+  var r=await sb.from('caa_public_boards').upsert(row,{onConflict:'token'});
+  if(r.error)throw r.error;
+}
 function plan(){return localStorage.getItem(PLAN_KEY)||window.FONELY_PLAN_TIER||'base';}
 function isPro(){return plan()==='pro';}
 function patient(pid){return (appData().patients||[]).find(function(p){return p.id===pid;})||null;}
@@ -95,11 +104,16 @@ function communicatorHTML(p,snapshot,preview){
   var cards=snapshot.cards||[],cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),cat=preview?manager.previewCategory:'Todas',shown=cat==='Todas'?cards:cards.filter(function(c){return c.category===cat}),cols=Number((snapshot.settings||{}).columns||4);
   return '<div class="caa-preview-note"><b>Toque para falar</b><span>Cada cartão reproduz a fala imediatamente.</span></div><div class="caa-categories">'+cats.map(function(c){return '<button class="caa-category '+(c===cat?'active':'')+'" data-preview-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><div class="caa-board" style="--caa-cols:'+cols+'">'+shown.map(function(c){return '<button class="caa-comm-card" data-preview-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.speech||c.label)+'</small></button>';}).join('')+'</div>';
 }
-function publish(pid){
+async function publish(pid){
   var p=profile(pid);if(!p||!isPro())return;
   var cards=draftCards(p).map(function(c){return JSON.parse(JSON.stringify(c));}),now=new Date().toISOString(),ver=(p.versions||[]).length+1,snap={version:ver,publishedAt:now,cards:cards,settings:JSON.parse(JSON.stringify(p.settings||defaultSettings()))};
-  updateProfile(pid,function(x){x.published=snap;x.versions=x.versions||[];x.versions.push({version:ver,publishedAt:now,cards:cards,settings:snap.settings,summary:'Prancha publicada'});});
-  manager.tab='share';renderManager();
+  p=updateProfile(pid,function(x){x.published=snap;x.versions=x.versions||[];x.versions.push({version:ver,publishedAt:now,cards:cards,settings:snap.settings,summary:'Prancha publicada'});});
+  try{
+    await syncPublishedBoard(p);
+    manager.tab='share';renderManager();
+  }catch(err){
+    alert('A prancha ficou salva no Fonely, mas não foi possível atualizar o link da família agora. Conecte-se à internet e publique novamente.');
+  }
 }
 function bindManager(w,p){
   w.onclick=function(e){
@@ -113,7 +127,7 @@ function bindManager(w,p){
     var cat=e.target.closest('[data-preview-cat]');if(cat){manager.previewCategory=cat.getAttribute('data-preview-cat');renderManager();return;}
     if(e.target.closest('[data-test-voice]')){window.FonelyCAASpeech&&window.FonelyCAASpeech.speak('Olá. Esta é a voz selecionada para o Fonely CAA.',profile(manager.patientId).settings);return;}
     if(e.target.closest('[data-copy-link]')){var inp=w.querySelector('#caaShareLink');if(inp){navigator.clipboard&&navigator.clipboard.writeText(inp.value);e.target.textContent='Copiado ✓';}return;}
-    if(e.target.closest('[data-toggle-enabled]')){updateProfile(manager.patientId,function(x){x.enabled=!x.enabled;});renderManager();return;}
+    if(e.target.closest('[data-toggle-enabled]')){var changed=updateProfile(manager.patientId,function(x){x.enabled=!x.enabled;});if(changed&&changed.published)syncPublishedBoard(changed).catch(function(){});renderManager();return;}
     if(e.target.closest('[data-record-audio]')){toggleRecording();return;}
   };
   var s=w.querySelector('#caaSearch');if(s)s.oninput=function(){manager.search=s.value;renderManager();};
