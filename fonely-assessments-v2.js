@@ -36,7 +36,7 @@ function esc(v){
 }
 function currentProfessional(){
   var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};
-  return {id:u.id||'',name:p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};
+  return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};
 }
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
