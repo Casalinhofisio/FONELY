@@ -357,9 +357,10 @@ async function prepareWorkspace(user){
 
   var isOwner=!membership;
   var workspaceOwnerId=membership?membership.owner_id:user.id;
+  var defaultPermissions={patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:false,reports:false,manage_team:false};
   var permissions=isOwner
-    ?{finance:true,reports:true,manage_team:true}
-    :Object.assign({finance:false,reports:false,manage_team:false},membership.permissions||{});
+    ?{patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:true,reports:true,manage_team:true}
+    :Object.assign({},defaultPermissions,membership.permissions||{});
   var teamContext={
     isOwner:isOwner,
     ownerId:workspaceOwnerId,
@@ -411,7 +412,7 @@ async function prepareWorkspace(user){
           membership.role=cloudLoad.data.member.role||membership.role;
           membership.permissions=cloudLoad.data.member.permissions||membership.permissions;
           teamContext.role=membership.role;
-          teamContext.permissions=Object.assign({finance:false,reports:false,manage_team:false},membership.permissions||{});
+          teamContext.permissions=Object.assign({},defaultPermissions,membership.permissions||{});
         }
       }
     }
@@ -423,11 +424,11 @@ async function prepareWorkspace(user){
   if(isOwner&&!localStorage.getItem(window.FONELY_CAA_KEY)&&legacyCAA)localStorage.setItem(window.FONELY_CAA_KEY,legacyCAA);
 
   var profileData={full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email,avatar_url:'',created_at:user.created_at};
-  var accessData={plan_tier:'base',status:'active',plan_started_at:null,plan_ends_at:null,trial_ends_at:null,cancel_at_period_end:false};
+  var accessData={plan_tier:'base',status:'active',plan_started_at:null,plan_ends_at:null,trial_ends_at:null,cancel_at_period_end:false,team_member_limit:0};
   try{
     var accountResults=await Promise.all([
       sb.from('profiles').select('full_name,email,avatar_url,created_at,updated_at').eq('id',user.id).maybeSingle(),
-      sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,created_at,updated_at').eq('user_id',workspaceOwnerId).maybeSingle()
+      sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,team_member_limit,created_at,updated_at').eq('user_id',workspaceOwnerId).maybeSingle()
     ]);
     if(accountResults[0].data)profileData=Object.assign(profileData,accountResults[0].data);
     if(accountResults[1].data)accessData=Object.assign(accessData,accountResults[1].data);
