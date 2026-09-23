@@ -27,10 +27,10 @@ function areaTag(area){area=area||'Fonoaudiologia';return '<mark class="farea-ta
 function teamContext(){var a=window.FonelyAccount||{};return a.team||{isOwner:true,permissions:{finance:true,reports:true,manage_team:true}};}
 function isWorkspaceOwner(){return teamContext().isOwner!==false;}
 function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;return !!(t.permissions&&t.permissions[key]);}
-function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
+function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
-function canOpenPage(page){if(page==='financeiro')return canAccess('finance');if(page==='relatorios')return canAccess('reports');if(page==='equipe')return isWorkspaceOwner()||canAccess('manage_team');return true;}
+function canOpenPage(page){if(page==='financeiro')return canAccess('finance');if(page==='relatorios')return canAccess('reports');if(page==='equipe')return isWorkspaceOwner();return true;}
 
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
@@ -257,7 +257,6 @@ function teamPermissionBadges(t){
   var p=t.permissions||{},out=['Clínico'];
   if(p.finance)out.push('Financeiro');
   if(p.reports)out.push('Relatórios');
-  if(p.manage_team)out.push('Gerencia equipe');
   return out.map(function(x){return '<mark>'+esc(x)+'</mark>';}).join('');
 }
 async function refreshTeamMembers(){
@@ -271,7 +270,7 @@ async function refreshTeamMembers(){
   return window.FonelyTeamMembers;
 }
 function teamPage(){
-  if(!(isWorkspaceOwner()||canAccess('manage_team')))return shell('<div class="empty"><b>Acesso restrito</b><span>Somente quem gerencia a equipe pode abrir esta área.</span></div>','Equipe','');
+  if(!isWorkspaceOwner())return shell('<div class="empty"><b>Acesso restrito</b><span>Somente a conta proprietária pode gerenciar a equipe.</span></div>','Equipe','');
   var list=window.FonelyTeamMembers||[];
   var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Cada membro registra avaliações e evoluções com o próprio nome. O acesso financeiro fica bloqueado por padrão.</p></div><button id="newTeam" class="primary">+ Adicionar profissional</button></section>'+
     '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+list.length+' membro'+(list.length===1?'':'s')+' adicional'+(list.length===1?'':'is')+'</h3></div></div>'+
@@ -295,7 +294,6 @@ function teamForm(member){
       '<div class="team-permission-options">'+
         '<label><input type="checkbox" name="finance" '+(p.finance?'checked':'')+'><span><b>Financeiro geral</b><small>Ver pagamentos, pacotes, valores recebidos e indicadores financeiros.</small></span></label>'+
         '<label><input type="checkbox" name="reports" '+(p.reports?'checked':'')+'><span><b>Relatórios</b><small>Visualizar a área geral de relatórios da clínica.</small></span></label>'+
-        '<label><input type="checkbox" name="manage_team" '+(p.manage_team?'checked':'')+'><span><b>Gerenciar equipe</b><small>Adicionar profissionais e alterar permissões de outros membros.</small></span></label>'+
       '</div>'+
       '<div class="team-form-message" id="teamFormMessage"></div>'+
       '<button class="primary">'+(isEdit?'Salvar permissões':'Enviar convite')+'</button>'+
@@ -311,7 +309,7 @@ function teamForm(member){
       name:String(f.get('name')||'').trim(),
       email:String(f.get('email')||'').trim(),
       role:f.get('role'),
-      permissions:{finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:f.get('manage_team')==='on'}
+      permissions:{finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:false}
     };
     try{
       var r=await cloud.supabase.functions.invoke('team-admin',{body:body});
