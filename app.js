@@ -253,8 +253,91 @@ function reportsPage(){
   '<article class="panel"><div class="panel-title"><div><small>CARTEIRA</small><h3>Pacientes por área</h3></div></div><div class="farea-list">'+(ordered.length?ordered.map(function(a){var pct=data.patients.length?Math.round(areas[a]/data.patients.length*100):0;return '<div><span><b>'+esc(a)+'</b><small>'+areas[a]+' paciente'+(areas[a]===1?'':'s')+'</small></span><em>'+pct+'%</em></div>';}).join(''):'<div class="empty">Sem pacientes cadastrados.</div>')+'</div></article></div>',
   'Relatórios','');
 }
-function teamPage(){return shell('<article class="panel"><div class="tools"><div><b>Profissionais</b><span class="muted">Equipe vinculada ao espaço</span></div><button id="newTeam" class="primary">+ Adicionar profissional</button></div>'+(data.team.length?'<div class="patient-list">'+data.team.map(function(t){return '<div class="patient"><div class="avatar">'+esc((t.name||'?').charAt(0))+'</div><div><b>'+esc(t.name)+'</b><span>'+esc(t.role||'Profissional')+' · '+esc(t.email||'')+'</span></div></div>';}).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>O espaço pode ser usado individualmente.</span></div>')+'</article>','Equipe','');}
-function teamForm(){modal('<small class="overline">EQUIPE</small><h2>Adicionar profissional</h2><form id="teamForm"><label>Nome<input name="name" required></label><div class="two"><label>Função<input name="role" placeholder="Fonoaudiólogo(a)"></label><label>E-mail<input type="email" name="email"></label></div><button class="primary">Salvar profissional</button></form>');document.getElementById('teamForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);data.team.push({id:id(),name:f.get('name'),role:f.get('role'),email:f.get('email')});save();document.getElementById('modal').remove();render();};}
+function teamPermissionBadges(t){
+  var p=t.permissions||{},out=['Clínico'];
+  if(p.finance)out.push('Financeiro');
+  if(p.reports)out.push('Relatórios');
+  if(p.manage_team)out.push('Gerencia equipe');
+  return out.map(function(x){return '<mark>'+esc(x)+'</mark>';}).join('');
+}
+async function refreshTeamMembers(){
+  var account=window.FonelyAccount||{},team=account.team||{},cloud=window.FonelyCloud||{};
+  if(!cloud.supabase)return [];
+  var r=await cloud.supabase.from('clinic_members')
+    .select('id,owner_id,user_id,email,name,role,permissions,status,invited_at,accepted_at,last_active_at,created_at,updated_at')
+    .eq('owner_id',team.ownerId||cloud.workspaceOwnerId).eq('status','active').order('created_at',{ascending:true});
+  if(r.error)throw r.error;
+  window.FonelyTeamMembers=r.data||[];
+  return window.FonelyTeamMembers;
+}
+function teamPage(){
+  if(!(isWorkspaceOwner()||canAccess('manage_team')))return shell('<div class="empty"><b>Acesso restrito</b><span>Somente quem gerencia a equipe pode abrir esta área.</span></div>','Equipe','');
+  var list=window.FonelyTeamMembers||[];
+  var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Cada membro registra avaliações e evoluções com o próprio nome. O acesso financeiro fica bloqueado por padrão.</p></div><button id="newTeam" class="primary">+ Adicionar profissional</button></section>'+
+    '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+list.length+' membro'+(list.length===1?'':'s')+' adicional'+(list.length===1?'':'is')+'</h3></div></div>'+
+    (list.length?'<div class="fteam-list">'+list.map(function(t){
+      var status=t.accepted_at?'Ativo':'Convite enviado';
+      return '<article class="fteam-member"><div class="avatar">'+esc((t.name||'?').charAt(0))+'</div><div class="fteam-member-main"><div><b>'+esc(t.name||'Profissional')+'</b><mark class="'+(t.accepted_at?'active':'invited')+'">'+status+'</mark></div><span>'+esc(t.role||'Profissional')+' · '+esc(t.email||'')+'</span><div class="fteam-permissions">'+teamPermissionBadges(t)+'</div></div><div class="fteam-actions"><button class="soft-btn" data-team-edit="'+t.id+'">Permissões</button><button class="danger-btn" data-team-remove="'+t.id+'">Remover</button></div></article>';
+    }).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>Adicione alguém e o Fonely enviará um convite de acesso por e-mail.</span></div>')+
+    '</article>';
+  return shell(body,'Equipe','');
+}
+function teamForm(member){
+  member=member||null;
+  var p=member&&member.permissions||{},isEdit=!!member;
+  modal('<small class="overline">EQUIPE</small><h2>'+(isEdit?'Editar profissional':'Adicionar profissional')+'</h2>'+
+    '<p class="muted">'+(isEdit?'Ajuste o cargo e o que este login pode visualizar.':'A pessoa receberá um convite por e-mail e não precisará contratar outro plano.')+'</p>'+
+    '<form id="teamForm">'+
+      '<label>Nome<input name="name" value="'+esc(member&&member.name||'')+'" required></label>'+
+      '<div class="two"><label>Função<select name="role">'+['Fonoaudiólogo(a)','Estagiário(a)','Secretária / Administrativo','Outro profissional'].map(function(x){return '<option '+(String(member&&member.role||'Fonoaudiólogo(a)')===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label>'+
+      '<label>E-mail<input type="email" name="email" value="'+esc(member&&member.email||'')+'" '+(isEdit?'readonly':'required')+'></label></div>'+
+      '<div class="team-clinical-access"><b>Acesso clínico</b><span>Pacientes, agenda, avaliações, evoluções e documentos ficam disponíveis para o profissional.</span></div>'+
+      '<div class="team-permission-options">'+
+        '<label><input type="checkbox" name="finance" '+(p.finance?'checked':'')+'><span><b>Financeiro geral</b><small>Ver pagamentos, pacotes, valores recebidos e indicadores financeiros.</small></span></label>'+
+        '<label><input type="checkbox" name="reports" '+(p.reports?'checked':'')+'><span><b>Relatórios</b><small>Visualizar a área geral de relatórios da clínica.</small></span></label>'+
+        '<label><input type="checkbox" name="manage_team" '+(p.manage_team?'checked':'')+'><span><b>Gerenciar equipe</b><small>Adicionar profissionais e alterar permissões de outros membros.</small></span></label>'+
+      '</div>'+
+      '<div class="team-form-message" id="teamFormMessage"></div>'+
+      '<button class="primary">'+(isEdit?'Salvar permissões':'Enviar convite')+'</button>'+
+    '</form>');
+  document.getElementById('teamForm').onsubmit=async function(e){
+    e.preventDefault();
+    var f=new FormData(e.target),btn=e.target.querySelector('.primary'),msg=document.getElementById('teamFormMessage'),cloud=window.FonelyCloud||{};
+    if(!cloud.supabase)return;
+    btn.disabled=true;btn.textContent=isEdit?'Salvando...':'Enviando convite...';
+    var body={
+      action:isEdit?'update':'invite',
+      member_id:member&&member.id||undefined,
+      name:String(f.get('name')||'').trim(),
+      email:String(f.get('email')||'').trim(),
+      role:f.get('role'),
+      permissions:{finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:f.get('manage_team')==='on'}
+    };
+    try{
+      var r=await cloud.supabase.functions.invoke('team-admin',{body:body});
+      if(r.error)throw r.error;
+      if(r.data&&r.data.error)throw new Error(r.data.error);
+      await refreshTeamMembers();
+      document.getElementById('modal').remove();
+      render();
+      if(!isEdit)alert(r.data&&r.data.invitation_sent?'Convite enviado para '+body.email+'.':'Esse e-mail já possuía um login no Fonely. O acesso à equipe foi vinculado à conta existente.');
+    }catch(err){
+      msg.className='team-form-message show error';msg.textContent=String(err&&err.message||err||'Não foi possível salvar.');
+      btn.disabled=false;btn.textContent=isEdit?'Salvar permissões':'Enviar convite';
+    }
+  };
+}
+async function removeTeamMember(memberId){
+  var member=(window.FonelyTeamMembers||[]).find(function(x){return x.id===memberId;});
+  if(!member||!confirm('Remover '+(member.name||'este profissional')+' da equipe? O login pessoal continuará existindo, mas perderá o acesso à clínica.'))return;
+  var cloud=window.FonelyCloud||{};
+  try{
+    var r=await cloud.supabase.functions.invoke('team-admin',{body:{action:'remove',member_id:memberId}});
+    if(r.error)throw r.error;
+    if(r.data&&r.data.error)throw new Error(r.data.error);
+    await refreshTeamMembers();render();
+  }catch(err){alert('Não foi possível remover agora. '+String(err&&err.message||err||''));}
+}
 function academy(){return shell('<article class="academy"><div>✦</div><h2>Fonely <span>Academy</span></h2><p>Conteúdos e cursos para transformar conhecimento em prática clínica.</p><em>EM BREVE</em></article>','Fonely Academy','');}
 function modal(html){var old=document.getElementById('modal');if(old)old.remove();var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div class="modal-card"><button class="close" id="closeModal">×</button>'+html+'</div>';document.body.appendChild(m);document.getElementById('closeModal').onclick=function(){m.remove();};}
 function bindModalRows(){document.querySelectorAll('#modal [data-ap]').forEach(function(b){b.onclick=function(){var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a){document.getElementById('modal').remove();appointmentDetails(a);}};});}
@@ -285,7 +368,9 @@ function bind(){
   var nf=document.getElementById('financeFilter');if(nf){nf.value=state.financePatient||'';nf.onchange=function(){state.financePatient=this.value||null;render();};}
   var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){packageForm();};
   var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){paymentForm();};
-  var nt=document.getElementById('newTeam');if(nt)nt.onclick=teamForm;
+  var nt=document.getElementById('newTeam');if(nt)nt.onclick=function(){teamForm();};
+  document.querySelectorAll('[data-team-edit]').forEach(function(b){b.onclick=function(){var t=(window.FonelyTeamMembers||[]).find(function(x){return x.id===b.getAttribute('data-team-edit');});if(t)teamForm(t);};});
+  document.querySelectorAll('[data-team-remove]').forEach(function(b){b.onclick=function(){removeTeamMember(b.getAttribute('data-team-remove'));};});
   var accountButton=document.getElementById('accountMenu');
   if(accountButton&&window.FonelyAccountUI){accountButton.onclick=function(){window.FonelyAccountUI.open();};}
 
