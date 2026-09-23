@@ -2,7 +2,21 @@
 'use strict';
 var KEY='fonely_caa_v1',token=new URLSearchParams(location.search).get('token')||'',state={category:'Todas',volumeOverride:null};
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{profiles:{}};}catch(e){return {profiles:{}};}}
+function load(){
+  var merged={profiles:{}};
+  try{
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(k===KEY||String(k||'').indexOf(KEY+'_')===0){
+        try{
+          var d=JSON.parse(localStorage.getItem(k))||{profiles:{}};
+          Object.keys(d.profiles||{}).forEach(function(id){merged.profiles[id]=d.profiles[id];});
+        }catch(e){}
+      }
+    }
+  }catch(e){}
+  return merged;
+}
 function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
 function findProfile(d){var keys=Object.keys(d.profiles||{});for(var i=0;i<keys.length;i++){var p=d.profiles[keys[i]];if(p&&p.token===token)return p;}return null;}
 function settings(p){var s=Object.assign({},p.published&&p.published.settings||p.settings||{});s.speakOnTap=true;s.addToPhrase=false;if(state.volumeOverride!=null)s.volume=state.volumeOverride;return s;}
