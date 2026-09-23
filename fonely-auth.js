@@ -5,8 +5,8 @@ const SUPABASE_URL='https://apjmkstuffzgfhgcxhvt.supabase.co';
 const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://casalinhofisio.github.io/FONELY/';
 const APP_SCRIPTS=[
-  'app.js?v=14',
-  'fonely-assessments-v2.js?v=5',
+  'app.js?v=15',
+  'fonely-assessments-v2.js?v=6',
   'fonely-package-integration-v2.js?v=3',
   'fonely-full-edit-v1.js?v=2',
   'fonely-logo.js?v=5',
@@ -20,6 +20,7 @@ let appLoaded=false;
 let appLoadPromise=null;
 let authMounted=false;
 let recoveryMode=/type=recovery/i.test(location.hash)||/type=recovery/i.test(location.search);
+let inviteMode=/team_invite=1/i.test(location.search)||/type=invite/i.test(location.hash)||/type=invite/i.test(location.search);
 
 function esc(v){
   return String(v==null?'':v).replace(/[&<>"']/g,function(c){
@@ -272,7 +273,8 @@ async function uploadProfileAvatar(file,button,msg){
   }
 }
 function openAccountPanel(){
-  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{};
+  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
+  var isTeamMember=team.isOwner===false;
   var old=document.getElementById('fonelyAccountOverlay');if(old)old.remove();
   var expiry=access.status==='trialing'&&access.trial_ends_at?access.trial_ends_at:access.plan_ends_at;
   var validity=expiry?accountDate(expiry):(access.plan_tier==='base'?'Sem vencimento':'Sem data definida');
@@ -282,16 +284,26 @@ function openAccountPanel(){
   var photo=profile.avatar_url
     ?'<div class="fe-account-photo"><img src="'+esc(profile.avatar_url)+'" alt="'+esc(name)+'"><span class="fe-account-photo-edit">Alterar</span></div>'
     :'<div class="fe-account-photo fallback">'+esc(initial)+'<span class="fe-account-photo-edit">Adicionar foto</span></div>';
+  var planBlock=isTeamMember
+    ?'<div class="fe-account-plan"><div><span>ACESSO À CLÍNICA</span><b>'+esc(team.role||'Profissional')+'</b></div><mark class="ok">Sem cobrança individual</mark></div>'
+    :'<div class="fe-account-plan"><div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div><mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark></div>';
+  var grid=isTeamMember
+    ?'<div class="fe-account-grid">'+
+       '<div><small>VÍNCULO</small><b>Membro da equipe</b></div>'+
+       '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado pela clínica':'Conforme o plano da clínica')+'</b></div>'+
+       '<div><small>FINANCEIRO GERAL</small><b>'+(team.permissions&&team.permissions.finance?'Liberado pela proprietária':'Sem acesso')+'</b></div>'+
+      '</div>'
+    :'<div class="fe-account-grid">'+
+       '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
+       '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
+       '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
+      '</div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
   w.innerHTML='<div class="fe-account-panel">'+
     '<div class="fe-account-top"><div class="fe-account-identity">'+photo+'<div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p><button type="button" class="fe-photo-button" data-account-photo>Alterar foto</button><input type="file" accept="image/jpeg,image/png,image/webp" data-account-photo-input hidden></div></div><button type="button" data-account-close>×</button></div>'+
-    '<div class="fe-account-plan"><div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div><mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark></div>'+
-    '<div class="fe-account-grid">'+
-      '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
-      '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-      '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
-      '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
-    '</div>'+
+    planBlock+grid+
     '<div class="fe-account-actions"><button type="button" class="soft-btn" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
     '<div class="fe-account-message" data-account-message></div>'+
   '</div>';
@@ -324,39 +336,78 @@ window.FonelyAccountUI={open:openAccountPanel};
 
 async function prepareWorkspace(user){
   window.FONELY_USER_ID=user.id;
-  window.FONELY_STORAGE_KEY='fonely_clean_v1_'+user.id;
-  window.FONELY_CAA_KEY='fonely_caa_v1_'+user.id;
-  window.FONELY_PLAN_KEY='fonely_plan_v1_'+user.id;
+
+  var membership=null;
+  try{
+    var mr=await sb.from('clinic_members')
+      .select('id,owner_id,user_id,email,name,role,permissions,status,invited_at,accepted_at,created_at')
+      .eq('user_id',user.id).eq('status','active')
+      .order('created_at',{ascending:true}).limit(1);
+    if(!mr.error&&mr.data&&mr.data.length)membership=mr.data[0];
+  }catch(e){console.warn('Fonely: não foi possível verificar o vínculo da equipe.',e);}
+
+  var isOwner=!membership;
+  var workspaceOwnerId=membership?membership.owner_id:user.id;
+  var permissions=isOwner
+    ?{finance:true,reports:true,manage_team:true}
+    :Object.assign({finance:false,reports:false,manage_team:false},membership.permissions||{});
+  var teamContext={
+    isOwner:isOwner,
+    ownerId:workspaceOwnerId,
+    memberId:membership&&membership.id||null,
+    role:membership&&membership.role||'Proprietário',
+    permissions:permissions
+  };
+
+  window.FONELY_WORKSPACE_OWNER_ID=workspaceOwnerId;
+  window.FONELY_STORAGE_KEY='fonely_clean_v1_'+workspaceOwnerId;
+  window.FONELY_CAA_KEY='fonely_caa_v1_'+workspaceOwnerId;
+  window.FONELY_PLAN_KEY='fonely_plan_v1_'+workspaceOwnerId;
 
   var workspaceKey=window.FONELY_STORAGE_KEY;
   var localUserData=localStorage.getItem(workspaceKey);
   var legacy=localStorage.getItem('fonely_clean_v1');
 
   try{
-    var result=await sb.from('workspace_state').select('data').eq('user_id',user.id).maybeSingle();
-    if(result.error)throw result.error;
-    if(result.data&&result.data.data&&Object.keys(result.data.data).length){
-      localStorage.setItem(workspaceKey,JSON.stringify(result.data.data));
-    }else if(localUserData){
-      await sb.from('workspace_state').upsert({user_id:user.id,data:JSON.parse(localUserData),updated_at:new Date().toISOString()});
-    }else if(legacy){
-      var parsed=JSON.parse(legacy);
-      localStorage.setItem(workspaceKey,legacy);
-      await sb.from('workspace_state').upsert({user_id:user.id,data:parsed,updated_at:new Date().toISOString()});
+    if(isOwner){
+      var result=await sb.from('workspace_state').select('data').eq('user_id',workspaceOwnerId).maybeSingle();
+      if(result.error)throw result.error;
+      if(result.data&&result.data.data&&Object.keys(result.data.data).length){
+        localStorage.setItem(workspaceKey,JSON.stringify(result.data.data));
+      }else if(localUserData){
+        await sb.from('workspace_state').upsert({user_id:workspaceOwnerId,data:JSON.parse(localUserData),updated_at:new Date().toISOString()});
+      }else if(legacy){
+        var parsed=JSON.parse(legacy);
+        localStorage.setItem(workspaceKey,legacy);
+        await sb.from('workspace_state').upsert({user_id:workspaceOwnerId,data:parsed,updated_at:new Date().toISOString()});
+      }
+    }else{
+      var cloudLoad=await sb.functions.invoke('team-workspace',{body:{action:'load'}});
+      if(cloudLoad.error)throw cloudLoad.error;
+      if(cloudLoad.data&&cloudLoad.data.data){
+        localStorage.setItem(workspaceKey,JSON.stringify(cloudLoad.data.data));
+        if(cloudLoad.data.member){
+          membership.name=cloudLoad.data.member.name||membership.name;
+          membership.role=cloudLoad.data.member.role||membership.role;
+          membership.permissions=cloudLoad.data.member.permissions||membership.permissions;
+          teamContext.role=membership.role;
+          teamContext.permissions=Object.assign({finance:false,reports:false,manage_team:false},membership.permissions||{});
+        }
+      }
     }
   }catch(e){
-    console.warn('Fonely: não foi possível carregar a nuvem agora.',e);
+    console.warn('Fonely: não foi possível carregar o espaço compartilhado agora.',e);
   }
 
   var legacyCAA=localStorage.getItem('fonely_caa_v1');
-  if(!localStorage.getItem(window.FONELY_CAA_KEY)&&legacyCAA)localStorage.setItem(window.FONELY_CAA_KEY,legacyCAA);
+  if(isOwner&&!localStorage.getItem(window.FONELY_CAA_KEY)&&legacyCAA)localStorage.setItem(window.FONELY_CAA_KEY,legacyCAA);
 
   var profileData={full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email,avatar_url:'',created_at:user.created_at};
   var accessData={plan_tier:'base',status:'active',plan_started_at:null,plan_ends_at:null,trial_ends_at:null,cancel_at_period_end:false};
   try{
     var accountResults=await Promise.all([
       sb.from('profiles').select('full_name,email,avatar_url,created_at,updated_at').eq('id',user.id).maybeSingle(),
-      sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,created_at,updated_at').eq('user_id',user.id).maybeSingle()
+      sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,created_at,updated_at').eq('user_id',workspaceOwnerId).maybeSingle()
     ]);
     if(accountResults[0].data)profileData=Object.assign(profileData,accountResults[0].data);
     if(accountResults[1].data)accessData=Object.assign(accessData,accountResults[1].data);
@@ -364,21 +415,72 @@ async function prepareWorkspace(user){
     console.warn('Fonely: não foi possível carregar os dados da conta.',e);
   }
 
+  var teamMembers=[];
+  if(isOwner||teamContext.permissions.manage_team){
+    try{
+      var tr=await sb.from('clinic_members')
+        .select('id,owner_id,user_id,email,name,role,permissions,status,invited_at,accepted_at,last_active_at,created_at,updated_at')
+        .eq('owner_id',workspaceOwnerId).eq('status','active')
+        .order('created_at',{ascending:true});
+      if(!tr.error&&tr.data)teamMembers=tr.data;
+    }catch(e){console.warn('Fonely: não foi possível carregar a equipe.',e);}
+  }
+
   window.FONELY_PLAN_TIER=accessData.plan_tier||'base';
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
-  window.FonelyAccount={user:user,profile:profileData,access:accessData};
+  window.FonelyTeamMembers=teamMembers;
+  window.FonelyAccount={user:user,profile:profileData,access:accessData,team:teamContext};
 
   window.FonelyCloud={
     saveWorkspace:function(data){
       if(!sb||!user||!data)return;
-      sb.from('workspace_state').upsert({
-        user_id:user.id,
-        data:data,
-        updated_at:new Date().toISOString()
-      }).then(function(r){if(r.error)console.warn('Fonely: falha ao sincronizar.',r.error);});
+      if(isOwner){
+        sb.from('workspace_state').upsert({
+          user_id:workspaceOwnerId,
+          data:data,
+          updated_at:new Date().toISOString()
+        }).then(function(r){if(r.error)console.warn('Fonely: falha ao sincronizar.',r.error);});
+      }else{
+        sb.functions.invoke('team-workspace',{body:{action:'save',data:data}})
+          .then(function(r){if(r.error)console.warn('Fonely: falha ao sincronizar espaço da equipe.',r.error);});
+      }
     },
     user:user,
+    workspaceOwnerId:workspaceOwnerId,
+    isOwner:isOwner,
+    permissions:teamContext.permissions,
     supabase:sb
+  };
+}
+function showTeamInviteSetup(){
+  if(!inviteMode||document.getElementById('fonelyTeamInviteSetup'))return;
+  var account=window.FonelyAccount||{},team=account.team||{};
+  if(team.isOwner!==false){inviteMode=false;return;}
+  var w=document.createElement('div');
+  w.id='fonelyTeamInviteSetup';
+  w.className='fe-account-overlay';
+  w.innerHTML='<div class="fe-account-panel">'+
+    '<div class="fe-account-top"><div><small class="fe-auth-kicker">CONVITE ACEITO</small><h2>Crie sua senha</h2><p>Seu acesso à equipe do Fonely já está ativo. Crie uma senha para entrar depois com seu e-mail.</p></div></div>'+
+    '<form data-team-invite-password>'+
+      '<label class="fe-field"><span>Nova senha</span><input type="password" name="password" minlength="8" autocomplete="new-password" required></label>'+
+      '<label class="fe-field"><span>Repita a senha</span><input type="password" name="password2" minlength="8" autocomplete="new-password" required></label>'+
+      '<button class="fe-primary" type="submit">Salvar senha e entrar</button>'+
+    '</form>'+
+    '<div class="fe-account-message" data-team-invite-message></div>'+
+  '</div>';
+  document.body.appendChild(w);
+  var form=w.querySelector('[data-team-invite-password]'),msg=w.querySelector('[data-team-invite-message]');
+  form.onsubmit=async function(e){
+    e.preventDefault();
+    var fd=new FormData(form),p=String(fd.get('password')||''),p2=String(fd.get('password2')||''),btn=form.querySelector('button');
+    if(p.length<8){msg.className='fe-account-message show error';msg.textContent='A senha precisa ter pelo menos 8 caracteres.';return;}
+    if(p!==p2){msg.className='fe-account-message show error';msg.textContent='As duas senhas precisam ser iguais.';return;}
+    btn.disabled=true;btn.textContent='Salvando...';
+    var r=await sb.auth.updateUser({password:p});
+    if(r.error){msg.className='fe-account-message show error';msg.textContent=friendlyError(r.error);btn.disabled=false;btn.textContent='Salvar senha e entrar';return;}
+    inviteMode=false;
+    if(history.replaceState)history.replaceState({},document.title,APP_URL);
+    w.remove();
   };
 }
 
@@ -393,10 +495,10 @@ async function loadApp(user){
     for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
     appLoaded=true;
     mountAccount(user);
+    if(inviteMode)setTimeout(showTeamInviteSetup,80);
   })();
   try{await appLoadPromise;}finally{if(!appLoaded)appLoadPromise=null;}
 }
-
 function mountAccount(user){
   var button=document.getElementById('accountMenu');
   if(button&&window.FonelyAccountUI)button.onclick=function(){window.FonelyAccountUI.open();};
