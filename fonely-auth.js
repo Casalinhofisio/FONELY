@@ -53,67 +53,64 @@ async function ensureSupabase(){
 
 function authHTML(){
   return '<div class="fe-shell">'+
-    '<header class="fe-top">'+
-      '<img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely">'+
-      '<div class="fe-top-copy"><span>Plataforma para fonoaudiologia</span><b>Seu atendimento. Seu espaço.</b></div>'+
-    '</header>'+
-    '<main class="fe-main">'+
-      '<section class="fe-hero">'+
-        '<span class="fe-eyebrow">FONOAUDIOLOGIA EM UM SÓ LUGAR</span>'+
-        '<h1>Menos sistema.<br><span>Mais clínica.</span></h1>'+
-        '<p>Organize pacientes, agenda, avaliações, evoluções, documentos e financeiro em um espaço feito para a rotina fonoaudiológica.</p>'+
-        '<div class="fe-feature-grid">'+
-          '<div><i>01</i><b>Prontuário organizado</b><span>Histórico clínico centralizado por paciente.</span></div>'+
-          '<div><i>02</i><b>Agenda inteligente</b><span>Sessões, pacotes e rotina diária conectados.</span></div>'+
-          '<div><i>03</i><b>Avaliações de fono</b><span>Fluxos pensados para linguagem, fala e outras áreas.</span></div>'+
-          '<div><i>04</i><b>Fonely CAA</b><span>Comunicação alternativa para quem realmente precisa.</span></div>'+
+    '<main class="fe-frame">'+
+      '<section class="fe-brand-side">'+
+        '<div class="fe-brand-top"><img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely"><span>SISTEMA PARA FONOAUDIÓLOGOS</span></div>'+
+        '<div class="fe-brand-copy">'+
+          '<span class="fe-eyebrow">CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
+          '<h1>Mais tempo para o que <em>realmente importa.</em></h1>'+
+          '<p>Pacientes, agenda, avaliações, evoluções, documentos e financeiro em um único espaço feito para a rotina fonoaudiológica.</p>'+
+          '<div class="fe-brand-points"><span>Prontuário clínico</span><span>Agenda e recorrências</span><span>Avaliações de fono</span><span>Fonely CAA</span></div>'+
         '</div>'+
         '<div class="fe-product-preview">'+
-          '<div class="fe-preview-head"><span></span><span></span><span></span><b>Fonely</b></div>'+
-          '<div class="fe-preview-body">'+
-            '<aside><i></i><i></i><i></i><i></i><i></i></aside>'+
-            '<section><div class="fe-preview-title"></div><div class="fe-preview-cards"><i></i><i></i><i></i></div><div class="fe-preview-lines"><i></i><i></i><i></i><i></i></div></section>'+
+          '<div class="fe-preview-sidebar"><img src="fonely-icon.svg" alt=""><i class="active"></i><i></i><i></i><i></i><i></i></div>'+
+          '<div class="fe-preview-content">'+
+            '<div class="fe-preview-header"><div><small>VISÃO DO DIA</small><b>Seu consultório em ordem.</b></div><span>+ Novo atendimento</span></div>'+
+            '<div class="fe-preview-stats"><i></i><i></i><i></i><i></i></div>'+
+            '<div class="fe-preview-grid"><div class="wide"><b></b><i></i><i></i><i></i></div><div><b></b><i></i><i></i><i></i></div></div>'+
           '</div>'+
         '</div>'+
       '</section>'+
-      '<aside class="fe-card" id="feCard">'+
-        '<div class="fe-card-brand"><img src="fonely-logo-official.svg" alt="Fonely"><span>ACESSO PROFISSIONAL</span></div>'+
-        '<div class="fe-card-head"><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre com seu e-mail e senha para acessar seu espaço.</p></div>'+
-        '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
-        '<form class="fe-form active" data-fe-form="login">'+
-          '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
-          '<label class="fe-field fe-password"><span>Senha</span><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
-          '<div class="fe-forgot"><button type="button" data-fe-forgot>Esqueci minha senha</button></div>'+
-          '<button class="fe-primary" type="submit">Entrar no Fonely</button>'+
-        '</form>'+
-        '<form class="fe-form" data-fe-form="signup">'+
-          '<label class="fe-field"><span>Nome</span><input name="name" autocomplete="name" placeholder="Seu nome completo" required></label>'+
-          '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="voce@clinica.com" required></label>'+
-          '<label class="fe-field fe-password"><span>Crie uma senha</span><input type="password" name="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
-          '<label class="fe-field fe-password"><span>Repita a senha</span><input type="password" name="password2" autocomplete="new-password" placeholder="Digite a mesma senha" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
-          '<button class="fe-primary" type="submit">Criar minha conta</button>'+
-          '<p class="fe-helper">Depois do cadastro, enviaremos a confirmação para o seu e-mail.</p>'+
-        '</form>'+
-        '<div class="fe-reset" data-fe-reset>'+
-          '<button class="fe-back" type="button" data-fe-back>← Voltar</button>'+
-          '<h2>Recuperar acesso</h2><p>Digite seu e-mail para receber o link de redefinição de senha.</p>'+
-          '<form data-fe-reset-form><label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label><button class="fe-primary">Enviar link</button></form>'+
-        '</div>'+
-        '<div class="fe-recovery" data-fe-recovery>'+
-          '<h2>Criar nova senha</h2><p>Digite a nova senha duas vezes para concluir a recuperação.</p>'+
-          '<form data-fe-recovery-form>'+
-            '<label class="fe-field fe-password"><span>Nova senha</span><input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Mínimo de 8 caracteres" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
-            '<label class="fe-field fe-password"><span>Repita a nova senha</span><input type="password" name="password2" autocomplete="new-password" minlength="8" placeholder="Digite novamente" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
-            '<button class="fe-primary">Salvar nova senha</button>'+
+      '<section class="fe-auth-side">'+
+        '<aside class="fe-card" id="feCard">'+
+          '<div class="fe-card-brand"><img src="fonely-logo-official.svg" alt="Fonely"><span>ACESSO PROFISSIONAL</span></div>'+
+          '<div class="fe-card-head"><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre com seu e-mail e senha para acessar seu espaço.</p></div>'+
+          '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
+          '<form class="fe-form active" data-fe-form="login">'+
+            '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
+            '<label class="fe-field fe-password"><span>Senha</span><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+            '<div class="fe-forgot"><button type="button" data-fe-forgot>Esqueci minha senha</button></div>'+
+            '<button class="fe-primary" type="submit">Entrar no Fonely</button>'+
           '</form>'+
-        '</div>'+
-        '<div class="fe-message" id="feMessage"></div>'+
-        '<div class="fe-trust"><i></i><span>Conta protegida pelo Supabase Auth</span></div>'+
-      '</aside>'+
+          '<form class="fe-form" data-fe-form="signup">'+
+            '<label class="fe-field"><span>Nome</span><input name="name" autocomplete="name" placeholder="Seu nome completo" required></label>'+
+            '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="voce@clinica.com" required></label>'+
+            '<label class="fe-field fe-password"><span>Crie uma senha</span><input type="password" name="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+            '<label class="fe-field fe-password"><span>Repita a senha</span><input type="password" name="password2" autocomplete="new-password" placeholder="Digite a mesma senha" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+            '<button class="fe-primary" type="submit">Criar minha conta</button>'+
+            '<p class="fe-helper">Enviaremos uma confirmação para o seu e-mail.</p>'+
+          '</form>'+
+          '<div class="fe-reset" data-fe-reset>'+
+            '<button class="fe-back" type="button" data-fe-back>← Voltar</button>'+
+            '<h2>Recuperar acesso</h2><p>Digite seu e-mail para receber o link de redefinição de senha.</p>'+
+            '<form data-fe-reset-form><label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label><button class="fe-primary">Enviar link</button></form>'+
+          '</div>'+
+          '<div class="fe-recovery" data-fe-recovery>'+
+            '<h2>Criar nova senha</h2><p>Digite a nova senha duas vezes para concluir a recuperação.</p>'+
+            '<form data-fe-recovery-form>'+
+              '<label class="fe-field fe-password"><span>Nova senha</span><input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Mínimo de 8 caracteres" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+              '<label class="fe-field fe-password"><span>Repita a nova senha</span><input type="password" name="password2" autocomplete="new-password" minlength="8" placeholder="Digite novamente" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+              '<button class="fe-primary">Salvar nova senha</button>'+
+            '</form>'+
+          '</div>'+
+          '<div class="fe-message" id="feMessage"></div>'+
+          '<div class="fe-trust"><i></i><span>Acesso seguro ao seu espaço Fonely</span></div>'+
+        '</aside>'+
+      '</section>'+
     '</main>'+
+    '<footer class="fe-footer"><span>Fonely</span><b>Mais escuta para mais conquistas.</b></footer>'+
   '</div>';
 }
-
 function mountAuth(){
   var old=document.getElementById('fonelyEntry');
   if(old)old.remove();
