@@ -1,9 +1,9 @@
 (function(){
 'use strict';
-var KEY='fonely_clean_v1',cursor=new Date();cursor=new Date(cursor.getFullYear(),cursor.getMonth(),1,12);
+var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1',cursor=new Date();cursor=new Date(cursor.getFullYear(),cursor.getMonth(),1,12);
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{patients:[],appointments:[]};}catch(e){return {patients:[],appointments:[]};}}
-function save(d){localStorage.setItem(KEY,JSON.stringify(d));}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d));if(window.FonelyCloud)window.FonelyCloud.saveWorkspace(d);}
 function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 function key(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function parse(s){var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2],12);}
