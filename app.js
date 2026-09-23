@@ -30,7 +30,11 @@ function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;ret
 function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
-function canOpenPage(page){if(page==='financeiro')return canAccess('finance');if(page==='relatorios')return canAccess('reports');if(page==='equipe')return isWorkspaceOwner();return true;}
+function canOpenPage(page){
+  var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
+  if(page==='equipe')return isWorkspaceOwner();
+  return map[page]?canAccess(map[page]):true;
+}
 
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
@@ -95,12 +99,19 @@ function patientView(p){
   var pkg=activePackage(p.id),ass=data.assessments.filter(function(x){return x.patientId===p.id;}).length,
   evs=data.evolutions.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}),
   ev=evs.length,docs=(p.documents||[]).length,na=nextAppointment(p.id),le=evs[0]||null;
-  var cards=[['anam','📝','Anamnese','Histórico inicial, desenvolvimento e rotina'],['assess','◇','Avaliações','Avaliação inicial, triagem e reavaliações'],['evol','✎','Evoluções','Registro clínico de cada sessão'],['docs','▤','Documentos','Laudos, exames, fotos, vídeos e amostras']];
+  var cards=[['anam','📝','Anamnese','Histórico inicial, desenvolvimento e rotina']];
+  if(canAccess('assessments'))cards.push(['assess','◇','Avaliações','Avaliação inicial, triagem e reavaliações']);
+  if(canAccess('evolutions'))cards.push(['evol','✎','Evoluções','Registro clínico de cada sessão']);
+  if(canAccess('documents'))cards.push(['docs','▤','Documentos','Laudos, exames, fotos, vídeos e amostras']);
   if(canAccess('finance'))cards.push(['fin','$','Financeiro','Pacotes, sessões e pagamentos']);
   if(canAccess('reports'))cards.push(['reports','◫','Relatórios','Indicadores e acompanhamento do caso']);
-  return shell('<button class="back" data-go="pacientes">← Voltar aos pacientes</button><article class="patient-head fpatient-head"><div class="avatar large">'+esc((p.name||'?').charAt(0))+'</div><div class="fpatient-title"><small>PACIENTE</small><h2>'+esc(p.name)+'</h2><p>'+esc(p.area||'Área não informada')+(patientAge(p)?' · '+patientAge(p):'')+(p.guardian?' · Responsável: '+esc(p.guardian):'')+'</p>'+(p.complaint?'<span class="fpatient-complaint">'+esc(p.complaint)+'</span>':'')+'</div><button class="primary" id="schedulePatient">+ Agendar</button></article>'+
-  '<div class="fpatient-context"><div><small>PRÓXIMO ATENDIMENTO</small><b>'+(na?shortDate(na.date)+' · '+esc(na.time||'—'):'Não agendado')+'</b><span>'+(na?esc(na.type||'Atendimento')+' · '+esc(na.mode||'Presencial'):'Use “Agendar” para criar um horário')+'</span></div><div><small>ÚLTIMO REGISTRO</small><b>'+(le?shortDate(le.date):'Sem evolução')+'</b><span>'+(le?esc(le.focus||'Sessão clínica')+(recordProfessional(le)?' · '+esc(recordProfessional(le)):''):'Registre a primeira evolução')+'</span></div><div><small>PACOTE ATIVO</small><b>'+(pkg?remainingPackage(pkg)+' de '+Number(pkg.sessions||0)+' restantes':'Sem pacote')+'</b><span>'+(pkg?esc(pkg.name||'Pacote'):'Atendimento avulso ou sem pacote')+'</span></div></div>'+
-  '<div class="fpatient-actions"><button id="patientNewAssessment"><i>◇</i><span><b>Nova avaliação</b><small>Registrar avaliação ou reavaliação</small></span></button><button id="patientNewEvolution"><i>✎</i><span><b>Nova evolução</b><small>Registrar a sessão de hoje</small></span></button><button id="patientNewDocument"><i>▤</i><span><b>Novo documento</b><small>Anexar material clínico</small></span></button></div>'+
+  var quickActions='';
+  if(canAccess('assessments'))quickActions+='<button id="patientNewAssessment"><i>◇</i><span><b>Nova avaliação</b><small>Registrar avaliação ou reavaliação</small></span></button>';
+  if(canAccess('evolutions'))quickActions+='<button id="patientNewEvolution"><i>✎</i><span><b>Nova evolução</b><small>Registrar a sessão de hoje</small></span></button>';
+  if(canAccess('documents'))quickActions+='<button id="patientNewDocument"><i>▤</i><span><b>Novo documento</b><small>Anexar material clínico</small></span></button>';
+  return shell('<button class="back" data-go="pacientes">← Voltar aos pacientes</button><article class="patient-head fpatient-head"><div class="avatar large">'+esc((p.name||'?').charAt(0))+'</div><div class="fpatient-title"><small>PACIENTE</small><h2>'+esc(p.name)+'</h2><p>'+esc(p.area||'Área não informada')+(patientAge(p)?' · '+patientAge(p):'')+(p.guardian?' · Responsável: '+esc(p.guardian):'')+'</p>'+(p.complaint?'<span class="fpatient-complaint">'+esc(p.complaint)+'</span>':'')+'</div>'+(canAccess('agenda')?'<button class="primary" id="schedulePatient">+ Agendar</button>':'')+'</article>'+
+  '<div class="fpatient-context"><div><small>PRÓXIMO ATENDIMENTO</small><b>'+(na?shortDate(na.date)+' · '+esc(na.time||'—'):'Não agendado')+'</b><span>'+(na?esc(na.type||'Atendimento')+' · '+esc(na.mode||'Presencial'):'Sem próximo horário')+'</span></div><div><small>ÚLTIMO REGISTRO</small><b>'+(le?shortDate(le.date):'Sem evolução')+'</b><span>'+(le?esc(le.focus||'Sessão clínica')+(recordProfessional(le)?' · '+esc(recordProfessional(le)):''):'Nenhuma evolução registrada')+'</span></div><div><small>PACOTE ATIVO</small><b>'+(pkg?remainingPackage(pkg)+' de '+Number(pkg.sessions||0)+' restantes':'Sem pacote')+'</b><span>'+(pkg?esc(pkg.name||'Pacote'):'Atendimento avulso ou sem pacote')+'</span></div></div>'+
+  (quickActions?'<div class="fpatient-actions">'+quickActions+'</div>':'')+
   '<div class="patient-kpis"><div><b>'+ass+'</b><span>Avaliações</span></div><div><b>'+ev+'</b><span>Evoluções</span></div><div><b>'+docs+'</b><span>Documentos</span></div><div><b>'+(pkg?remainingPackage(pkg):'—')+'</b><span>Sessões restantes</span></div></div><div class="clinical-grid">'+cards.map(function(x){return '<button class="clinical" data-parea="'+x[0]+'"><i>'+x[1]+'</i><b>'+x[2]+'</b><span>'+x[3]+'</span></button>';}).join('')+'</div>','Prontuário','');
 }
 function agenda(){
@@ -254,9 +265,11 @@ function reportsPage(){
   'Relatórios','');
 }
 function teamPermissionBadges(t){
-  var p=t.permissions||{},out=['Clínico'];
-  if(p.finance)out.push('Financeiro');
-  if(p.reports)out.push('Relatórios');
+  var p=t.permissions||{},labels=[
+    ['patients','Pacientes'],['agenda','Agenda'],['assessments','Avaliações'],['evolutions','Evoluções'],
+    ['documents','Documentos'],['caa','CAA'],['finance','Financeiro'],['reports','Relatórios']
+  ];
+  var out=labels.filter(function(x){return p[x[0]]!==false&&((['finance','reports'].indexOf(x[0])<0)||!!p[x[0]]);}).map(function(x){return x[1];});
   return out.map(function(x){return '<mark>'+esc(x)+'</mark>';}).join('');
 }
 async function refreshTeamMembers(){
@@ -271,34 +284,50 @@ async function refreshTeamMembers(){
 }
 function teamPage(){
   if(!isWorkspaceOwner())return shell('<div class="empty"><b>Acesso restrito</b><span>Somente a conta proprietária pode gerenciar a equipe.</span></div>','Equipe','');
-  var list=window.FonelyTeamMembers||[];
-  var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Cada membro registra avaliações e evoluções com o próprio nome. O acesso financeiro fica bloqueado por padrão.</p></div><button id="newTeam" class="primary">+ Adicionar profissional</button></section>'+
-    '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+list.length+' membro'+(list.length===1?'':'s')+' adicional'+(list.length===1?'':'is')+'</h3></div></div>'+
+  var list=window.FonelyTeamMembers||[],account=window.FonelyAccount||{},access=account.access||{};
+  var limit=Math.max(0,Number(access.team_member_limit||0)),used=list.length,remaining=Math.max(0,limit-used),full=limit<=used;
+  var seatText=limit?used+' de '+limit+' vagas usadas':'Seu plano atual não possui vagas de equipe';
+  var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Só a conta principal paga o plano. As vagas disponíveis vêm do plano da clínica e cada profissional entra com o próprio e-mail e senha.</p></div><button id="newTeam" class="primary" '+(full?'disabled':'')+'>+ Adicionar profissional</button></section>'+
+    '<div class="fteam-seats"><div><small>VAGAS DO PLANO</small><b>'+esc(seatText)+'</b><span>'+(limit?(remaining+' vaga'+(remaining===1?'':'s')+' disponível'+(remaining===1?'':'is')):'Aumente o plano para liberar acessos adicionais')+'</span></div><div class="fteam-seatbar"><i style="width:'+(limit?Math.min(100,used/Math.max(1,limit)*100):100)+'%"></i></div></div>'+
+    '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+used+' membro'+(used===1?'':'s')+' adicional'+(used===1?'':'is')+'</h3></div></div>'+
     (list.length?'<div class="fteam-list">'+list.map(function(t){
       var status=t.accepted_at?'Ativo':'Convite enviado';
       return '<article class="fteam-member"><div class="avatar">'+esc((t.name||'?').charAt(0))+'</div><div class="fteam-member-main"><div><b>'+esc(t.name||'Profissional')+'</b><mark class="'+(t.accepted_at?'active':'invited')+'">'+status+'</mark></div><span>'+esc(t.role||'Profissional')+' · '+esc(t.email||'')+'</span><div class="fteam-permissions">'+teamPermissionBadges(t)+'</div></div><div class="fteam-actions"><button class="soft-btn" data-team-edit="'+t.id+'">Permissões</button><button class="danger-btn" data-team-remove="'+t.id+'">Remover</button></div></article>';
-    }).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>Adicione alguém e o Fonely enviará um convite de acesso por e-mail.</span></div>')+
+    }).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>Quando houver vagas no plano, adicione o e-mail e o Fonely enviará o convite para criação da senha.</span></div>')+
     '</article>';
   return shell(body,'Equipe','');
 }
 function teamForm(member){
   member=member||null;
-  var p=member&&member.permissions||{},isEdit=!!member;
+  var defaults={patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:false,reports:false},p=Object.assign({},defaults,member&&member.permissions||{}),isEdit=!!member;
   modal('<small class="overline">EQUIPE</small><h2>'+(isEdit?'Editar profissional':'Adicionar profissional')+'</h2>'+
-    '<p class="muted">'+(isEdit?'Ajuste o cargo e o que este login pode visualizar.':'A pessoa receberá um convite por e-mail e não precisará contratar outro plano.')+'</p>'+
+    '<p class="muted">'+(isEdit?'Ligue ou desligue o que este login pode acessar. As alterações valem no próximo carregamento do profissional.':'A pessoa receberá um convite por e-mail, criará a própria senha e usará uma vaga do plano da clínica. Ela não paga outro plano.')+'</p>'+
     '<form id="teamForm">'+
       '<label>Nome<input name="name" value="'+esc(member&&member.name||'')+'" required></label>'+
       '<div class="two"><label>Função<select name="role">'+['Fonoaudiólogo(a)','Estagiário(a)','Secretária / Administrativo','Outro profissional'].map(function(x){return '<option '+(String(member&&member.role||'Fonoaudiólogo(a)')===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label>'+
       '<label>E-mail<input type="email" name="email" value="'+esc(member&&member.email||'')+'" '+(isEdit?'readonly':'required')+'></label></div>'+
-      '<div class="team-clinical-access"><b>Acesso clínico</b><span>Pacientes, agenda, avaliações, evoluções e documentos ficam disponíveis para o profissional.</span></div>'+
+      '<div class="team-permission-title"><b>O que vai aparecer para este profissional</b><span>A conta principal pode mudar isso quando quiser.</span></div>'+
       '<div class="team-permission-options">'+
-        '<label><input type="checkbox" name="finance" '+(p.finance?'checked':'')+'><span><b>Financeiro geral</b><small>Ver pagamentos, pacotes, valores recebidos e indicadores financeiros.</small></span></label>'+
+        '<label><input type="checkbox" name="patients" '+(p.patients?'checked':'')+'><span><b>Pacientes e prontuários</b><small>Lista de pacientes, anamnese e dados clínicos básicos.</small></span></label>'+
+        '<label><input type="checkbox" name="agenda" '+(p.agenda?'checked':'')+'><span><b>Agenda</b><small>Visualizar e registrar atendimentos.</small></span></label>'+
+        '<label><input type="checkbox" name="assessments" '+(p.assessments?'checked':'')+'><span><b>Avaliações</b><small>Criar, editar e consultar avaliações dos pacientes.</small></span></label>'+
+        '<label><input type="checkbox" name="evolutions" '+(p.evolutions?'checked':'')+'><span><b>Evoluções</b><small>Registrar sessões com o nome do profissional logado.</small></span></label>'+
+        '<label><input type="checkbox" name="documents" '+(p.documents?'checked':'')+'><span><b>Documentos</b><small>Visualizar e anexar documentos clínicos.</small></span></label>'+
+        '<label><input type="checkbox" name="caa" '+(p.caa?'checked':'')+'><span><b>Fonely CAA</b><small>Acessar e gerenciar as pranchas dos pacientes, quando o plano permitir.</small></span></label>'+
+        '<label><input type="checkbox" name="finance" '+(p.finance?'checked':'')+'><span><b>Financeiro geral</b><small>Ver pagamentos, valores recebidos, pacotes e indicadores financeiros. Vem desligado por padrão.</small></span></label>'+
         '<label><input type="checkbox" name="reports" '+(p.reports?'checked':'')+'><span><b>Relatórios</b><small>Visualizar a área geral de relatórios da clínica.</small></span></label>'+
       '</div>'+
       '<div class="team-form-message" id="teamFormMessage"></div>'+
       '<button class="primary">'+(isEdit?'Salvar permissões':'Enviar convite')+'</button>'+
     '</form>');
-  document.getElementById('teamForm').onsubmit=async function(e){
+  var form=document.getElementById('teamForm');
+  var patientsBox=form.querySelector('input[name="patients"]');
+  var deps=['agenda','assessments','evolutions','documents','caa'];
+  patientsBox.onchange=function(){
+    if(!this.checked)deps.forEach(function(n){var el=form.querySelector('input[name="'+n+'"]');if(el)el.checked=false;});
+  };
+  deps.forEach(function(n){var el=form.querySelector('input[name="'+n+'"]');if(el)el.onchange=function(){if(this.checked)patientsBox.checked=true;};});
+  form.onsubmit=async function(e){
     e.preventDefault();
     var f=new FormData(e.target),btn=e.target.querySelector('.primary'),msg=document.getElementById('teamFormMessage'),cloud=window.FonelyCloud||{};
     if(!cloud.supabase)return;
@@ -309,7 +338,11 @@ function teamForm(member){
       name:String(f.get('name')||'').trim(),
       email:String(f.get('email')||'').trim(),
       role:f.get('role'),
-      permissions:{finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:false}
+      permissions:{
+        patients:f.get('patients')==='on',agenda:f.get('agenda')==='on',assessments:f.get('assessments')==='on',
+        evolutions:f.get('evolutions')==='on',documents:f.get('documents')==='on',caa:f.get('caa')==='on',
+        finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:false
+      }
     };
     try{
       var r=await cloud.supabase.functions.invoke('team-admin',{body:body});
@@ -318,7 +351,7 @@ function teamForm(member){
       await refreshTeamMembers();
       document.getElementById('modal').remove();
       render();
-      if(!isEdit)alert(r.data&&r.data.invitation_sent?'Convite enviado para '+body.email+'.':'Esse e-mail já possuía um login no Fonely. O acesso à equipe foi vinculado à conta existente.');
+      if(!isEdit)alert(r.data&&r.data.invitation_sent?'Convite enviado. A pessoa vai abrir o e-mail, criar a senha e entrar como membro da equipe.':'Esse e-mail já possuía um login no Fonely. O acesso à equipe foi vinculado à conta existente.');
     }catch(err){
       msg.className='team-form-message show error';msg.textContent=String(err&&err.message||err||'Não foi possível salvar.');
       btn.disabled=false;btn.textContent=isEdit?'Salvar permissões':'Enviar convite';
@@ -343,35 +376,34 @@ function choosePatientFor(kind){if(!data.patients.length){newPatient(false);retu
 function choosePatientForDocument(){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">DOCUMENTO</small><h2>Selecionar paciente</h2><label>Paciente<select id="chooseDocPatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmDocPatient">Continuar</button>');document.getElementById('confirmDocPatient').onclick=function(){documentForm(document.getElementById('chooseDocPatient').value);};}
 function bind(){
   document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
-  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
-  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam')anamnesis(p);if(area==='assess')assessmentArea(p);if(area==='evol')evolutionArea(p);if(area==='docs')documentsArea(p);if(area==='fin'&&canAccess('finance'))financePatient(p);if(area==='reports'&&canAccess('reports')){state.page='relatorios';render();}};});
-  document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
-  document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){dayModal(b.getAttribute('data-day'));};});
+  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
+  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);if(area==='fin'&&canAccess('finance'))financePatient(p);if(area==='reports'&&canAccess('reports')){state.page='relatorios';render();}};});
+  document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
+  document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){if(canAccess('agenda'))dayModal(b.getAttribute('data-day'));};});
   document.querySelectorAll('[data-home-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-home-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
-  document.querySelectorAll('[data-home-list]').forEach(function(b){b.onclick=function(){var mode=b.getAttribute('data-home-list'),list=appointmentsForDate(today());if(mode==='done')list=list.filter(function(a){return a.status==='Concluído';});modal('<small class="overline">'+(mode==='done'?'CONCLUÍDOS HOJE':'ATENDIMENTOS DE HOJE')+'</small><h2>'+esc(parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))+'</h2>'+appointmentRows(list)+'<div class="modal-actions"><button class="soft-btn" id="homeOpenAgenda">Abrir agenda completa</button></div>');var go=document.getElementById('homeOpenAgenda');if(go)go.onclick=function(){document.getElementById('modal').remove();state.page='agenda';state.agendaDate=today();render();};bindModalRows();};});
-  var np=document.getElementById('newPatient');if(np)np.onclick=function(){newPatient(false);};
-  var na=document.getElementById('newAppointment');if(na)na.onclick=function(){newAppointment(null,today());};
-  var hna=document.getElementById('homeNewAppointment');if(hna)hna.onclick=function(){newAppointment(null,today());};
-  var sp=document.getElementById('schedulePatient');if(sp)sp.onclick=function(){newAppointment(state.patient,today());};
-  var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(state.patient);else assessmentForm(state.patient);};
-  var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){evolutionForm(state.patient);};
-  var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){documentForm(state.patient);};
-  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
+  document.querySelectorAll('[data-home-list]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var mode=b.getAttribute('data-home-list'),list=appointmentsForDate(today());if(mode==='done')list=list.filter(function(a){return a.status==='Concluído';});modal('<small class="overline">'+(mode==='done'?'CONCLUÍDOS HOJE':'ATENDIMENTOS DE HOJE')+'</small><h2>'+esc(parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))+'</h2>'+appointmentRows(list)+'<div class="modal-actions"><button class="soft-btn" id="homeOpenAgenda">Abrir agenda completa</button></div>');var go=document.getElementById('homeOpenAgenda');if(go)go.onclick=function(){document.getElementById('modal').remove();state.page='agenda';state.agendaDate=today();render();};bindModalRows();};});
+  var np=document.getElementById('newPatient');if(np)np.onclick=function(){if(canAccess('patients'))newPatient(false);};
+  var na=document.getElementById('newAppointment');if(na)na.onclick=function(){if(canAccess('agenda'))newAppointment(null,today());};
+  var hna=document.getElementById('homeNewAppointment');if(hna)hna.onclick=function(){if(canAccess('agenda'))newAppointment(null,today());};
+  var sp=document.getElementById('schedulePatient');if(sp)sp.onclick=function(){if(canAccess('agenda'))newAppointment(state.patient,today());};
+  var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){if(!canAccess('assessments'))return;if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(state.patient);else assessmentForm(state.patient);};
+  var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){if(canAccess('evolutions'))evolutionForm(state.patient);};
+  var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){if(canAccess('documents'))documentForm(state.patient);};
+  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
   var prev=document.getElementById('agendaPrev'),next=document.getElementById('agendaNext'),at=document.getElementById('agendaToday');
   if(prev)prev.onclick=function(){var d=parseDate(state.agendaDate);d.setMonth(d.getMonth()-1);state.agendaDate=dateKey(d);render();};
   if(next)next.onclick=function(){var d2=parseDate(state.agendaDate);d2.setMonth(d2.getMonth()+1);state.agendaDate=dateKey(d2);render();};
   if(at)at.onclick=function(){state.agendaDate=today();render();};
-  var nc=document.getElementById('newClinical');if(nc)nc.onclick=function(){choosePatientFor(nc.getAttribute('data-kind'));};
-  var nd=document.getElementById('newGlobalDocument');if(nd)nd.onclick=choosePatientForDocument;
+  var nc=document.getElementById('newClinical');if(nc)nc.onclick=function(){var kind=nc.getAttribute('data-kind');if(kind==='assessment'&&!canAccess('assessments'))return;if(kind==='evolution'&&!canAccess('evolutions'))return;choosePatientFor(kind);};
+  var nd=document.getElementById('newGlobalDocument');if(nd)nd.onclick=function(){if(canAccess('documents'))choosePatientForDocument();};
   var nf=document.getElementById('financeFilter');if(nf){nf.value=state.financePatient||'';nf.onchange=function(){state.financePatient=this.value||null;render();};}
-  var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){packageForm();};
-  var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){paymentForm();};
-  var nt=document.getElementById('newTeam');if(nt)nt.onclick=function(){teamForm();};
+  var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){if(canAccess('finance'))packageForm();};
+  var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){if(canAccess('finance'))paymentForm();};
+  var nt=document.getElementById('newTeam');if(nt&&!nt.disabled)nt.onclick=function(){teamForm();};
   document.querySelectorAll('[data-team-edit]').forEach(function(b){b.onclick=function(){var t=(window.FonelyTeamMembers||[]).find(function(x){return x.id===b.getAttribute('data-team-edit');});if(t)teamForm(t);};});
   document.querySelectorAll('[data-team-remove]').forEach(function(b){b.onclick=function(){removeTeamMember(b.getAttribute('data-team-remove'));};});
   var accountButton=document.getElementById('accountMenu');
   if(accountButton&&window.FonelyAccountUI){accountButton.onclick=function(){window.FonelyAccountUI.open();};}
-
   bindDocActions();
 }
 syncPackages();save();render();
