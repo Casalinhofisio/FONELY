@@ -85,3 +85,14 @@
   .fe-account-identity{align-items:flex-start}
   .fe-account-photo{width:60px;height:60px;min-width:60px}
 }
+
+/* Dashboard interativo + áreas clínicas */
+.fhome-stats .fhome-stat{appearance:none;width:100%;font:inherit;text-align:left;color:inherit;cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:18px;padding:18px;position:relative;transition:.16s}
+.fhome-stats .fhome-stat:hover{transform:translateY(-2px);border-color:#d9c6bb;box-shadow:0 10px 26px rgba(70,56,47,.07)}
+.fhome-stats .fhome-stat>em{display:block;margin-top:9px;color:#b46f55;font-size:8px;font-style:normal;font-weight:900;opacity:0;transform:translateY(2px);transition:.15s}
+.fhome-stats .fhome-stat:hover>em{opacity:1;transform:none}
+.fhome-patient-list .farea-tag{margin-right:3px}
+.farea-tag{display:inline-flex;align-items:center;border:0;border-radius:999px;padding:3px 7px;font-size:7px!important;font-weight:900!important;line-height:1.25;vertical-align:middle}
+.area-linguagem{background:#efe4fa;color:#71538c}.area-fala{background:#e4f0fb;color:#426c91}.area-voz{background:#fce7ec;color:#99576a}.area-fluencia{background:#e3f4ef;color:#467c6c}.area-mo{background:#fff0d8;color:#936d32}.area-disfagia{background:#fbe6df;color:#985c49}.area-audio{background:#e7eefc;color:#536c9a}.area-caa{background:#e8f5e6;color:#557b4f}.area-outra{background:#eee9e6;color:#74655d}
+.fpatient-row .fpatient-main>span{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+@media(max-width:720px){.fhome-stats .fhome-stat>em{opacity:1}.fhome-stats .fhome-stat{padding:15px}}
