@@ -29,7 +29,11 @@ function shell(body,title,action){
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
   var accountPlan=access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico';
-  return '<div class="layout"><aside>'+logo()+'<nav>'+nav.map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav><button class="account" id="accountMenu" type="button"><div class="avatar">'+esc(accountInitial)+'</div><div><b>'+esc(accountName)+'</b><small>'+esc(accountPlan)+' · Minha conta</small></div><strong>⋯</strong></button></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div>'+(action||'')+'</header>'+body+'</main></div>';
+  var avatar=profile.avatar_url
+    ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
+    :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
+  var accountMenu='<button class="top-account" id="accountMenu" type="button" aria-label="Abrir minha conta">'+avatar+'<span class="top-account-copy"><b>'+esc(accountName)+'</b><small>'+esc(accountPlan)+'</small></span><i>⌄</i></button>';
+  return '<div class="layout"><aside>'+logo()+'<nav>'+nav.map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div><div class="header-actions">'+(action||'')+accountMenu+'</div></header>'+body+'</main></div>';
 }
 function render(){var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;app.innerHTML=fn();bind();}
 function patient(pid){return data.patients.find(function(x){return x.id===pid;});}
@@ -208,6 +212,9 @@ function bind(){
   var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){packageForm();};
   var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){paymentForm();};
   var nt=document.getElementById('newTeam');if(nt)nt.onclick=teamForm;
+  var accountButton=document.getElementById('accountMenu');
+  if(accountButton&&window.FonelyAccountUI){accountButton.onclick=function(){window.FonelyAccountUI.open();};}
+
   bindDocActions();
 }
 syncPackages();save();render();
