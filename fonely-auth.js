@@ -272,6 +272,15 @@ async function uploadProfileAvatar(file,button,msg){
     button.textContent='Alterar foto';
   }
 }
+function clearTeamLocalCache(){
+  var a=window.FonelyAccount||{},t=a.team||{},u=a.user||{};
+  if(t.isOwner===false&&t.ownerId){
+    localStorage.removeItem('fonely_clean_v1_'+t.ownerId);
+    localStorage.removeItem('fonely_caa_v1_'+t.ownerId);
+    localStorage.removeItem('fonely_plan_v1_'+t.ownerId);
+    if(u.id)localStorage.removeItem('fonely_last_team_owner_'+u.id);
+  }
+}
 function openAccountPanel(){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var isTeamMember=team.isOwner===false;
@@ -317,7 +326,7 @@ function openAccountPanel(){
   photoInput.onchange=function(){if(photoInput.files&&photoInput.files[0])uploadProfileAvatar(photoInput.files[0],photoButton,msg);};
 
   var logout=w.querySelector('[data-account-logout]');
-  logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';await sb.auth.signOut();location.replace(APP_URL);};
+  logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';clearTeamLocalCache();await sb.auth.signOut();location.replace(APP_URL);};
   var pass=w.querySelector('[data-account-password]');
   pass.onclick=async function(){
     pass.disabled=true;pass.textContent='Enviando...';
@@ -355,9 +364,20 @@ async function prepareWorkspace(user){
     isOwner:isOwner,
     ownerId:workspaceOwnerId,
     memberId:membership&&membership.id||null,
+    name:membership&&membership.name||'',
     role:membership&&membership.role||'Proprietário',
     permissions:permissions
   };
+
+  var lastTeamKey='fonely_last_team_owner_'+user.id;
+  var previousTeamOwner=localStorage.getItem(lastTeamKey);
+  if(isOwner&&previousTeamOwner&&previousTeamOwner!==user.id){
+    localStorage.removeItem('fonely_clean_v1_'+previousTeamOwner);
+    localStorage.removeItem('fonely_caa_v1_'+previousTeamOwner);
+    localStorage.removeItem('fonely_plan_v1_'+previousTeamOwner);
+    localStorage.removeItem(lastTeamKey);
+  }
+  if(!isOwner)localStorage.setItem(lastTeamKey,workspaceOwnerId);
 
   window.FONELY_WORKSPACE_OWNER_ID=workspaceOwnerId;
   window.FONELY_STORAGE_KEY='fonely_clean_v1_'+workspaceOwnerId;
@@ -608,6 +628,7 @@ try{
       return;
     }
     if(event==='SIGNED_OUT'&&!recoveryMode){
+      clearTeamLocalCache();
       appLoaded=false;
       mountAuth();
       setTab('login');
