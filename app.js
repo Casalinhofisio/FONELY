@@ -24,21 +24,33 @@ function money(v){return 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFract
 function slug(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');}
 function areaKey(area){var x=slug(area);if(x.indexOf('linguagem')>=0)return 'linguagem';if(x.indexOf('fonologia')>=0||x==='fala')return 'fala';if(x.indexOf('voz')>=0)return 'voz';if(x.indexOf('fluencia')>=0)return 'fluencia';if(x.indexOf('motricidade')>=0)return 'mo';if(x.indexOf('disfagia')>=0)return 'disfagia';if(x.indexOf('audiologia')>=0)return 'audio';if(x.indexOf('caa')>=0)return 'caa';return 'outra';}
 function areaTag(area){area=area||'Fonoaudiologia';return '<mark class="farea-tag area-'+areaKey(area)+'">'+esc(area)+'</mark>';}
+function teamContext(){var a=window.FonelyAccount||{};return a.team||{isOwner:true,permissions:{finance:true,reports:true,manage_team:true}};}
+function isWorkspaceOwner(){return teamContext().isOwner!==false;}
+function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;return !!(t.permissions&&t.permissions[key]);}
+function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
+function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
+function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
+function canOpenPage(page){
+  var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
+  if(page==='equipe')return isWorkspaceOwner();
+  return map[page]?canAccess(map[page]):true;
+}
+
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
 var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe']];
 function shell(body,title,action){
-  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{};
+  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
-  var accountPlan=access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico';
+  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico');
   var avatar=profile.avatar_url
     ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
     :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
   var accountMenu='<button class="top-account" id="accountMenu" type="button" aria-label="Abrir minha conta">'+avatar+'<span class="top-account-copy"><b>'+esc(accountName)+'</b><small>'+esc(accountPlan)+'</small></span><i>⌄</i></button>';
-  return '<div class="layout"><aside>'+logo()+'<nav>'+nav.map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div><div class="header-actions">'+(action||'')+accountMenu+'</div></header>'+body+'</main></div>';
+  return '<div class="layout"><aside>'+logo()+'<nav>'+nav.filter(function(n){return canOpenPage(n[0]);}).map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div><div class="header-actions">'+(action||'')+accountMenu+'</div></header>'+body+'</main></div>';
 }
-function render(){var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;app.innerHTML=fn();bind();}
+function render(){if(!canOpenPage(state.page))state.page='inicio';var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;app.innerHTML=fn();bind();}
 function patient(pid){return data.patients.find(function(x){return x.id===pid;});}
 function patientName(pid){var p=patient(pid);return p?p.name:'Paciente';}
 function activePackage(pid){return data.packages.filter(function(p){return p.patientId===pid&&p.status!=='Encerrado'&&Number(p.used||0)<Number(p.sessions||0);}).sort(function(a,b){return (b.startDate||'').localeCompare(a.startDate||'');})[0]||null;}
@@ -54,10 +66,15 @@ function home(){
   activeToday=aps.filter(function(a){return ['Cancelado','Concluído','Faltou'].indexOf(a.status)<0;}),
   next=activeToday[0]||null,
   quickPatients=data.patients.slice().sort(function(a,b){var an=nextAppointment(a.id),bn=nextAppointment(b.id);return ((an&&an.date)||'9999').localeCompare((bn&&bn.date)||'9999');}).slice(0,5),
-  dayLabel=parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  dayLabel=parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}),
+  pro=currentProfessional(),
+  myRecords=data.evolutions.filter(function(x){return x.professionalId===pro.id;}).length;
+  var fourthStat=canAccess('finance')
+    ?'<button class="fhome-stat" data-home-go="financeiro"><i>$</i><small>RECEBIDO NO MÊS</small><b class="money">'+money(monthRevenue())+'</b><span>Financeiro do Fonely</span><em>Abrir financeiro →</em></button>'
+    :'<button class="fhome-stat" data-home-go="evolucoes"><i>✎</i><small>MEUS REGISTROS</small><b>'+myRecords+'</b><span>Evoluções registradas por você</span><em>Abrir evoluções →</em></button>';
   return shell(
     '<section class="fhome-welcome"><div><span class="fhome-kicker">VISÃO DO DIA</span><h2>Seu consultório em ordem.</h2><p>Agenda, pacientes e registros clínicos conectados em um único fluxo.</p></div><button id="homeNewAppointment" class="primary">+ Novo atendimento</button></section>'+
-    '<div class="fhome-stats"><button class="fhome-stat" data-home-list="today"><i>▣</i><small>ATENDIMENTOS HOJE</small><b>'+aps.length+'</b><span>'+confirmed+' confirmado'+(confirmed===1?'':'s')+'</span><em>Ver atendimentos →</em></button><button class="fhome-stat" data-home-list="done"><i>✓</i><small>CONCLUÍDOS HOJE</small><b>'+done+'</b><span>'+pendingEvol+' evolução'+(pendingEvol===1?'':'ões')+' pendente'+(pendingEvol===1?'':'s')+'</span><em>Ver concluídos →</em></button><button class="fhome-stat" data-home-go="pacientes"><i>♡</i><small>PACIENTES</small><b>'+data.patients.length+'</b><span>'+data.assessments.length+' avaliações registradas</span><em>Ver pacientes →</em></button><button class="fhome-stat" data-home-go="financeiro"><i>$</i><small>RECEBIDO NO MÊS</small><b class="money">'+money(monthRevenue())+'</b><span>Financeiro do Fonely</span><em>Abrir financeiro →</em></button></div>'+
+    '<div class="fhome-stats"><button class="fhome-stat" data-home-list="today"><i>▣</i><small>ATENDIMENTOS HOJE</small><b>'+aps.length+'</b><span>'+confirmed+' confirmado'+(confirmed===1?'':'s')+'</span><em>Ver atendimentos →</em></button><button class="fhome-stat" data-home-list="done"><i>✓</i><small>CONCLUÍDOS HOJE</small><b>'+done+'</b><span>'+pendingEvol+' evolução'+(pendingEvol===1?'':'ões')+' pendente'+(pendingEvol===1?'':'s')+'</span><em>Ver concluídos →</em></button><button class="fhome-stat" data-home-go="pacientes"><i>♡</i><small>PACIENTES</small><b>'+data.patients.length+'</b><span>'+data.assessments.length+' avaliações registradas</span><em>Ver pacientes →</em></button>'+fourthStat+'</div>'+
     '<div class="fhome-main"><article class="panel fhome-agenda"><div class="panel-title"><div><small>AGENDA DE HOJE · '+esc(dayLabel.toUpperCase())+'</small><h3>'+(next?'Próximo: '+esc(next.time||'')+' · '+esc(patientName(next.patientId)):(aps.length?'Todos os horários de hoje finalizados':'Agenda livre hoje'))+'</h3></div><button data-go="agenda">Abrir agenda →</button></div>'+
     (aps.length?'<div class="fhome-upcoming">'+aps.map(function(a){return '<button data-ap="'+a.id+'"><div class="fhome-date"><b>'+esc(a.time||'—')+'</b><span>'+esc(a.duration?a.duration+' min':'Hoje')+'</span></div><div><strong>'+esc(patientName(a.patientId))+'</strong><small>'+esc(a.type||'Atendimento')+' · '+esc(a.mode||'Presencial')+'</small></div><mark class="status-'+slug(a.status)+'">'+esc(a.status||'Agendado')+'</mark></button>';}).join('')+'</div>':'<div class="empty"><b>Nenhum horário hoje</b><span>Adicione um atendimento ou abra a agenda para consultar outros dias.</span></div>')+
     '</article><article class="panel fhome-patients"><div class="panel-title"><div><small>PACIENTES</small><h3>Acesso rápido</h3></div><button data-go="pacientes">Ver todos →</button></div>'+
@@ -82,10 +99,19 @@ function patientView(p){
   var pkg=activePackage(p.id),ass=data.assessments.filter(function(x){return x.patientId===p.id;}).length,
   evs=data.evolutions.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}),
   ev=evs.length,docs=(p.documents||[]).length,na=nextAppointment(p.id),le=evs[0]||null;
-  var cards=[['anam','📝','Anamnese','Histórico inicial, desenvolvimento e rotina'],['assess','◇','Avaliações','Avaliação inicial, triagem e reavaliações'],['evol','✎','Evoluções','Registro clínico de cada sessão'],['docs','▤','Documentos','Laudos, exames, fotos, vídeos e amostras'],['fin','$','Financeiro','Pacotes, sessões e pagamentos'],['reports','◫','Relatórios','Indicadores e acompanhamento do caso']];
-  return shell('<button class="back" data-go="pacientes">← Voltar aos pacientes</button><article class="patient-head fpatient-head"><div class="avatar large">'+esc((p.name||'?').charAt(0))+'</div><div class="fpatient-title"><small>PACIENTE</small><h2>'+esc(p.name)+'</h2><p>'+esc(p.area||'Área não informada')+(patientAge(p)?' · '+patientAge(p):'')+(p.guardian?' · Responsável: '+esc(p.guardian):'')+'</p>'+(p.complaint?'<span class="fpatient-complaint">'+esc(p.complaint)+'</span>':'')+'</div><button class="primary" id="schedulePatient">+ Agendar</button></article>'+
-  '<div class="fpatient-context"><div><small>PRÓXIMO ATENDIMENTO</small><b>'+(na?shortDate(na.date)+' · '+esc(na.time||'—'):'Não agendado')+'</b><span>'+(na?esc(na.type||'Atendimento')+' · '+esc(na.mode||'Presencial'):'Use “Agendar” para criar um horário')+'</span></div><div><small>ÚLTIMO REGISTRO</small><b>'+(le?shortDate(le.date):'Sem evolução')+'</b><span>'+(le?esc(le.focus||'Sessão clínica'):'Registre a primeira evolução')+'</span></div><div><small>PACOTE ATIVO</small><b>'+(pkg?remainingPackage(pkg)+' de '+Number(pkg.sessions||0)+' restantes':'Sem pacote')+'</b><span>'+(pkg?esc(pkg.name||'Pacote'):'Atendimento avulso ou sem pacote')+'</span></div></div>'+
-  '<div class="fpatient-actions"><button id="patientNewAssessment"><i>◇</i><span><b>Nova avaliação</b><small>Registrar avaliação ou reavaliação</small></span></button><button id="patientNewEvolution"><i>✎</i><span><b>Nova evolução</b><small>Registrar a sessão de hoje</small></span></button><button id="patientNewDocument"><i>▤</i><span><b>Novo documento</b><small>Anexar material clínico</small></span></button></div>'+
+  var cards=[['anam','📝','Anamnese','Histórico inicial, desenvolvimento e rotina']];
+  if(canAccess('assessments'))cards.push(['assess','◇','Avaliações','Avaliação inicial, triagem e reavaliações']);
+  if(canAccess('evolutions'))cards.push(['evol','✎','Evoluções','Registro clínico de cada sessão']);
+  if(canAccess('documents'))cards.push(['docs','▤','Documentos','Laudos, exames, fotos, vídeos e amostras']);
+  if(canAccess('finance'))cards.push(['fin','$','Financeiro','Pacotes, sessões e pagamentos']);
+  if(canAccess('reports'))cards.push(['reports','◫','Relatórios','Indicadores e acompanhamento do caso']);
+  var quickActions='';
+  if(canAccess('assessments'))quickActions+='<button id="patientNewAssessment"><i>◇</i><span><b>Nova avaliação</b><small>Registrar avaliação ou reavaliação</small></span></button>';
+  if(canAccess('evolutions'))quickActions+='<button id="patientNewEvolution"><i>✎</i><span><b>Nova evolução</b><small>Registrar a sessão de hoje</small></span></button>';
+  if(canAccess('documents'))quickActions+='<button id="patientNewDocument"><i>▤</i><span><b>Novo documento</b><small>Anexar material clínico</small></span></button>';
+  return shell('<button class="back" data-go="pacientes">← Voltar aos pacientes</button><article class="patient-head fpatient-head"><div class="avatar large">'+esc((p.name||'?').charAt(0))+'</div><div class="fpatient-title"><small>PACIENTE</small><h2>'+esc(p.name)+'</h2><p>'+esc(p.area||'Área não informada')+(patientAge(p)?' · '+patientAge(p):'')+(p.guardian?' · Responsável: '+esc(p.guardian):'')+'</p>'+(p.complaint?'<span class="fpatient-complaint">'+esc(p.complaint)+'</span>':'')+'</div>'+(canAccess('agenda')?'<button class="primary" id="schedulePatient">+ Agendar</button>':'')+'</article>'+
+  '<div class="fpatient-context"><div><small>PRÓXIMO ATENDIMENTO</small><b>'+(na?shortDate(na.date)+' · '+esc(na.time||'—'):'Não agendado')+'</b><span>'+(na?esc(na.type||'Atendimento')+' · '+esc(na.mode||'Presencial'):'Sem próximo horário')+'</span></div><div><small>ÚLTIMO REGISTRO</small><b>'+(le?shortDate(le.date):'Sem evolução')+'</b><span>'+(le?esc(le.focus||'Sessão clínica')+(recordProfessional(le)?' · '+esc(recordProfessional(le)):''):'Nenhuma evolução registrada')+'</span></div><div><small>PACOTE ATIVO</small><b>'+(pkg?remainingPackage(pkg)+' de '+Number(pkg.sessions||0)+' restantes':'Sem pacote')+'</b><span>'+(pkg?esc(pkg.name||'Pacote'):'Atendimento avulso ou sem pacote')+'</span></div></div>'+
+  (quickActions?'<div class="fpatient-actions">'+quickActions+'</div>':'')+
   '<div class="patient-kpis"><div><b>'+ass+'</b><span>Avaliações</span></div><div><b>'+ev+'</b><span>Evoluções</span></div><div><b>'+docs+'</b><span>Documentos</span></div><div><b>'+(pkg?remainingPackage(pkg):'—')+'</b><span>Sessões restantes</span></div></div><div class="clinical-grid">'+cards.map(function(x){return '<button class="clinical" data-parea="'+x[0]+'"><i>'+x[1]+'</i><b>'+x[2]+'</b><span>'+x[3]+'</span></button>';}).join('')+'</div>','Prontuário','');
 }
 function agenda(){
@@ -137,8 +163,19 @@ function documentsPage(){
   var samples=docs.filter(function(x){return /Áudio|Vídeo|Foto/i.test(x.d.type||'');}).length,latest=docs[0];
   return shell('<div class="fdocs-summary"><div><small>TOTAL</small><b>'+docs.length+'</b><span>arquivos clínicos</span></div><div><small>AMOSTRAS</small><b>'+samples+'</b><span>áudio, vídeo ou foto</span></div><div><small>ÚLTIMO ARQUIVO</small><b class="text">'+(latest?shortDate(latest.d.date):'—')+'</b><span>'+(latest?esc(latest.p.name):'Nenhum documento')+'</span></div></div><article class="panel"><div class="tools"><div><b>Documentos clínicos</b><span class="muted">Laudos, exames, amostras e registros por paciente</span></div><button id="newGlobalDocument" class="primary">+ Adicionar documento</button></div>'+(docs.length?'<div class="record-list fdocs-list">'+docs.map(function(x){return documentRow(x.p,x.d);}).join('')+'</div>':'<div class="empty"><b>Nenhum documento</b><span>Adicione arquivos a partir daqui ou do prontuário do paciente.</span></div>')+'</article>','Documentos Clínicos','');
 }
-function clinicalListing(title,type){var arr=type==='assessment'?data.assessments:data.evolutions;var html=arr.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).map(function(x){return '<div class="clinical-record"><div><b>'+esc(patientName(x.patientId))+' · '+shortDate(x.date)+'</b><small>'+esc(type==='assessment'?(x.kind||'Avaliação'):(x.focus||'Atendimento'))+'</small><p>'+esc(type==='assessment'?(x.summary||''):(x.text||''))+'</p></div></div>';}).join('');return shell('<article class="panel"><div class="tools"><div><b>'+title+'</b><span class="muted">Histórico de todos os pacientes</span></div><button id="newClinical" data-kind="'+type+'" class="primary">+ Novo registro</button></div>'+(html||'<div class="empty"><b>Nenhum registro</b><span>Crie o primeiro registro clínico.</span></div>')+'</article>',title,'');}
-function assessmentArea(p){var list=data.assessments.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});modal('<small class="overline">AVALIAÇÕES</small><h2>'+esc(p.name)+'</h2><div class="modal-actions"><button class="primary" id="newAssessment">+ Nova avaliação</button></div>'+(list.length?'<div class="record-list">'+list.map(function(x){return '<div class="clinical-record"><div><b>'+esc(x.kind||'Avaliação')+'</b><small>'+shortDate(x.date)+' · '+esc(x.area||'Geral')+'</small><p>'+esc(x.summary||'')+'</p></div></div>';}).join('')+'</div>':'<div class="empty">Nenhuma avaliação registrada.</div>'));document.getElementById('newAssessment').onclick=function(){assessmentForm(p.id);};}
+function clinicalListing(title,type){
+  var arr=type==='assessment'?data.assessments:data.evolutions;
+  var html=arr.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).map(function(x){
+    return '<div class="clinical-record"><div><b>'+esc(patientName(x.patientId))+' · '+shortDate(x.date)+'</b><small>'+esc(type==='assessment'?(x.kind||'Avaliação'):(x.focus||'Atendimento'))+'</small>'+professionalMetaHTML(x)+'<p>'+esc(type==='assessment'?(x.summary||x.conclusion||''):(x.text||''))+'</p></div></div>';
+  }).join('');
+  return shell('<article class="panel"><div class="tools"><div><b>'+title+'</b><span class="muted">Histórico de todos os pacientes</span></div><button id="newClinical" data-kind="'+type+'" class="primary">+ Novo registro</button></div>'+(html||'<div class="empty"><b>Nenhum registro</b><span>Crie o primeiro registro clínico.</span></div>')+'</article>',title,'');
+}
+function assessmentArea(p){
+  var list=data.assessments.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  modal('<small class="overline">AVALIAÇÕES</small><h2>'+esc(p.name)+'</h2><div class="modal-actions"><button class="primary" id="newAssessment">+ Nova avaliação</button></div>'+
+    (list.length?'<div class="record-list">'+list.map(function(x){return '<div class="clinical-record"><div><b>'+esc(x.kind||'Avaliação')+'</b><small>'+shortDate(x.date)+' · '+esc(x.area||x.mainArea||'Geral')+'</small>'+professionalMetaHTML(x)+'<p>'+esc(x.summary||x.conclusion||'')+'</p></div></div>';}).join('')+'</div>':'<div class="empty">Nenhuma avaliação registrada.</div>'));
+  document.getElementById('newAssessment').onclick=function(){if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(p.id);else assessmentForm(p.id);};
+}
 function assessmentSpecificFields(area){
   var k=areaKey(area),common='<label>Comportamento durante a avaliação<textarea name="behavior" placeholder="Interação, atenção, participação, vínculo, necessidade de apoio e observações relevantes"></textarea></label>';
   if(k==='linguagem'||k==='caa')return common+'<div class="two"><label>Compreensão / linguagem receptiva<textarea name="receptive" placeholder="Compreensão de ordens, perguntas, conceitos, vocabulário receptivo"></textarea></label><label>Expressão / linguagem expressiva<textarea name="expressive" placeholder="Intenção comunicativa, vocabulário, frases, narrativa e pragmática"></textarea></label></div><div class="two"><label>Pragmática e interação<textarea name="pragmatics" placeholder="Turnos, contato, iniciativa, manutenção de tópico e funções comunicativas"></textarea></label><label>Recursos de comunicação<textarea name="communicationResources" placeholder="Fala, gestos, CAA, pistas, apoios visuais e recursos utilizados"></textarea></label></div>';
@@ -151,18 +188,47 @@ function assessmentSpecificFields(area){
   return common+'<label>Aspectos específicos da área<textarea name="specific" placeholder="Registre os achados específicos relevantes para este caso"></textarea></label>';
 }
 function assessmentForm(pid){
-  var p=patient(pid),defaultArea=p&&p.area||'Linguagem';
-  modal('<small class="overline">AVALIAÇÃO FONOAUDIOLÓGICA</small><h2>Novo registro</h2><form id="assessmentForm"><div class="two"><label>Tipo<select name="kind"><option>Avaliação inicial</option><option>Reavaliação</option><option>Triagem</option><option>Avaliação complementar</option></select></label><label>Data<input type="date" name="date" value="'+today()+'"></label></div><div class="two"><label>Área principal<select name="area" id="assessmentArea">'+['Linguagem','Fala / Fonologia','Voz','Fluência','Motricidade Orofacial','Disfagia','Audiologia','CAA / Comunicação','Outra'].map(function(x){return '<option '+(x===defaultArea?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label><label>Protocolo / instrumento<input name="protocol" placeholder="Ex.: protocolo, escala ou avaliação clínica"></label></div><label>Motivo / objetivo da avaliação<textarea name="objective" placeholder="Queixa, demanda principal e o que está sendo investigado ou acompanhado"></textarea></label><div id="assessmentSpecific">'+assessmentSpecificFields(defaultArea)+'</div><label>Achados clínicos gerais<textarea name="findings" required placeholder="Integre os principais comportamentos, desempenhos, alterações, respostas e resultados observados"></textarea></label><div class="two"><label>Impressão / síntese clínica<textarea name="impression" placeholder="Síntese dos principais achados e hipóteses clínicas"></textarea></label><label>Conduta / próximos passos<textarea name="plan" placeholder="Objetivos terapêuticos, orientações, encaminhamentos e reavaliação"></textarea></label></div><label>Orientações à família / paciente<textarea name="guidance" placeholder="Orientações realizadas ao final da avaliação"></textarea></label><button class="primary">Salvar avaliação</button></form>');
+  var p=patient(pid),defaultArea=p&&p.area||'Linguagem',pro=currentProfessional();
+  modal('<small class="overline">AVALIAÇÃO FONOAUDIOLÓGICA</small><h2>Novo registro</h2><div class="record-author-note"><span>AVALIADO POR</span><b>'+esc(pro.name)+'</b><small>'+esc(pro.role||'Profissional')+'</small></div><form id="assessmentForm"><div class="two"><label>Tipo<select name="kind"><option>Avaliação inicial</option><option>Reavaliação</option><option>Triagem</option><option>Avaliação complementar</option></select></label><label>Data<input type="date" name="date" value="'+today()+'"></label></div><div class="two"><label>Área principal<select name="area" id="assessmentArea">'+['Linguagem','Fala / Fonologia','Voz','Fluência','Motricidade Orofacial','Disfagia','Audiologia','CAA / Comunicação','Outra'].map(function(x){return '<option '+(x===defaultArea?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label><label>Protocolo / instrumento<input name="protocol" placeholder="Ex.: protocolo, escala ou avaliação clínica"></label></div><label>Motivo / objetivo da avaliação<textarea name="objective" placeholder="Queixa, demanda principal e o que está sendo investigado ou acompanhado"></textarea></label><div id="assessmentSpecific">'+assessmentSpecificFields(defaultArea)+'</div><label>Achados clínicos gerais<textarea name="findings" required placeholder="Integre os principais comportamentos, desempenhos, alterações, respostas e resultados observados"></textarea></label><div class="two"><label>Impressão / síntese clínica<textarea name="impression" placeholder="Síntese dos principais achados e hipóteses clínicas"></textarea></label><label>Conduta / próximos passos<textarea name="plan" placeholder="Objetivos terapêuticos, orientações, encaminhamentos e reavaliação"></textarea></label></div><label>Orientações à família / paciente<textarea name="guidance" placeholder="Orientações realizadas ao final da avaliação"></textarea></label><button class="primary">Salvar avaliação</button></form>');
   var areaSelect=document.getElementById('assessmentArea'),specific=document.getElementById('assessmentSpecific');
   areaSelect.onchange=function(){specific.innerHTML=assessmentSpecificFields(this.value);};
-  document.getElementById('assessmentForm').onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target),details={};fd.forEach(function(v,k){if(['kind','date','area','protocol','objective','findings','impression','plan'].indexOf(k)<0)details[k]=v;});var summary=[fd.get('objective')?'Objetivo: '+fd.get('objective'):'','Achados: '+fd.get('findings'),fd.get('impression')?'Síntese: '+fd.get('impression'):'',fd.get('plan')?'Conduta: '+fd.get('plan'):''].filter(Boolean).join('\n\n');data.assessments.push({id:id(),patientId:pid,kind:fd.get('kind'),date:fd.get('date'),area:fd.get('area'),protocol:fd.get('protocol'),objective:fd.get('objective'),findings:fd.get('findings'),impression:fd.get('impression'),plan:fd.get('plan'),details:details,summary:summary});save();document.getElementById('modal').remove();var pp=patient(pid);if(state.patient&&pp){app.innerHTML=patientView(pp);bind();}else render();};
+  document.getElementById('assessmentForm').onsubmit=function(e){
+    e.preventDefault();
+    var fd=new FormData(e.target),details={},now=new Date().toISOString();
+    fd.forEach(function(v,k){if(['kind','date','area','protocol','objective','findings','impression','plan'].indexOf(k)<0)details[k]=v;});
+    var summary=[fd.get('objective')?'Objetivo: '+fd.get('objective'):'','Achados: '+fd.get('findings'),fd.get('impression')?'Síntese: '+fd.get('impression'):'',fd.get('plan')?'Conduta: '+fd.get('plan'):''].filter(Boolean).join('\n\n');
+    data.assessments.push({
+      id:id(),patientId:pid,kind:fd.get('kind'),date:fd.get('date'),area:fd.get('area'),protocol:fd.get('protocol'),objective:fd.get('objective'),
+      findings:fd.get('findings'),impression:fd.get('impression'),plan:fd.get('plan'),details:details,summary:summary,
+      professionalId:pro.id,professionalName:pro.name,professionalEmail:pro.email,professionalRole:pro.role,createdAt:now,updatedAt:now
+    });
+    save();document.getElementById('modal').remove();
+    var pp=patient(pid);if(state.patient&&pp){app.innerHTML=patientView(pp);bind();}else render();
+  };
 }
-function evolutionArea(p){var list=data.evolutions.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});modal('<small class="overline">EVOLUÇÕES</small><h2>'+esc(p.name)+'</h2><div class="modal-actions"><button class="primary" id="newEvolution">+ Nova evolução</button></div>'+(list.length?'<div class="record-list">'+list.map(function(x){return '<div class="clinical-record"><div><b>'+shortDate(x.date)+' · '+esc(x.focus||'Atendimento')+'</b><p>'+esc(x.text||'')+'</p><small>Conduta: '+esc(x.conduct||'—')+'</small></div></div>';}).join('')+'</div>':'<div class="empty">Nenhuma evolução registrada.</div>'));document.getElementById('newEvolution').onclick=function(){evolutionForm(p.id);};}
+function evolutionArea(p){
+  var list=data.evolutions.filter(function(x){return x.patientId===p.id;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
+  modal('<small class="overline">EVOLUÇÕES</small><h2>'+esc(p.name)+'</h2><div class="modal-actions"><button class="primary" id="newEvolution">+ Nova evolução</button></div>'+
+    (list.length?'<div class="record-list">'+list.map(function(x){return '<div class="clinical-record"><div><b>'+shortDate(x.date)+' · '+esc(x.focus||'Atendimento')+'</b>'+professionalMetaHTML(x)+'<p>'+esc(x.text||'')+'</p><small>Conduta: '+esc(x.conduct||'—')+'</small></div></div>';}).join('')+'</div>':'<div class="empty">Nenhuma evolução registrada.</div>'));
+  document.getElementById('newEvolution').onclick=function(){evolutionForm(p.id);};
+}
 function evolutionForm(pid,appointment){
   appointment=appointment||null;
-  var p=patient(pid),defaultFocus=p&&p.area||'Linguagem';
-  modal('<small class="overline">SESSÃO CLÍNICA</small><h2>Registrar evolução</h2><form id="evolutionForm"><div class="two"><label>Data<input type="date" name="date" value="'+esc(appointment&&appointment.date||today())+'"></label><label>Foco da sessão<select name="focus">'+['Linguagem','Fala / Fonologia','Voz','Fluência','Motricidade Orofacial','Disfagia','Audiologia','CAA / Comunicação','Orientação familiar','Outro'].map(function(x){return '<option '+(x===defaultFocus?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label></div><label>Objetivo da sessão<textarea name="objective" placeholder="O que foi priorizado neste atendimento?"></textarea></label><label>Atividades / estratégias utilizadas<textarea name="activities" placeholder="Recursos, tarefas, estratégias e estímulos utilizados"></textarea></label><label>Resposta do paciente / evolução<textarea name="text" required placeholder="Desempenho, respostas, facilidades, dificuldades e progresso observado"></textarea></label><div class="two"><label>Orientações / conduta<textarea name="conduct" placeholder="Orientações ao paciente/família e conduta"></textarea></label><label>Próximos objetivos<textarea name="next" placeholder="O que seguir trabalhando nas próximas sessões"></textarea></label></div><button class="primary">Salvar evolução</button></form>');
-  document.getElementById('evolutionForm').onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target);var fullText=[fd.get('objective')?'Objetivo: '+fd.get('objective'):'',fd.get('activities')?'Atividades: '+fd.get('activities'):'','Evolução: '+fd.get('text'),fd.get('next')?'Próximos objetivos: '+fd.get('next'):''].filter(Boolean).join('\n\n');data.evolutions.push({id:id(),patientId:pid,appointmentId:appointment&&appointment.id||null,date:fd.get('date'),focus:fd.get('focus'),objective:fd.get('objective'),activities:fd.get('activities'),text:fullText,conduct:fd.get('conduct'),next:fd.get('next')});if(appointment)appointment.status='Concluído';syncPackages();save();document.getElementById('modal').remove();var pp=patient(pid);if(state.patient&&pp){app.innerHTML=patientView(pp);bind();}else render();};
+  var p=patient(pid),defaultFocus=p&&p.area||'Linguagem',pro=currentProfessional();
+  modal('<small class="overline">SESSÃO CLÍNICA</small><h2>Registrar evolução</h2><div class="record-author-note"><span>REGISTRADO POR</span><b>'+esc(pro.name)+'</b><small>'+esc(pro.role||'Profissional')+'</small></div><form id="evolutionForm"><div class="two"><label>Data<input type="date" name="date" value="'+esc(appointment&&appointment.date||today())+'"></label><label>Foco da sessão<select name="focus">'+['Linguagem','Fala / Fonologia','Voz','Fluência','Motricidade Orofacial','Disfagia','Audiologia','CAA / Comunicação','Orientação familiar','Outro'].map(function(x){return '<option '+(x===defaultFocus?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label></div><label>Objetivo da sessão<textarea name="objective" placeholder="O que foi priorizado neste atendimento?"></textarea></label><label>Atividades / estratégias utilizadas<textarea name="activities" placeholder="Recursos, tarefas, estratégias e estímulos utilizados"></textarea></label><label>Resposta do paciente / evolução<textarea name="text" required placeholder="Desempenho, respostas, facilidades, dificuldades e progresso observado"></textarea></label><div class="two"><label>Orientações / conduta<textarea name="conduct" placeholder="Orientações ao paciente/família e conduta"></textarea></label><label>Próximos objetivos<textarea name="next" placeholder="O que seguir trabalhando nas próximas sessões"></textarea></label></div><button class="primary">Salvar evolução</button></form>');
+  document.getElementById('evolutionForm').onsubmit=function(e){
+    e.preventDefault();
+    var fd=new FormData(e.target),now=new Date().toISOString();
+    var fullText=[fd.get('objective')?'Objetivo: '+fd.get('objective'):'',fd.get('activities')?'Atividades: '+fd.get('activities'):'','Evolução: '+fd.get('text'),fd.get('next')?'Próximos objetivos: '+fd.get('next'):''].filter(Boolean).join('\n\n');
+    data.evolutions.push({
+      id:id(),patientId:pid,appointmentId:appointment&&appointment.id||null,date:fd.get('date'),focus:fd.get('focus'),
+      objective:fd.get('objective'),activities:fd.get('activities'),text:fullText,conduct:fd.get('conduct'),next:fd.get('next'),
+      professionalId:pro.id,professionalName:pro.name,professionalEmail:pro.email,professionalRole:pro.role,createdAt:now,updatedAt:now
+    });
+    if(appointment)appointment.status='Concluído';
+    syncPackages();save();document.getElementById('modal').remove();
+    var pp=patient(pid);if(state.patient&&pp){app.innerHTML=patientView(pp);bind();}else render();
+  };
 }
 function documentsArea(p){var list=p.documents||[];modal('<small class="overline">DOCUMENTOS</small><h2>'+esc(p.name)+'</h2><div class="modal-actions"><button class="primary" id="newDocument">+ Adicionar documento</button></div>'+(list.length?'<div class="record-list">'+list.map(function(d){return documentRow(p,d);}).join('')+'</div>':'<div class="empty">Nenhum documento salvo.</div>'));document.getElementById('newDocument').onclick=function(){documentForm(p.id);};bindDocActions();}
 function documentRow(p,d){return '<div class="clinical-record"><div><b>'+esc(d.title||d.fileName||'Documento')+'</b><small>'+esc(d.type||'Arquivo')+' · '+shortDate(d.date)+'</small><p>'+esc(d.note||'')+'</p></div><div class="record-actions">'+(d.dataUrl?'<button class="soft-btn" data-download-doc="'+p.id+'|'+d.id+'">Baixar</button>':'')+'<button class="danger-btn" data-delete-doc="'+p.id+'|'+d.id+'">Excluir</button></div></div>';}
@@ -198,42 +264,146 @@ function reportsPage(){
   '<article class="panel"><div class="panel-title"><div><small>CARTEIRA</small><h3>Pacientes por área</h3></div></div><div class="farea-list">'+(ordered.length?ordered.map(function(a){var pct=data.patients.length?Math.round(areas[a]/data.patients.length*100):0;return '<div><span><b>'+esc(a)+'</b><small>'+areas[a]+' paciente'+(areas[a]===1?'':'s')+'</small></span><em>'+pct+'%</em></div>';}).join(''):'<div class="empty">Sem pacientes cadastrados.</div>')+'</div></article></div>',
   'Relatórios','');
 }
-function teamPage(){return shell('<article class="panel"><div class="tools"><div><b>Profissionais</b><span class="muted">Equipe vinculada ao espaço</span></div><button id="newTeam" class="primary">+ Adicionar profissional</button></div>'+(data.team.length?'<div class="patient-list">'+data.team.map(function(t){return '<div class="patient"><div class="avatar">'+esc((t.name||'?').charAt(0))+'</div><div><b>'+esc(t.name)+'</b><span>'+esc(t.role||'Profissional')+' · '+esc(t.email||'')+'</span></div></div>';}).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>O espaço pode ser usado individualmente.</span></div>')+'</article>','Equipe','');}
-function teamForm(){modal('<small class="overline">EQUIPE</small><h2>Adicionar profissional</h2><form id="teamForm"><label>Nome<input name="name" required></label><div class="two"><label>Função<input name="role" placeholder="Fonoaudiólogo(a)"></label><label>E-mail<input type="email" name="email"></label></div><button class="primary">Salvar profissional</button></form>');document.getElementById('teamForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);data.team.push({id:id(),name:f.get('name'),role:f.get('role'),email:f.get('email')});save();document.getElementById('modal').remove();render();};}
+function teamPermissionBadges(t){
+  var p=t.permissions||{},labels=[
+    ['patients','Pacientes'],['agenda','Agenda'],['assessments','Avaliações'],['evolutions','Evoluções'],
+    ['documents','Documentos'],['caa','CAA'],['finance','Financeiro'],['reports','Relatórios']
+  ];
+  var out=labels.filter(function(x){return p[x[0]]!==false&&((['finance','reports'].indexOf(x[0])<0)||!!p[x[0]]);}).map(function(x){return x[1];});
+  return out.map(function(x){return '<mark>'+esc(x)+'</mark>';}).join('');
+}
+async function refreshTeamMembers(){
+  var account=window.FonelyAccount||{},team=account.team||{},cloud=window.FonelyCloud||{};
+  if(!cloud.supabase)return [];
+  var r=await cloud.supabase.from('clinic_members')
+    .select('id,owner_id,user_id,email,name,role,permissions,status,invited_at,accepted_at,last_active_at,created_at,updated_at')
+    .eq('owner_id',team.ownerId||cloud.workspaceOwnerId).eq('status','active').order('created_at',{ascending:true});
+  if(r.error)throw r.error;
+  window.FonelyTeamMembers=r.data||[];
+  return window.FonelyTeamMembers;
+}
+function teamPage(){
+  if(!isWorkspaceOwner())return shell('<div class="empty"><b>Acesso restrito</b><span>Somente a conta proprietária pode gerenciar a equipe.</span></div>','Equipe','');
+  var list=window.FonelyTeamMembers||[],account=window.FonelyAccount||{},access=account.access||{};
+  var limit=Math.max(0,Number(access.team_member_limit||0)),used=list.length,remaining=Math.max(0,limit-used),full=limit<=used;
+  var seatText=limit?used+' de '+limit+' vagas usadas':'Seu plano atual não possui vagas de equipe';
+  var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Só a conta principal paga o plano. As vagas disponíveis vêm do plano da clínica e cada profissional entra com o próprio e-mail e senha.</p></div><button id="newTeam" class="primary" '+(full?'disabled':'')+'>+ Adicionar profissional</button></section>'+
+    '<div class="fteam-seats"><div><small>VAGAS DO PLANO</small><b>'+esc(seatText)+'</b><span>'+(limit?(remaining+' vaga'+(remaining===1?'':'s')+' disponível'+(remaining===1?'':'is')):'Aumente o plano para liberar acessos adicionais')+'</span></div><div class="fteam-seatbar"><i style="width:'+(limit?Math.min(100,used/Math.max(1,limit)*100):100)+'%"></i></div></div>'+
+    '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+used+' membro'+(used===1?'':'s')+' adicional'+(used===1?'':'is')+'</h3></div></div>'+
+    (list.length?'<div class="fteam-list">'+list.map(function(t){
+      var status=t.accepted_at?'Ativo':'Convite enviado';
+      return '<article class="fteam-member"><div class="avatar">'+esc((t.name||'?').charAt(0))+'</div><div class="fteam-member-main"><div><b>'+esc(t.name||'Profissional')+'</b><mark class="'+(t.accepted_at?'active':'invited')+'">'+status+'</mark></div><span>'+esc(t.role||'Profissional')+' · '+esc(t.email||'')+'</span><div class="fteam-permissions">'+teamPermissionBadges(t)+'</div></div><div class="fteam-actions"><button class="soft-btn" data-team-edit="'+t.id+'">Permissões</button><button class="danger-btn" data-team-remove="'+t.id+'">Remover</button></div></article>';
+    }).join('')+'</div>':'<div class="empty"><b>Nenhum profissional adicional</b><span>Quando houver vagas no plano, adicione o e-mail e o Fonely enviará o convite para criação da senha.</span></div>')+
+    '</article>';
+  return shell(body,'Equipe','');
+}
+function teamForm(member){
+  member=member||null;
+  var defaults={patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:false,reports:false},p=Object.assign({},defaults,member&&member.permissions||{}),isEdit=!!member;
+  modal('<small class="overline">EQUIPE</small><h2>'+(isEdit?'Editar profissional':'Adicionar profissional')+'</h2>'+
+    '<p class="muted">'+(isEdit?'Ligue ou desligue o que este login pode acessar. As alterações valem no próximo carregamento do profissional.':'A pessoa receberá um convite por e-mail, criará a própria senha e usará uma vaga do plano da clínica. Ela não paga outro plano.')+'</p>'+
+    '<form id="teamForm">'+
+      '<label>Nome<input name="name" value="'+esc(member&&member.name||'')+'" required></label>'+
+      '<div class="two"><label>Função<select name="role">'+['Fonoaudiólogo(a)','Estagiário(a)','Secretária / Administrativo','Outro profissional'].map(function(x){return '<option '+(String(member&&member.role||'Fonoaudiólogo(a)')===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></label>'+
+      '<label>E-mail<input type="email" name="email" value="'+esc(member&&member.email||'')+'" '+(isEdit?'readonly':'required')+'></label></div>'+
+      '<div class="team-permission-title"><b>O que vai aparecer para este profissional</b><span>A conta principal pode mudar isso quando quiser.</span></div>'+
+      '<div class="team-permission-options">'+
+        '<label><input type="checkbox" name="patients" '+(p.patients?'checked':'')+'><span><b>Pacientes e prontuários</b><small>Lista de pacientes, anamnese e dados clínicos básicos.</small></span></label>'+
+        '<label><input type="checkbox" name="agenda" '+(p.agenda?'checked':'')+'><span><b>Agenda</b><small>Visualizar e registrar atendimentos.</small></span></label>'+
+        '<label><input type="checkbox" name="assessments" '+(p.assessments?'checked':'')+'><span><b>Avaliações</b><small>Criar, editar e consultar avaliações dos pacientes.</small></span></label>'+
+        '<label><input type="checkbox" name="evolutions" '+(p.evolutions?'checked':'')+'><span><b>Evoluções</b><small>Registrar sessões com o nome do profissional logado.</small></span></label>'+
+        '<label><input type="checkbox" name="documents" '+(p.documents?'checked':'')+'><span><b>Documentos</b><small>Visualizar e anexar documentos clínicos.</small></span></label>'+
+        '<label><input type="checkbox" name="caa" '+(p.caa?'checked':'')+'><span><b>Fonely CAA</b><small>Acessar e gerenciar as pranchas dos pacientes, quando o plano permitir.</small></span></label>'+
+        '<label><input type="checkbox" name="finance" '+(p.finance?'checked':'')+'><span><b>Financeiro geral</b><small>Ver pagamentos, valores recebidos, pacotes e indicadores financeiros. Vem desligado por padrão.</small></span></label>'+
+        '<label><input type="checkbox" name="reports" '+(p.reports?'checked':'')+'><span><b>Relatórios</b><small>Visualizar a área geral de relatórios da clínica.</small></span></label>'+
+      '</div>'+
+      '<div class="team-form-message" id="teamFormMessage"></div>'+
+      '<button class="primary">'+(isEdit?'Salvar permissões':'Enviar convite')+'</button>'+
+    '</form>');
+  var form=document.getElementById('teamForm');
+  var patientsBox=form.querySelector('input[name="patients"]');
+  var deps=['agenda','assessments','evolutions','documents','caa','finance','reports'];
+  patientsBox.onchange=function(){
+    if(!this.checked)deps.forEach(function(n){var el=form.querySelector('input[name="'+n+'"]');if(el)el.checked=false;});
+  };
+  deps.forEach(function(n){var el=form.querySelector('input[name="'+n+'"]');if(el)el.onchange=function(){if(this.checked)patientsBox.checked=true;};});
+  form.onsubmit=async function(e){
+    e.preventDefault();
+    var f=new FormData(e.target),btn=e.target.querySelector('.primary'),msg=document.getElementById('teamFormMessage'),cloud=window.FonelyCloud||{};
+    if(!cloud.supabase)return;
+    btn.disabled=true;btn.textContent=isEdit?'Salvando...':'Enviando convite...';
+    var body={
+      action:isEdit?'update':'invite',
+      member_id:member&&member.id||undefined,
+      name:String(f.get('name')||'').trim(),
+      email:String(f.get('email')||'').trim(),
+      role:f.get('role'),
+      permissions:{
+        patients:f.get('patients')==='on',agenda:f.get('agenda')==='on',assessments:f.get('assessments')==='on',
+        evolutions:f.get('evolutions')==='on',documents:f.get('documents')==='on',caa:f.get('caa')==='on',
+        finance:f.get('finance')==='on',reports:f.get('reports')==='on',manage_team:false
+      }
+    };
+    try{
+      var r=await cloud.supabase.functions.invoke('team-admin',{body:body});
+      if(r.error)throw r.error;
+      if(r.data&&r.data.error)throw new Error(r.data.error);
+      await refreshTeamMembers();
+      document.getElementById('modal').remove();
+      render();
+      if(!isEdit)alert(r.data&&r.data.invitation_sent?'Convite enviado. A pessoa vai abrir o e-mail, criar a senha e entrar como membro da equipe.':'Esse e-mail já possuía um login no Fonely. O acesso à equipe foi vinculado à conta existente.');
+    }catch(err){
+      msg.className='team-form-message show error';msg.textContent=String(err&&err.message||err||'Não foi possível salvar.');
+      btn.disabled=false;btn.textContent=isEdit?'Salvar permissões':'Enviar convite';
+    }
+  };
+}
+async function removeTeamMember(memberId){
+  var member=(window.FonelyTeamMembers||[]).find(function(x){return x.id===memberId;});
+  if(!member||!confirm('Remover '+(member.name||'este profissional')+' da equipe? O login pessoal continuará existindo, mas perderá o acesso à clínica.'))return;
+  var cloud=window.FonelyCloud||{};
+  try{
+    var r=await cloud.supabase.functions.invoke('team-admin',{body:{action:'remove',member_id:memberId}});
+    if(r.error)throw r.error;
+    if(r.data&&r.data.error)throw new Error(r.data.error);
+    await refreshTeamMembers();render();
+  }catch(err){alert('Não foi possível remover agora. '+String(err&&err.message||err||''));}
+}
 function academy(){return shell('<article class="academy"><div>✦</div><h2>Fonely <span>Academy</span></h2><p>Conteúdos e cursos para transformar conhecimento em prática clínica.</p><em>EM BREVE</em></article>','Fonely Academy','');}
 function modal(html){var old=document.getElementById('modal');if(old)old.remove();var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div class="modal-card"><button class="close" id="closeModal">×</button>'+html+'</div>';document.body.appendChild(m);document.getElementById('closeModal').onclick=function(){m.remove();};}
 function bindModalRows(){document.querySelectorAll('#modal [data-ap]').forEach(function(b){b.onclick=function(){var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a){document.getElementById('modal').remove();appointmentDetails(a);}};});}
 function choosePatientFor(kind){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">SELECIONAR PACIENTE</small><h2>'+esc(kind==='assessment'?'Nova avaliação':'Nova evolução')+'</h2><label>Paciente<select id="choosePatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmChoose">Continuar</button>');document.getElementById('confirmChoose').onclick=function(){var pid=document.getElementById('choosePatient').value;kind==='assessment'?assessmentForm(pid):evolutionForm(pid);};}
 function choosePatientForDocument(){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">DOCUMENTO</small><h2>Selecionar paciente</h2><label>Paciente<select id="chooseDocPatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmDocPatient">Continuar</button>');document.getElementById('confirmDocPatient').onclick=function(){documentForm(document.getElementById('chooseDocPatient').value);};}
 function bind(){
-  document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){state.page=b.getAttribute('data-go');state.patient=null;render();};});
-  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
-  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam')anamnesis(p);if(area==='assess')assessmentArea(p);if(area==='evol')evolutionArea(p);if(area==='docs')documentsArea(p);if(area==='fin')financePatient(p);if(area==='reports'){state.page='relatorios';render();}};});
-  document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
-  document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){dayModal(b.getAttribute('data-day'));};});
-  document.querySelectorAll('[data-home-go]').forEach(function(b){b.onclick=function(){state.page=b.getAttribute('data-home-go');state.patient=null;render();};});
-  document.querySelectorAll('[data-home-list]').forEach(function(b){b.onclick=function(){var mode=b.getAttribute('data-home-list'),list=appointmentsForDate(today());if(mode==='done')list=list.filter(function(a){return a.status==='Concluído';});modal('<small class="overline">'+(mode==='done'?'CONCLUÍDOS HOJE':'ATENDIMENTOS DE HOJE')+'</small><h2>'+esc(parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))+'</h2>'+appointmentRows(list)+'<div class="modal-actions"><button class="soft-btn" id="homeOpenAgenda">Abrir agenda completa</button></div>');var go=document.getElementById('homeOpenAgenda');if(go)go.onclick=function(){document.getElementById('modal').remove();state.page='agenda';state.agendaDate=today();render();};bindModalRows();};});
-  var np=document.getElementById('newPatient');if(np)np.onclick=function(){newPatient(false);};
-  var na=document.getElementById('newAppointment');if(na)na.onclick=function(){newAppointment(null,today());};
-  var hna=document.getElementById('homeNewAppointment');if(hna)hna.onclick=function(){newAppointment(null,today());};
-  var sp=document.getElementById('schedulePatient');if(sp)sp.onclick=function(){newAppointment(state.patient,today());};
-  var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){assessmentForm(state.patient);};
-  var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){evolutionForm(state.patient);};
-  var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){documentForm(state.patient);};
-  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
+  document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
+  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
+  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);if(area==='fin'&&canAccess('finance'))financePatient(p);if(area==='reports'&&canAccess('reports')){state.page='relatorios';render();}};});
+  document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
+  document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){if(canAccess('agenda'))dayModal(b.getAttribute('data-day'));};});
+  document.querySelectorAll('[data-home-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-home-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
+  document.querySelectorAll('[data-home-list]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var mode=b.getAttribute('data-home-list'),list=appointmentsForDate(today());if(mode==='done')list=list.filter(function(a){return a.status==='Concluído';});modal('<small class="overline">'+(mode==='done'?'CONCLUÍDOS HOJE':'ATENDIMENTOS DE HOJE')+'</small><h2>'+esc(parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))+'</h2>'+appointmentRows(list)+'<div class="modal-actions"><button class="soft-btn" id="homeOpenAgenda">Abrir agenda completa</button></div>');var go=document.getElementById('homeOpenAgenda');if(go)go.onclick=function(){document.getElementById('modal').remove();state.page='agenda';state.agendaDate=today();render();};bindModalRows();};});
+  var np=document.getElementById('newPatient');if(np)np.onclick=function(){if(canAccess('patients'))newPatient(false);};
+  var na=document.getElementById('newAppointment');if(na)na.onclick=function(){if(canAccess('agenda'))newAppointment(null,today());};
+  var hna=document.getElementById('homeNewAppointment');if(hna)hna.onclick=function(){if(canAccess('agenda'))newAppointment(null,today());};
+  var sp=document.getElementById('schedulePatient');if(sp)sp.onclick=function(){if(canAccess('agenda'))newAppointment(state.patient,today());};
+  var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){if(!canAccess('assessments'))return;if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(state.patient);else assessmentForm(state.patient);};
+  var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){if(canAccess('evolutions'))evolutionForm(state.patient);};
+  var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){if(canAccess('documents'))documentForm(state.patient);};
+  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
   var prev=document.getElementById('agendaPrev'),next=document.getElementById('agendaNext'),at=document.getElementById('agendaToday');
   if(prev)prev.onclick=function(){var d=parseDate(state.agendaDate);d.setMonth(d.getMonth()-1);state.agendaDate=dateKey(d);render();};
   if(next)next.onclick=function(){var d2=parseDate(state.agendaDate);d2.setMonth(d2.getMonth()+1);state.agendaDate=dateKey(d2);render();};
   if(at)at.onclick=function(){state.agendaDate=today();render();};
-  var nc=document.getElementById('newClinical');if(nc)nc.onclick=function(){choosePatientFor(nc.getAttribute('data-kind'));};
-  var nd=document.getElementById('newGlobalDocument');if(nd)nd.onclick=choosePatientForDocument;
+  var nc=document.getElementById('newClinical');if(nc)nc.onclick=function(){var kind=nc.getAttribute('data-kind');if(kind==='assessment'&&!canAccess('assessments'))return;if(kind==='evolution'&&!canAccess('evolutions'))return;choosePatientFor(kind);};
+  var nd=document.getElementById('newGlobalDocument');if(nd)nd.onclick=function(){if(canAccess('documents'))choosePatientForDocument();};
   var nf=document.getElementById('financeFilter');if(nf){nf.value=state.financePatient||'';nf.onchange=function(){state.financePatient=this.value||null;render();};}
-  var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){packageForm();};
-  var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){paymentForm();};
-  var nt=document.getElementById('newTeam');if(nt)nt.onclick=teamForm;
+  var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){if(canAccess('finance'))packageForm();};
+  var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){if(canAccess('finance'))paymentForm();};
+  var nt=document.getElementById('newTeam');if(nt&&!nt.disabled)nt.onclick=function(){teamForm();};
+  document.querySelectorAll('[data-team-edit]').forEach(function(b){b.onclick=function(){var t=(window.FonelyTeamMembers||[]).find(function(x){return x.id===b.getAttribute('data-team-edit');});if(t)teamForm(t);};});
+  document.querySelectorAll('[data-team-remove]').forEach(function(b){b.onclick=function(){removeTeamMember(b.getAttribute('data-team-remove'));};});
   var accountButton=document.getElementById('accountMenu');
   if(accountButton&&window.FonelyAccountUI){accountButton.onclick=function(){window.FonelyAccountUI.open();};}
-
   bindDocActions();
 }
 syncPackages();save();render();

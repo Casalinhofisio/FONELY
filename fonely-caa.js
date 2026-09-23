@@ -19,11 +19,12 @@ async function syncPublishedBoard(p){
 }
 function plan(){return localStorage.getItem(PLAN_KEY)||window.FONELY_PLAN_TIER||'base';}
 function isPro(){return plan()==='pro';}
+function canUseCAA(){var a=window.FonelyAccount||{},t=a.team||{};return t.isOwner!==false||!t.permissions||t.permissions.caa!==false;}
 function patient(pid){return (appData().patients||[]).find(function(p){return p.id===pid;})||null;}
 function profile(pid){return caaData().profiles[pid]||null;}
 function defaultSettings(){return {volume:.9,rate:.95,voiceName:'',speakOnTap:true,addToPhrase:false,columns:4,cardSize:'normal'};}
 function activate(pid){
-  if(!isPro())return false;
+  if(!canUseCAA()||!isPro())return false;
   var d=caaData();if(d.profiles[pid]){d.profiles[pid].enabled=true;saveCAA(d);return true;}
   d.profiles[pid]={id:id(),patientId:pid,enabled:true,token:token(),draft:['yes','no','more','finished','help','want','dont-want','water','eat','toilet','pain','play'],customCards:[],settings:defaultSettings(),versions:[],usage:[],published:null,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   saveCAA(d);return true;
@@ -36,6 +37,7 @@ function dateTime(v){try{return new Date(v).toLocaleString('pt-BR',{dateStyle:'s
 function shareUrl(p){var base=location.href.split('?')[0].replace(/[^/]*$/,'');return base+'caa.html?token='+encodeURIComponent(p.token);}
 function patientFromView(){var h=document.querySelector('.patient-head h2');if(!h)return null;var name=h.textContent.trim();return (appData().patients||[]).find(function(p){return String(p.name||'').trim()===name})||null;}
 function inject(){
+  if(!canUseCAA())return;
   var p=patientFromView(),grid=document.querySelector('.clinical-grid');
   if(p&&grid&&!grid.querySelector('[data-caa-entry]')){
     var pr=profile(p.id),b=document.createElement('button');b.className='clinical caa-card-trigger';b.setAttribute('data-caa-entry',p.id);
@@ -54,6 +56,7 @@ function openLocked(pid){
   document.body.appendChild(w);w.querySelector('[data-caa-close]').onclick=function(){w.remove();};
 }
 function openCAAList(){
+  if(!canUseCAA())return;
   var d=caaData(),aps=appData(),rows=Object.keys(d.profiles).filter(function(k){return d.profiles[k].enabled;}).map(function(k){var p=(aps.patients||[]).find(function(x){return x.id===k}),pr=d.profiles[k];return p?'<button class="patient" data-open-caa="'+esc(k)+'"><div class="avatar">'+esc((p.name||'?').charAt(0))+'</div><div><b>'+esc(p.name)+'</b><span>'+(pr.published?'Prancha publicada · '+(pr.published.cards||[]).length+' cartões':'CAA ativo · aguardando publicação')+'</span></div><strong>→</strong></button>':'';}).join('');
   var w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA</h2><p>Pacientes com comunicação aumentativa ativada</p></div><span class="caa-pro-badge">PRO</span></div><div class="caa-panel" style="margin-top:18px">'+(rows?'<div class="patient-list">'+rows+'</div>':'<div class="caa-empty"><b>Nenhum CAA ativo</b><span>Ative pelo prontuário de um paciente.</span></div>')+'</div></div>';
   document.body.appendChild(w);w.onclick=function(e){var b=e.target.closest('[data-open-caa]');if(b){w.remove();openManager(b.getAttribute('data-open-caa'));}if(e.target.closest('[data-caa-close]'))w.remove();};
