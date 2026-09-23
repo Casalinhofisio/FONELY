@@ -24,7 +24,13 @@ function money(v){return 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFract
 function slug(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');}
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
 var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe']];
-function shell(body,title,action){return '<div class="layout"><aside>'+logo()+'<nav>'+nav.map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav><div class="account"><div class="avatar">F</div><div><b>Meu espaço</b><small>Fonoaudiologia</small></div></div></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div>'+(action||'')+'</header>'+body+'</main></div>';}
+function shell(body,title,action){
+  var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{};
+  var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
+  var accountInitial=(accountName||'F').charAt(0).toUpperCase();
+  var accountPlan=access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico';
+  return '<div class="layout"><aside>'+logo()+'<nav>'+nav.map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav><button class="account" id="accountMenu" type="button"><div class="avatar">'+esc(accountInitial)+'</div><div><b>'+esc(accountName)+'</b><small>'+esc(accountPlan)+' · Minha conta</small></div><strong>⋯</strong></button></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div>'+(action||'')+'</header>'+body+'</main></div>';
+}
 function render(){var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;app.innerHTML=fn();bind();}
 function patient(pid){return data.patients.find(function(x){return x.id===pid;});}
 function patientName(pid){var p=patient(pid);return p?p.name:'Paciente';}
