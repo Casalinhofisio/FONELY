@@ -34,6 +34,10 @@ function esc(v){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
   });
 }
+function currentProfessional(){
+  var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};
+  return {id:u.id||'',name:p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};
+}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fmt(s){if(!s)return '—';var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2],12).toLocaleDateString('pt-BR');}
@@ -324,6 +328,7 @@ function normalize(a){
 function assessmentForm(pid,existing){
   var d=load(),p=d.patients.find(function(x){return x.id===pid;});if(!p)return;
   existing=normalize(existing||{});
+  var pro=currentProfessional(),authorName=existing.professionalName||existing.professional||pro.name,authorId=existing.professionalId||pro.id;
   var stage=existing.stage||stageFromPatient(p);
   var area=existing.mainArea||p.area||'Linguagem';
   if(AREAS.indexOf(area)<0)area='Linguagem';
@@ -337,7 +342,7 @@ function assessmentForm(pid,existing){
       '<div class="assessment-v3-top-grid">'+
         '<label>Tipo<select name="kind">'+selectOptions(['Avaliação inicial','Reavaliação','Triagem','Avaliação complementar'],existing.kind||'Avaliação inicial')+'</select></label>'+
         '<label>Data<input type="date" name="date" value="'+esc(existing.date||today())+'" required></label>'+
-        '<label>Profissional<input name="professional" value="'+esc(existing.professional||'')+'" placeholder="Nome da profissional"></label>'+
+        '<label>Profissional<input name="professional" value="'+esc(authorName)+'" readonly></label>'+
         '<label>Perfil<select name="stage" id="assessmentStage">'+selectOptions(['Infantil','Adolescente','Adulto','Idoso'],stage)+'</select></label>'+
         '<label class="assessment-v3-area-select">Foco principal<select name="mainArea" id="assessmentMainArea">'+selectOptions(AREAS,area)+'</select></label>'+
         '<label>Protocolo / instrumento<input name="protocols" value="'+esc(existing.protocols||existing.protocol||'')+'" placeholder="Nome do protocolo, escala ou procedimento"></label>'+
@@ -395,7 +400,11 @@ function assessmentForm(pid,existing){
       patientId:pid,
       kind:fd.get('kind'),
       date:fd.get('date'),
-      professional:fd.get('professional'),
+      professional:authorName,
+      professionalId:authorId,
+      professionalName:authorName,
+      professionalEmail:existing.professionalEmail||pro.email,
+      professionalRole:existing.professionalRole||pro.role,
       stage:fd.get('stage'),
       mainArea:fd.get('mainArea'),
       protocols:fd.get('protocols'),
@@ -408,6 +417,7 @@ function assessmentForm(pid,existing){
       plan:fd.get('plan'),
       guidance:fd.get('guidance'),
       referrals:fd.get('referrals'),
+      createdAt:existing.createdAt||new Date().toISOString(),
       updatedAt:new Date().toISOString()
     };
 
@@ -477,7 +487,7 @@ function cardsForPatient(d,pid){
   var list=d.assessments.filter(function(x){return x.patientId===pid;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
   if(!list.length)return '<div class="assessment-v3-empty"><b>Nenhuma avaliação registrada</b><span>Crie a primeira avaliação completa deste paciente.</span></div>';
   return '<div class="assessment-v3-timeline">'+list.map(function(a){
-    return '<button class="assessment-v3-card" data-assessment-view="'+a.id+'"><div><small>'+esc(a.kind||'Avaliação')+' · '+fmt(a.date)+'</small><b>'+esc(a.mainArea||a.area||'Geral')+'</b><p>'+esc(a.conclusion||a.summary||'Sem síntese registrada.')+'</p></div><strong>→</strong></button>';
+    return '<button class="assessment-v3-card" data-assessment-view="'+a.id+'"><div><small>'+esc(a.kind||'Avaliação')+' · '+fmt(a.date)+(a.professionalName||a.professional?' · '+esc(a.professionalName||a.professional):'')+'</small><b>'+esc(a.mainArea||a.area||'Geral')+'</b><p>'+esc(a.conclusion||a.summary||'Sem síntese registrada.')+'</p></div><strong>→</strong></button>';
   }).join('')+'</div>';
 }
 function bindAssessmentButtons(host,pid){
@@ -731,6 +741,7 @@ function collectCustomAnswers(form,t){
 function customAssessmentForm(pid,t,existing){
   var d=load(),p=d.patients.find(function(x){return x.id===pid;});if(!p)return;
   t=normalizeTemplate(JSON.parse(JSON.stringify(t)));existing=existing||{};
+  var pro=currentProfessional(),authorName=existing.professionalName||existing.professional||pro.name,authorId=existing.professionalId||pro.id;
   var snapshot=existing.customSnapshot||t,answers=existing.customAnswers||{};
   var body='';
   if(t.mode==='document'){
@@ -745,7 +756,7 @@ function customAssessmentForm(pid,t,existing){
   var w=modal(
     '<div class="assessment-v3-head"><div><small>AVALIAÇÃO PERSONALIZADA</small><h2>'+esc(t.name)+'</h2><p>'+esc(p.name)+' · modelo criado pela profissional</p></div><span>Meu modelo</span></div>'+
     '<form id="customAssessmentForm">'+
-      '<div class="assessment-v3-top-grid"><label>Data<input type="date" name="date" value="'+esc(existing.date||today())+'" required></label><label>Profissional<input name="professional" value="'+esc(existing.professional||'')+'" placeholder="Nome da profissional"></label><label>Tipo<select name="kind">'+selectOptions(['Avaliação inicial','Reavaliação','Triagem','Avaliação complementar'],existing.kind||'Avaliação personalizada')+'</select></label></div>'+
+      '<div class="assessment-v3-top-grid"><label>Data<input type="date" name="date" value="'+esc(existing.date||today())+'" required></label><label>Profissional<input name="professional" value="'+esc(authorName)+'" readonly></label><label>Tipo<select name="kind">'+selectOptions(['Avaliação inicial','Reavaliação','Triagem','Avaliação complementar'],existing.kind||'Avaliação personalizada')+'</select></label></div>'+
       body+
       '<label>Síntese / observações finais<textarea name="summary" placeholder="Resumo clínico, principais achados e próximos passos...">'+esc(existing.summary||'')+'</textarea></label>'+
       '<div class="assessment-v3-actions"><button type="button" class="soft-btn" data-custom-cancel>Cancelar</button><button class="primary">Salvar no prontuário</button></div>'+
@@ -771,10 +782,12 @@ function customAssessmentForm(pid,t,existing){
       if(missing.length){alert('Preencha os campos obrigatórios: '+missing.join(', '));return;}
     }
     var obj={
-      id:existing.id||uid(),patientId:pid,kind:fd.get('kind')||'Avaliação personalizada',date:fd.get('date'),professional:fd.get('professional'),
+      id:existing.id||uid(),patientId:pid,kind:fd.get('kind')||'Avaliação personalizada',date:fd.get('date'),professional:authorName,
+      professionalId:authorId,professionalName:authorName,professionalEmail:existing.professionalEmail||pro.email,professionalRole:existing.professionalRole||pro.role,
       mainArea:'Personalizada · '+t.name,customTemplateId:t.id,customTemplateName:t.name,customMode:t.mode,customSnapshot:snapshot,
       customAnswers:t.mode==='form'?collectCustomAnswers(form,t):{},customDocument:t.mode==='document'?fd.get('customDocument'):'',
-      summary:fd.get('summary')||((t.mode==='document'?(fd.get('customDocument')||'').slice(0,180):'Modelo personalizado preenchido')),updatedAt:new Date().toISOString()
+      summary:fd.get('summary')||((t.mode==='document'?(fd.get('customDocument')||'').slice(0,180):'Modelo personalizado preenchido')),
+      createdAt:existing.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()
     };
     var data=load(),idx=data.assessments.findIndex(function(x){return x.id===obj.id;});if(idx>=0)data.assessments[idx]=obj;else data.assessments.push(obj);
     save(data);w.remove();renderPatientAssessments(pid);mountPage(true);
@@ -818,7 +831,7 @@ function bindTemplateCards(host){
 function pageList(d,list){
   if(!list.length)return '<div class="assessment-v3-empty"><b>Nenhuma avaliação registrada</b><span>Comece selecionando um paciente e criando uma avaliação.</span></div>';
   return '<div class="assessment-v3-page-list">'+list.map(function(a){
-    return '<button data-page-open="'+a.patientId+'|'+a.id+'"><div class="assessment-v3-page-icon">◇</div><div><small>'+esc(a.kind||'Avaliação')+' · '+fmt(a.date)+'</small><b>'+esc(pname(d,a.patientId))+'</b><span>'+esc(a.mainArea||a.area||'Geral')+' · '+esc(a.conclusion||a.summary||'Sem síntese')+'</span></div><strong>→</strong></button>';
+    return '<button data-page-open="'+a.patientId+'|'+a.id+'"><div class="assessment-v3-page-icon">◇</div><div><small>'+esc(a.kind||'Avaliação')+' · '+fmt(a.date)+(a.professionalName||a.professional?' · '+esc(a.professionalName||a.professional):'')+'</small><b>'+esc(pname(d,a.patientId))+'</b><span>'+esc(a.mainArea||a.area||'Geral')+' · '+esc(a.conclusion||a.summary||'Sem síntese')+'</span></div><strong>→</strong></button>';
   }).join('')+'</div>';
 }
 function pageHTML(){
@@ -870,6 +883,7 @@ document.addEventListener('click',function(e){
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();renderPatientAssessments(p.id);
 },true);
 
+window.FonelyAssessments={newForPatient:chooseAssessmentType,openPatient:renderPatientAssessments};
 var obs=new MutationObserver(function(){mountPage(false);});
 obs.observe(document.documentElement,{childList:true,subtree:true});
 document.addEventListener('DOMContentLoaded',function(){mountPage(false);});
