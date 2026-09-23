@@ -36,7 +36,7 @@ function inject(){
   }
   var nav=document.querySelector('.layout aside nav'),d=caaData(),active=Object.keys(d.profiles).some(function(k){return d.profiles[k]&&d.profiles[k].enabled;});
   if(nav&&active&&!nav.querySelector('[data-caa-menu]')){
-    var n=document.createElement('button');n.setAttribute('data-caa-menu','1');n.innerHTML='<i>CAA</i>Fonely CAA <em>PRO</em>';n.onclick=openCAAList;nav.insertBefore(n,nav.lastElementChild||null);
+    var n=document.createElement('button');n.setAttribute('data-caa-menu','1');n.innerHTML='<i>◉</i>Fonely CAA <em>PRO</em>';n.onclick=openCAAList;nav.insertBefore(n,nav.lastElementChild||null);
   }
 }
 function openLocked(pid){
