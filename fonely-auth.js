@@ -56,18 +56,35 @@ function authHTML(){
     '<main class="fe-frame">'+
       '<section class="fe-brand-side">'+
         '<div class="fe-brand-top"><img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely"><span>SISTEMA PARA FONOAUDIÓLOGOS</span></div>'+
-        '<div class="fe-brand-copy">'+
-          '<span class="fe-eyebrow">CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
-          '<h1>Mais tempo para o que <em>realmente importa.</em></h1>'+
-          '<p>Pacientes, agenda, avaliações, evoluções, documentos e financeiro em um único espaço feito para a rotina fonoaudiológica.</p>'+
-          '<div class="fe-brand-points"><span>Prontuário clínico</span><span>Agenda e recorrências</span><span>Avaliações de fono</span><span>Fonely CAA</span></div>'+
+        '<div class="fe-hero-wrap">'+
+          '<div class="fe-hero-copy">'+
+            '<span class="fe-eyebrow"><i>✓</i> CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
+            '<h1>Mais tempo para cuidar.<br><em>Menos tempo organizando.</em></h1>'+
+            '<p>Pacientes, agenda, avaliações, evoluções, documentos e financeiro reunidos em um espaço simples, bonito e feito para a rotina fonoaudiológica.</p>'+
+            '<div class="fe-brand-points">'+
+              '<span><i>♡</i> Prontuário clínico</span>'+
+              '<span><i>▣</i> Agenda e recorrências</span>'+
+              '<span><i>◇</i> Avaliações de fono</span>'+
+              '<span><i>CAA</i> Fonely CAA</span>'+
+            '</div>'+
+          '</div>'+
+          '<div class="fe-hero-sidecard">'+
+            '<div class="fe-sidecard-kicker">FONELY EM AÇÃO</div>'+
+            '<div class="fe-sidecard-title">Seu dia em um só lugar.</div>'+
+            '<div class="fe-sidecard-list">'+
+              '<div><span class="dot"></span><b>Agenda organizada</b><small>próximos atendimentos e recorrências</small></div>'+
+              '<div><span class="dot"></span><b>Prontuário centralizado</b><small>avaliações e evoluções por paciente</small></div>'+
+              '<div><span class="dot"></span><b>Financeiro conectado</b><small>pacotes, sessões e recebimentos</small></div>'+
+            '</div>'+
+            '<div class="fe-sidecard-quote">“Mais escuta para mais conquistas.”</div>'+
+          '</div>'+
         '</div>'+
         '<div class="fe-product-preview">'+
           '<div class="fe-preview-sidebar"><img src="fonely-icon.svg" alt=""><i class="active"></i><i></i><i></i><i></i><i></i></div>'+
           '<div class="fe-preview-content">'+
             '<div class="fe-preview-header"><div><small>VISÃO DO DIA</small><b>Seu consultório em ordem.</b></div><span>+ Novo atendimento</span></div>'+
-            '<div class="fe-preview-stats"><i></i><i></i><i></i><i></i></div>'+
-            '<div class="fe-preview-grid"><div class="wide"><b></b><i></i><i></i><i></i></div><div><b></b><i></i><i></i><i></i></div></div>'+
+            '<div class="fe-preview-stats"><div><small>HOJE</small><b>5</b></div><div><small>PRÓXIMOS</small><b>3</b></div><div><small>AVALIAÇÕES</small><b>2</b></div><div><small>EVOLUÇÕES</small><b>12</b></div></div>'+
+            '<div class="fe-preview-grid"><div class="wide"><b>Agenda de hoje</b><i></i><i></i><i></i></div><div><b>Pacientes</b><i></i><i></i><i></i></div></div>'+
           '</div>'+
         '</div>'+
       '</section>'+
