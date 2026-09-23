@@ -322,7 +322,7 @@ function teamForm(member){
     '</form>');
   var form=document.getElementById('teamForm');
   var patientsBox=form.querySelector('input[name="patients"]');
-  var deps=['agenda','assessments','evolutions','documents','caa'];
+  var deps=['agenda','assessments','evolutions','documents','caa','finance','reports'];
   patientsBox.onchange=function(){
     if(!this.checked)deps.forEach(function(n){var el=form.querySelector('input[name="'+n+'"]');if(el)el.checked=false;});
   };
