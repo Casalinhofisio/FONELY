@@ -200,6 +200,63 @@ function accountStatusLabel(status){
 function accountStatusClass(status){
   return status==='active'?'ok':status==='trialing'?'trial':status==='past_due'?'warn':'off';
 }
+function updateProfileAvatarUI(url,name){
+  document.querySelectorAll('.top-account-avatar').forEach(function(box){
+    box.classList.remove('fallback');
+    box.innerHTML='<img data-profile-avatar src="'+esc(url)+'" alt="'+esc(name||'Profissional')+'">';
+  });
+  var photo=document.querySelector('.fe-account-photo');
+  if(photo){photo.classList.remove('fallback');photo.innerHTML='<img src="'+esc(url)+'" alt="'+esc(name||'Profissional')+'"><span class="fe-account-photo-edit">Alterar</span>';}
+}
+function oldAvatarStoragePath(url){
+  var marker='/storage/v1/object/public/profile-avatars/';
+  var i=String(url||'').indexOf(marker);
+  return i>=0?decodeURIComponent(String(url).slice(i+marker.length).split('?')[0]):'';
+}
+async function uploadProfileAvatar(file,button,msg){
+  var account=window.FonelyAccount||{},profile=account.profile||{},user=account.user||{};
+  var name=profile.full_name||String(user.email||'Profissional').split('@')[0]||'Profissional';
+  if(!file)return;
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)){msg.className='fe-account-message show error';msg.textContent='Use uma foto JPG, PNG ou WebP.';return;}
+  if(file.size>5*1024*1024){msg.className='fe-account-message show error';msg.textContent='A foto pode ter no máximo 5 MB.';return;}
+
+  var previous=profile.avatar_url||'';
+  var preview=URL.createObjectURL(file);
+  updateProfileAvatarUI(preview,name);
+  button.disabled=true;
+  button.textContent='Salvando foto...';
+  msg.className='fe-account-message show';
+  msg.textContent='Enviando sua foto...';
+
+  try{
+    var ext=file.type==='image/png'?'png':file.type==='image/webp'?'webp':'jpg';
+    var path=user.id+'/avatar-'+Date.now()+'.'+ext;
+    var up=await sb.storage.from('profile-avatars').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+    if(up.error)throw up.error;
+    var pub=sb.storage.from('profile-avatars').getPublicUrl(path);
+    var publicUrl=pub.data&&pub.data.publicUrl;
+    if(!publicUrl)throw new Error('Não foi possível obter a URL da foto.');
+    var saved=await sb.from('profiles').update({avatar_url:publicUrl,updated_at:new Date().toISOString()}).eq('id',user.id);
+    if(saved.error)throw saved.error;
+
+    profile.avatar_url=publicUrl;
+    window.FonelyAccount.profile=profile;
+    updateProfileAvatarUI(publicUrl,name);
+    var oldPath=oldAvatarStoragePath(previous);
+    if(oldPath&&oldPath!==path)sb.storage.from('profile-avatars').remove([oldPath]).then(function(){});
+    msg.className='fe-account-message show success';
+    msg.textContent='Foto atualizada.';
+  }catch(err){
+    if(previous)updateProfileAvatarUI(previous,name);
+    else location.reload();
+    msg.className='fe-account-message show error';
+    msg.textContent='Não foi possível salvar a foto. '+String(err&&err.message||err||'');
+  }finally{
+    URL.revokeObjectURL(preview);
+    button.disabled=false;
+    button.textContent='Alterar foto';
+  }
+}
 function openAccountPanel(){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{};
   var old=document.getElementById('fonelyAccountOverlay');if(old)old.remove();
@@ -207,13 +264,14 @@ function openAccountPanel(){
   var validity=expiry?accountDate(expiry):(access.plan_tier==='base'?'Sem vencimento':'Sem data definida');
   var name=profile.full_name||String(user.email||'Profissional').split('@')[0]||'Profissional';
   var joined=profile.created_at?accountDate(profile.created_at):'—';
+  var initial=(name||'F').charAt(0).toUpperCase();
+  var photo=profile.avatar_url
+    ?'<div class="fe-account-photo"><img src="'+esc(profile.avatar_url)+'" alt="'+esc(name)+'"><span class="fe-account-photo-edit">Alterar</span></div>'
+    :'<div class="fe-account-photo fallback">'+esc(initial)+'<span class="fe-account-photo-edit">Adicionar foto</span></div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
   w.innerHTML='<div class="fe-account-panel">'+
-    '<div class="fe-account-top"><div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p></div><button type="button" data-account-close>×</button></div>'+
-    '<div class="fe-account-plan">'+
-      '<div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div>'+
-      '<mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark>'+
-    '</div>'+
+    '<div class="fe-account-top"><div class="fe-account-identity">'+photo+'<div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p><button type="button" class="fe-photo-button" data-account-photo>Alterar foto</button><input type="file" accept="image/jpeg,image/png,image/webp" data-account-photo-input hidden></div></div><button type="button" data-account-close>×</button></div>'+
+    '<div class="fe-account-plan"><div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div><mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark></div>'+
     '<div class="fe-account-grid">'+
       '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
       '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
@@ -226,11 +284,17 @@ function openAccountPanel(){
   document.body.appendChild(w);
   w.querySelector('[data-account-close]').onclick=function(){w.remove();};
   w.onclick=function(e){if(e.target===w)w.remove();};
+
+  var photoButton=w.querySelector('[data-account-photo]'),photoInput=w.querySelector('[data-account-photo-input]'),msg=w.querySelector('[data-account-message]');
+  photoButton.onclick=function(){photoInput.click();};
+  w.querySelector('.fe-account-photo').onclick=function(){photoInput.click();};
+  photoInput.onchange=function(){if(photoInput.files&&photoInput.files[0])uploadProfileAvatar(photoInput.files[0],photoButton,msg);};
+
   var logout=w.querySelector('[data-account-logout]');
   logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';await sb.auth.signOut();location.replace(APP_URL);};
   var pass=w.querySelector('[data-account-password]');
   pass.onclick=async function(){
-    var msg=w.querySelector('[data-account-message]');pass.disabled=true;pass.textContent='Enviando...';
+    pass.disabled=true;pass.textContent='Enviando...';
     try{
       var email=user.email||profile.email;
       if(!email)throw new Error('E-mail da conta não encontrado.');
@@ -273,11 +337,11 @@ async function prepareWorkspace(user){
   var legacyCAA=localStorage.getItem('fonely_caa_v1');
   if(!localStorage.getItem(window.FONELY_CAA_KEY)&&legacyCAA)localStorage.setItem(window.FONELY_CAA_KEY,legacyCAA);
 
-  var profileData={full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email,created_at:user.created_at};
+  var profileData={full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email,avatar_url:'',created_at:user.created_at};
   var accessData={plan_tier:'base',status:'active',plan_started_at:null,plan_ends_at:null,trial_ends_at:null,cancel_at_period_end:false};
   try{
     var accountResults=await Promise.all([
-      sb.from('profiles').select('full_name,email,created_at,updated_at').eq('id',user.id).maybeSingle(),
+      sb.from('profiles').select('full_name,email,avatar_url,created_at,updated_at').eq('id',user.id).maybeSingle(),
       sb.from('account_access').select('plan_tier,status,plan_started_at,plan_ends_at,trial_ends_at,cancel_at_period_end,created_at,updated_at').eq('user_id',user.id).maybeSingle()
     ]);
     if(accountResults[0].data)profileData=Object.assign(profileData,accountResults[0].data);
@@ -320,17 +384,8 @@ async function loadApp(user){
 }
 
 function mountAccount(user){
-  function apply(){
-    var button=document.getElementById('accountMenu');
-    if(!button)return false;
-    if(button.dataset.accountBound==='1')return true;
-    button.dataset.accountBound='1';
-    button.onclick=function(){openAccountPanel();};
-    return true;
-  }
-  apply();
-  var ob=new MutationObserver(function(){apply();});
-  ob.observe(document.documentElement,{childList:true,subtree:true});
+  var button=document.getElementById('accountMenu');
+  if(button&&window.FonelyAccountUI)button.onclick=function(){window.FonelyAccountUI.open();};
 }
 
 function bindAuth(w){
