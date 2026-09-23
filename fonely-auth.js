@@ -17,8 +17,9 @@ const APP_SCRIPTS=[
 
 let sb=null;
 let appLoaded=false;
+let appLoadPromise=null;
 let authMounted=false;
-let recoveryMode=false;
+let recoveryMode=/type=recovery/i.test(location.hash)||/type=recovery/i.test(location.search);
 
 function esc(v){
   return String(v==null?'':v).replace(/[&<>"']/g,function(c){
@@ -246,13 +247,17 @@ async function prepareWorkspace(user){
 
 async function loadApp(user){
   if(appLoaded)return;
-  await prepareWorkspace(user);
-  var entry=document.getElementById('fonelyEntry');
-  if(entry)entry.remove();
-  document.body.classList.remove('fonely-entry-open');
-  for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
-  appLoaded=true;
-  mountAccount(user);
+  if(appLoadPromise)return appLoadPromise;
+  appLoadPromise=(async function(){
+    await prepareWorkspace(user);
+    var entry=document.getElementById('fonelyEntry');
+    if(entry)entry.remove();
+    document.body.classList.remove('fonely-entry-open');
+    for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
+    appLoaded=true;
+    mountAccount(user);
+  })();
+  try{await appLoadPromise;}finally{if(!appLoaded)appLoadPromise=null;}
 }
 
 function mountAccount(user){
@@ -396,9 +401,11 @@ try{
   });
 
   var sessionResult=await sb.auth.getSession();
-  if(sessionResult.data&&sessionResult.data.session&&!recoveryMode){
+  if(recoveryMode){
+    showRecovery();
+  }else if(sessionResult.data&&sessionResult.data.session){
     await loadApp(sessionResult.data.session.user);
-  }else if(!recoveryMode){
+  }else{
     mountAuth();
   }
 }catch(err){
