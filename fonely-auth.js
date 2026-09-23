@@ -55,65 +55,54 @@ function authHTML(){
   return '<div class="fe-shell">'+
     '<main class="fe-frame">'+
       '<section class="fe-brand-side">'+
-        '<div class="fe-brand-top"><img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely"><span>SISTEMA PARA FONOAUDIÓLOGOS</span></div>'+
-        '<div class="fe-hero-wrap">'+
-          '<div class="fe-hero-copy">'+
-            '<span class="fe-eyebrow"><i>✓</i> CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
-            '<h1>Mais tempo para cuidar.<br><em>Menos tempo organizando.</em></h1>'+
-            '<p>Pacientes, agenda, avaliações, evoluções, documentos e financeiro reunidos em um espaço simples, bonito e feito para a rotina fonoaudiológica.</p>'+
-            '<div class="fe-brand-points">'+
-              '<span><i>♡</i> Prontuário clínico</span>'+
-              '<span><i>▣</i> Agenda e recorrências</span>'+
-              '<span><i>◇</i> Avaliações de fono</span>'+
-              '<span><i>CAA</i> Fonely CAA</span>'+
-            '</div>'+
-          '</div>'+
-          '<div class="fe-hero-sidecard">'+
-            '<div class="fe-sidecard-kicker">FONELY EM AÇÃO</div>'+
-            '<div class="fe-sidecard-title">Seu dia em um só lugar.</div>'+
-            '<div class="fe-sidecard-list">'+
-              '<div><span class="dot"></span><b>Agenda organizada</b><small>próximos atendimentos e recorrências</small></div>'+
-              '<div><span class="dot"></span><b>Prontuário centralizado</b><small>avaliações e evoluções por paciente</small></div>'+
-              '<div><span class="dot"></span><b>Financeiro conectado</b><small>pacotes, sessões e recebimentos</small></div>'+
-            '</div>'+
-            '<div class="fe-sidecard-quote">“Mais escuta para mais conquistas.”</div>'+
+        '<div class="fe-brand-top">'+
+          '<img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely">'+
+          '<span>SISTEMA PARA FONOAUDIÓLOGOS</span>'+
+        '</div>'+
+        '<div class="fe-hero">'+
+          '<span class="fe-eyebrow">CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
+          '<h1>Seu consultório,<br><em>mais leve.</em></h1>'+
+          '<p>Uma rotina mais simples para acompanhar pacientes, organizar a agenda e registrar cada evolução com clareza.</p>'+
+          '<div class="fe-benefits">'+
+            '<div><i>01</i><span><b>Pacientes</b><small>Prontuário e histórico em um só lugar.</small></span></div>'+
+            '<div><i>02</i><span><b>Agenda</b><small>Atendimentos e recorrências organizados.</small></span></div>'+
+            '<div><i>03</i><span><b>Avaliações</b><small>Fluxos pensados para fonoaudiologia.</small></span></div>'+
           '</div>'+
         '</div>'+
-        '<div class="fe-product-preview">'+
-          '<div class="fe-preview-sidebar"><img src="fonely-icon.svg" alt=""><i class="active"></i><i></i><i></i><i></i><i></i></div>'+
-          '<div class="fe-preview-content">'+
-            '<div class="fe-preview-header"><div><small>VISÃO DO DIA</small><b>Seu consultório em ordem.</b></div><span>+ Novo atendimento</span></div>'+
-            '<div class="fe-preview-stats"><div><small>HOJE</small><b>5</b></div><div><small>PRÓXIMOS</small><b>3</b></div><div><small>AVALIAÇÕES</small><b>2</b></div><div><small>EVOLUÇÕES</small><b>12</b></div></div>'+
-            '<div class="fe-preview-grid"><div class="wide"><b>Agenda de hoje</b><i></i><i></i><i></i></div><div><b>Pacientes</b><i></i><i></i><i></i></div></div>'+
-          '</div>'+
+        '<div class="fe-product-card">'+
+          '<div class="fe-product-top"><div><small>FONELY</small><b>Visão do dia</b></div><span>Hoje</span></div>'+
+          '<div class="fe-product-stats"><div><small>Atendimentos</small><b>5</b></div><div><small>Próximos</small><b>3</b></div><div><small>Avaliações</small><b>2</b></div></div>'+
+          '<div class="fe-product-row"><i></i><span><b>Agenda organizada</b><small>Seus próximos horários em destaque</small></span><strong>→</strong></div>'+
+          '<div class="fe-product-row"><i></i><span><b>Prontuário conectado</b><small>Avaliações e evoluções por paciente</small></span><strong>→</strong></div>'+
         '</div>'+
+        '<div class="fe-brand-note">Mais escuta para mais conquistas.</div>'+
       '</section>'+
       '<section class="fe-auth-side">'+
         '<aside class="fe-card" id="feCard">'+
-          '<div class="fe-card-brand"><img src="fonely-logo-official.svg" alt="Fonely"><span>ACESSO PROFISSIONAL</span></div>'+
-          '<div class="fe-card-head"><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre com seu e-mail e senha para acessar seu espaço.</p></div>'+
+          '<div class="fe-auth-brand"><img src="fonely-logo-official.svg" alt="Fonely"></div>'+
+          '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar seu espaço no Fonely.</p></div>'+
           '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
           '<form class="fe-form active" data-fe-form="login">'+
             '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
-            '<label class="fe-field fe-password"><span>Senha</span><input type="password" name="password" autocomplete="current-password" placeholder="Sua senha" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
+            '<label class="fe-field fe-password"><span>Senha</span><input type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
             '<div class="fe-forgot"><button type="button" data-fe-forgot>Esqueci minha senha</button></div>'+
             '<button class="fe-primary" type="submit">Entrar no Fonely</button>'+
           '</form>'+
           '<form class="fe-form" data-fe-form="signup">'+
-            '<label class="fe-field"><span>Nome</span><input name="name" autocomplete="name" placeholder="Seu nome completo" required></label>'+
+            '<label class="fe-field"><span>Nome completo</span><input name="name" autocomplete="name" placeholder="Seu nome completo" required></label>'+
             '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="voce@clinica.com" required></label>'+
             '<label class="fe-field fe-password"><span>Crie uma senha</span><input type="password" name="password" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
             '<label class="fe-field fe-password"><span>Repita a senha</span><input type="password" name="password2" autocomplete="new-password" placeholder="Digite a mesma senha" minlength="8" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
             '<button class="fe-primary" type="submit">Criar minha conta</button>'+
-            '<p class="fe-helper">Enviaremos uma confirmação para o seu e-mail.</p>'+
+            '<p class="fe-helper">Você receberá um e-mail para confirmar seu cadastro.</p>'+
           '</form>'+
           '<div class="fe-reset" data-fe-reset>'+
             '<button class="fe-back" type="button" data-fe-back>← Voltar</button>'+
-            '<h2>Recuperar acesso</h2><p>Digite seu e-mail para receber o link de redefinição de senha.</p>'+
+            '<span class="fe-auth-kicker">RECUPERAR ACESSO</span><h2>Esqueceu sua senha?</h2><p>Digite seu e-mail e enviaremos um link seguro para criar uma nova senha.</p>'+
             '<form data-fe-reset-form><label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label><button class="fe-primary">Enviar link</button></form>'+
           '</div>'+
           '<div class="fe-recovery" data-fe-recovery>'+
-            '<h2>Criar nova senha</h2><p>Digite a nova senha duas vezes para concluir a recuperação.</p>'+
+            '<span class="fe-auth-kicker">NOVA SENHA</span><h2>Criar nova senha</h2><p>Digite a nova senha duas vezes para concluir a recuperação.</p>'+
             '<form data-fe-recovery-form>'+
               '<label class="fe-field fe-password"><span>Nova senha</span><input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="Mínimo de 8 caracteres" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
               '<label class="fe-field fe-password"><span>Repita a nova senha</span><input type="password" name="password2" autocomplete="new-password" minlength="8" placeholder="Digite novamente" required><button type="button" class="fe-show" data-fe-show>Mostrar</button></label>'+
@@ -121,11 +110,10 @@ function authHTML(){
             '</form>'+
           '</div>'+
           '<div class="fe-message" id="feMessage"></div>'+
-          '<div class="fe-trust"><i></i><span>Acesso seguro ao seu espaço Fonely</span></div>'+
+          '<div class="fe-trust"><i></i><span>Seus dados protegidos e vinculados à sua conta</span></div>'+
         '</aside>'+
       '</section>'+
     '</main>'+
-    '<footer class="fe-footer"><span>Fonely</span><b>Mais escuta para mais conquistas.</b></footer>'+
   '</div>';
 }
 function mountAuth(){
