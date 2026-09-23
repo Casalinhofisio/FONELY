@@ -208,6 +208,15 @@ function updateProfileAvatarUI(url,name){
   var photo=document.querySelector('.fe-account-photo');
   if(photo){photo.classList.remove('fallback');photo.innerHTML='<img src="'+esc(url)+'" alt="'+esc(name||'Profissional')+'"><span class="fe-account-photo-edit">Alterar</span>';}
 }
+function restoreProfileAvatarFallback(name){
+  var initial=(name||'F').charAt(0).toUpperCase();
+  document.querySelectorAll('.top-account-avatar').forEach(function(box){
+    box.classList.add('fallback');
+    box.textContent=initial;
+  });
+  var photo=document.querySelector('.fe-account-photo');
+  if(photo){photo.classList.add('fallback');photo.innerHTML=esc(initial)+'<span class="fe-account-photo-edit">Adicionar foto</span>';}
+}
 function oldAvatarStoragePath(url){
   var marker='/storage/v1/object/public/profile-avatars/';
   var i=String(url||'').indexOf(marker);
@@ -248,7 +257,7 @@ async function uploadProfileAvatar(file,button,msg){
     msg.textContent='Foto atualizada.';
   }catch(err){
     if(previous)updateProfileAvatarUI(previous,name);
-    else location.reload();
+    else restoreProfileAvatarFallback(name);
     msg.className='fe-account-message show error';
     msg.textContent='Não foi possível salvar a foto. '+String(err&&err.message||err||'');
   }finally{
