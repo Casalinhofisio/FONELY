@@ -95,3 +95,65 @@
 .caa-publish-success{display:flex;flex-direction:column;gap:4px;padding:14px 16px;margin-bottom:14px;border:1px solid #cfe7d5;background:#f1faf3;border-radius:14px;color:#355b3f}
 .caa-publish-success b{font-weight:900}.caa-publish-success span{font-size:12px;line-height:1.45}
 [data-caa-publish]:disabled{opacity:.72;cursor:wait}
+
+
+/* CAA Mobile V4 — uso confortável no celular */
+@media(max-width:700px){
+  .caa-overlay{overscroll-behavior:contain;background:#f8f4f1}
+  .caa-shell{padding:0 0 calc(18px + env(safe-area-inset-bottom))!important;max-width:none!important}
+  .caa-topbar{top:0!important;border-radius:0!important;border-width:0 0 1px!important;padding:calc(9px + env(safe-area-inset-top)) 10px 9px!important;gap:8px!important;flex-wrap:nowrap!important;box-shadow:0 4px 18px rgba(62,43,37,.06)}
+  .caa-topbar>div:not(.grow){flex:0 0 auto}
+  .caa-topbar .grow{min-width:0}
+  .caa-topbar h2{font-size:17px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .caa-topbar p{display:none!important}
+  .caa-topbar .caa-btn{padding:8px 9px!important;font-size:10px!important;white-space:nowrap}
+  .caa-tabs{position:sticky;top:55px;z-index:2;margin:0!important;padding:8px 9px;background:#f8f4f1;gap:6px!important;scrollbar-width:none}
+  .caa-tabs::-webkit-scrollbar{display:none}
+  .caa-tabs button{padding:8px 10px!important;border-radius:10px!important;font-size:10px!important}
+  .caa-panel{border-radius:0!important;border-left:0!important;border-right:0!important;padding:13px 10px!important}
+  .caa-panel h3{font-size:17px!important}.caa-panel>p{font-size:11px!important;margin-bottom:11px!important;line-height:1.4}
+  .caa-grid-2{display:block!important}
+  .caa-grid-2>.caa-panel+ .caa-panel{margin-top:10px}
+  .caa-library-tools{display:grid!important;grid-template-columns:1fr 1fr;gap:7px!important;margin-bottom:10px!important}
+  .caa-library-tools input{grid-column:1/-1;max-width:none!important}
+  .caa-library-tools select{max-width:none!important}
+  .caa-library{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .caa-lib-card{min-height:0!important;border-radius:15px!important;padding:7px!important}
+  .caa-lib-card img{aspect-ratio:1!important;width:100%!important;height:auto!important;border-radius:11px!important;padding:5px!important}
+  .caa-lib-card b{font-size:13px!important;margin-top:5px!important}.caa-lib-card small{font-size:8px!important}
+  .caa-check{width:22px!important;height:22px!important;right:5px!important;top:5px!important}
+  .caa-board-list{gap:6px!important}
+  .caa-board-row{grid-template-columns:60px minmax(0,1fr) auto!important;gap:7px!important;padding:7px!important;border-radius:12px!important}
+  .caa-board-row img{width:58px!important;height:54px!important;padding:4px!important;border-radius:10px!important}
+  .caa-drag-main{padding:2px 3px!important}.caa-drag-main b{font-size:12px!important}.caa-drag-main small,.caa-drag-main em{font-size:8px!important}
+  .caa-row-actions{grid-column:auto!important;display:flex!important;gap:3px!important}
+  .caa-row-actions button{width:34px!important;height:34px!important;padding:0!important}
+  .caa-row-actions .caa-edit-card{font-size:0!important;width:34px!important;padding:0!important}
+  .caa-row-actions .caa-edit-card:after{content:'✎';font-size:16px}
+  .caa-settings{gap:8px!important}.caa-setting{padding:11px!important;border-radius:12px!important}
+  .caa-public-preview{padding:8px!important;border-radius:14px!important;min-height:0!important}
+  .caa-preview-note{padding:9px!important;margin-bottom:7px!important;border-radius:11px!important}
+  .caa-preview-note span{font-size:9px!important}
+  .caa-categories{margin:7px 0!important;gap:5px!important}
+  .caa-category{padding:7px 9px!important;font-size:10px!important}
+  .caa-board{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+  .caa-comm-card{padding:6px 6px 8px!important;border-radius:14px!important;text-align:center!important}
+  .caa-comm-card img{aspect-ratio:1!important;border-radius:10px!important;padding:5px!important}
+  .caa-comm-card b{font-size:13px!important;margin:5px 2px 0!important;line-height:1.15}
+  .caa-comm-card small{font-size:8px!important;margin:2px 2px 0!important}
+  .caa-linkbox{gap:7px!important}.caa-linkbox .caa-btn{width:100%!important;min-height:42px}
+  .caa-stats{grid-template-columns:1fr 1fr!important;gap:7px!important}.caa-stat{padding:10px!important}.caa-stat b{font-size:19px!important}
+  .caa-card-editor-overlay{align-items:end!important;padding:0!important}
+  .caa-card-editor{width:100%!important;max-height:92dvh!important;border-radius:22px 22px 0 0!important;padding:15px 11px calc(14px + env(safe-area-inset-bottom))!important}
+  .caa-card-editor-head{margin-bottom:12px!important}.caa-card-editor-head h2{font-size:20px!important}
+  .caa-editor-layout{gap:12px!important}
+  .caa-editor-image{max-width:210px!important;border-radius:16px!important}
+  .caa-editor-photo-actions{gap:6px!important}
+  .caa-editor-footer{position:sticky;bottom:0;background:#fff;margin:12px -2px -2px!important;padding:10px 2px 2px!important}
+  .caa-editor-footer .caa-btn{min-height:42px}
+}
+@media(max-width:380px){
+  .caa-topbar .caa-btn{padding:7px!important;font-size:9px!important}
+  .caa-board-row{grid-template-columns:52px minmax(0,1fr) auto!important}
+  .caa-board-row img{width:50px!important;height:48px!important}
+}
