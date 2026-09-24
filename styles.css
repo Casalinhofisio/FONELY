@@ -132,3 +132,80 @@
 .team-permission-title{margin:14px 0 8px}.team-permission-title b,.team-permission-title span{display:block}
 .team-permission-title b{font-size:10px;color:#503d34}.team-permission-title span{margin-top:2px;font-size:8px;color:#8e7b71}
 .fteam-intro .primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+
+/* Fonely Mobile Shell V1 — padrão compacto tipo Force Anatomy */
+@media(max-width:720px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body{padding-bottom:76px}
+  .layout{display:block!important;min-height:100dvh}
+  .layout>aside{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:68px!important;z-index:90!important;padding:5px 7px calc(5px + env(safe-area-inset-bottom))!important;border:0!important;border-top:1px solid var(--line)!important;background:rgba(255,255,255,.97)!important;box-shadow:0 -8px 28px rgba(70,56,47,.08)!important;display:block!important}
+  .layout>aside .brand,.layout>aside .account{display:none!important}
+  .layout>aside nav{height:100%;display:flex!important;align-items:stretch;gap:2px!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none;padding:0!important}
+  .layout>aside nav::-webkit-scrollbar{display:none}
+  .layout>aside nav button{min-width:67px!important;flex:1 0 67px!important;padding:6px 3px!important;border-radius:12px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;text-align:center!important;font-size:9px!important;line-height:1.05!important;font-weight:800!important;color:#806d65!important}
+  .layout>aside nav button i{width:auto!important;height:20px!important;display:grid!important;place-items:center!important;font-size:17px!important;line-height:1!important;margin:0!important}
+  .layout>aside nav button em{position:absolute!important;transform:translate(22px,-17px)!important;float:none!important;font-size:5px!important;padding:2px 4px!important}
+  .layout>aside nav button.active{background:#f7ece6!important;color:var(--terra)!important}
+  .layout>main{grid-column:auto!important;width:100%!important;max-width:none!important;margin:0!important;padding:14px 12px 22px!important}
+  .layout>main>header{position:sticky;top:0;z-index:40;margin:-14px -12px 14px!important;padding:calc(10px + env(safe-area-inset-top)) 12px 10px!important;min-height:58px;align-items:center!important;background:rgba(247,238,228,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(231,219,210,.8)}
+  .layout>main>header h1{font-size:21px!important;line-height:1.05!important;margin:1px 0!important}
+  .layout>main>header .overline{font-size:7px!important}
+  .header-actions{display:flex;align-items:center;gap:6px}
+  .header-actions .primary,.header-actions .soft-btn{padding:9px 10px!important;font-size:10px!important}
+  #accountMenu{width:36px!important;height:36px!important;min-width:36px!important;padding:0!important;border-radius:12px!important}
+  .panel,.hero,.patient-head,.patient-hero,.agenda-board,.academy{border-radius:16px!important;box-shadow:none!important}
+  .panel{padding:14px!important}
+  .hello,.fhome-welcome{padding:16px!important;border-radius:16px!important;margin-bottom:12px!important}
+  .hello h2,.fhome-welcome h2{font-size:22px!important}
+  .hello p,.fhome-welcome p{font-size:11px!important}
+  .hero-grid,.bottom-grid{gap:10px!important;margin-top:10px!important}
+  .fhome-stats{grid-template-columns:1fr 1fr!important;gap:8px!important;margin-bottom:10px!important}
+  .fhome-stats article{min-height:88px!important;padding:12px!important;border-radius:14px!important}
+  .fhome-stats article b{font-size:22px!important}
+  .quick{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .quick button{min-height:105px!important;padding:14px!important;border-radius:15px!important}
+  .quick i{font-size:21px!important}.quick b{font-size:14px!important;margin:7px 0 2px!important}.quick span{font-size:10px!important}
+  .tools{gap:8px!important;margin-bottom:12px!important}
+  .tools input,.search{max-width:none!important;width:100%!important}
+  .patient-list,.rows,.record-list{gap:7px!important}
+  .patient,.row,.clinical-record,.package-card{padding:11px!important;border-radius:13px!important}
+  .patient-head,.patient-hero{padding:14px!important;gap:10px!important}
+  .patient-head h2{font-size:21px!important}
+  .big-avatar,.avatar.large{width:48px!important;height:48px!important;min-width:48px!important;font-size:18px!important}
+  .patient-stats{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(90px,1fr))!important;overflow-x:auto!important;padding-bottom:2px}
+  .patient-stats div{min-width:90px!important;padding:9px!important;border-radius:12px!important}
+  .patient-stats strong{font-size:19px!important}
+  .patient-flow,.flow{margin:10px 0!important;padding:9px 10px!important;gap:7px!important;overflow-x:auto!important;justify-content:flex-start!important;white-space:nowrap!important}
+  .patient-map,.clinical-grid{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .patient-tile,.clinical{min-height:108px!important;padding:13px!important;border-radius:15px!important}
+  .patient-tile b,.clinical b{font-size:13px!important;margin:7px 0 2px!important}
+  .clinical span{font-size:10px!important}
+  .stats,.patient-kpis,.report-grid{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .stats article,.patient-kpis>div,.report-grid>div{padding:12px!important;border-radius:13px!important}
+  .agenda-top{gap:8px!important;margin-bottom:10px!important}
+  .agenda-nav,.agenda-actions{width:100%!important}
+  .agenda-nav{justify-content:space-between!important}
+  .agenda-actions{display:grid!important;grid-template-columns:1fr!important}
+  .agenda-summary{grid-template-columns:1fr 1fr!important;gap:7px!important}
+  .agenda-summary>div{padding:10px!important;border-radius:12px!important}
+  .agenda-summary b{font-size:19px!important}
+  .agenda-board{padding:9px!important}
+  .fonely-full-calendar{overflow-x:auto!important;-webkit-overflow-scrolling:touch}
+  .fullcal-weekdays,.fullcal-grid{min-width:760px!important}
+  .month-weekdays,.month-grid{min-width:650px!important}
+  .modal{align-items:end!important;padding:0!important}
+  .modal-card{width:100%!important;max-width:none!important;max-height:91dvh!important;border-radius:22px 22px 0 0!important;padding:20px 14px calc(18px + env(safe-area-inset-bottom))!important}
+  .modal-card h2{font-size:21px!important;padding-right:35px}
+  .close{position:sticky!important;float:right!important;right:0!important;top:0!important;z-index:2}
+  .two,.appointment-detail{grid-template-columns:1fr!important}
+  .modal-actions{display:grid!important;grid-template-columns:1fr!important}
+  .modal-actions button,.modal form>.primary{width:100%!important;min-height:44px!important}
+  input,select,textarea{font-size:16px!important}
+  .segments{overflow-x:auto!important;white-space:nowrap!important}
+  .segments button{min-width:max-content!important}
+}
+@media(max-width:390px){
+  .layout>aside nav button{min-width:62px!important;flex-basis:62px!important;font-size:8px!important}
+  .patient-map,.clinical-grid,.quick{grid-template-columns:1fr!important}
+}
