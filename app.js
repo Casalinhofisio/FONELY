@@ -2,7 +2,27 @@
 'use strict';
 var app=document.getElementById('app');
 var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
-var state={page:'inicio',patient:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};
+var UI_KEY='fonely_ui_state_v2_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||KEY);
+function defaultUIState(){return {page:'inicio',patient:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};}
+function loadUIState(){
+  try{
+    var saved=JSON.parse(localStorage.getItem(UI_KEY)||'null');
+    if(!saved||typeof saved!=='object')return defaultUIState();
+    return Object.assign(defaultUIState(),saved);
+  }catch(e){return defaultUIState();}
+}
+function persistUIState(){
+  try{
+    localStorage.setItem(UI_KEY,JSON.stringify({
+      page:state.page||'inicio',
+      patient:state.patient||null,
+      agendaMode:state.agendaMode||'mes',
+      agendaDate:state.agendaDate||dateKey(new Date()),
+      financePatient:state.financePatient||null
+    }));
+  }catch(e){}
+}
+var state=loadUIState();
 var data=load();
 function blank(){return {patients:[],appointments:[],payments:[],packages:[],assessments:[],evolutions:[],reports:[],team:[]};}
 function load(){try{var d=JSON.parse(localStorage.getItem(KEY))||blank();return d;}catch(e){return blank();}}
@@ -50,7 +70,24 @@ function shell(body,title,action){
   var accountMenu='<button class="top-account" id="accountMenu" type="button" aria-label="Abrir minha conta">'+avatar+'<span class="top-account-copy"><b>'+esc(accountName)+'</b><small>'+esc(accountPlan)+'</small></span><i>⌄</i></button>';
   return '<div class="layout"><aside>'+logo()+'<nav>'+nav.filter(function(n){return canOpenPage(n[0]);}).map(function(n){return '<button data-go="'+n[0]+'" class="'+(state.page===n[0]?'active':'')+'"><i>'+n[1]+'</i>'+n[2]+'</button>';}).join('')+'<button data-go="academy"><i>✦</i>Fonely Academy <em>EM BREVE</em></button></nav></aside><main><header><div><small class="overline">FONELY</small><h1>'+esc(title||'')+'</h1></div><div class="header-actions">'+(action||'')+accountMenu+'</div></header>'+body+'</main></div>';
 }
-function render(){if(!canOpenPage(state.page))state.page='inicio';var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;app.innerHTML=fn();bind();}
+function render(){
+  if(!canOpenPage(state.page))state.page='inicio';
+  if(state.patient){
+    var openPatient=patient(state.patient);
+    if(openPatient&&canAccess('patients')){
+      persistUIState();
+      app.innerHTML=patientView(openPatient);
+      bind();
+      return;
+    }
+    state.patient=null;
+  }
+  var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;
+  persistUIState();
+  app.innerHTML=fn();
+  bind();
+}
+function rerenderCurrentView(){persistUIState();render();}
 function patient(pid){return data.patients.find(function(x){return x.id===pid;});}
 function patientName(pid){var p=patient(pid);return p?p.name:'Paciente';}
 function activePackage(pid){return data.packages.filter(function(p){return p.patientId===pid&&p.status!=='Encerrado'&&Number(p.used||0)<Number(p.sessions||0);}).sort(function(a,b){return (b.startDate||'').localeCompare(a.startDate||'');})[0]||null;}
@@ -138,7 +175,7 @@ function newAppointment(preselected,presetDate){
   var pid=preselected||data.patients[0].id;
   modal('<small class="overline">AGENDA</small><h2>Novo agendamento</h2><form id="appointmentForm"><label>Paciente<select name="patientId" id="appointmentPatient">'+patientOptions(pid)+'</select></label><div class="two"><label>Data<input type="date" name="date" value="'+esc(presetDate||today())+'" required></label><label>Horário<input type="time" name="time" required></label></div><div class="three fappointment-three"><label>Tipo<select name="type"><option>Atendimento</option><option>Avaliação</option><option>Reavaliação</option><option>Triagem</option><option>Orientação familiar</option><option>CAA / comunicação</option></select></label><label>Modalidade<select name="mode"><option>Presencial</option><option>Online</option><option>Domiciliar</option></select></label><label>Duração<select name="duration"><option value="30">30 min</option><option value="40">40 min</option><option value="50" selected>50 min</option><option value="60">60 min</option><option value="90">90 min</option></select></label></div><label>Pacote / forma<select name="packageId" id="appointmentPackage">'+packageOptions(pid,'')+'</select></label><div class="two"><label>Repetição<select name="repeat"><option value="1">Somente este atendimento</option><option value="4">Semanal · 4 sessões</option><option value="8">Semanal · 8 sessões</option><option value="10">Semanal · 10 sessões</option><option value="12">Semanal · 12 sessões</option></select></label><label>Status inicial<select name="status"><option>Agendado</option><option>Confirmado</option></select></label></div><label>Observações<textarea name="notes" placeholder="Objetivo do horário, orientações ou observações importantes"></textarea></label><button class="primary">Salvar agendamento</button></form>');
   document.getElementById('appointmentPatient').onchange=function(){document.getElementById('appointmentPackage').innerHTML=packageOptions(this.value,'');};
-  document.getElementById('appointmentForm').onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target),count=Number(fd.get('repeat')||1),start=parseDate(fd.get('date')),series=count>1?'series-'+Date.now():null;for(var n=0;n<count;n++){var d=new Date(start);d.setDate(d.getDate()+(n*7));data.appointments.push({id:id(),patientId:fd.get('patientId'),date:dateKey(d),time:fd.get('time'),type:fd.get('type'),mode:fd.get('mode'),duration:Number(fd.get('duration')||50),packageId:fd.get('packageId')||null,notes:fd.get('notes'),status:fd.get('status')||'Agendado',seriesId:series});}syncPackages();save();document.getElementById('modal').remove();state.page='agenda';state.agendaDate=fd.get('date');render();};
+  document.getElementById('appointmentForm').onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target),count=Number(fd.get('repeat')||1),start=parseDate(fd.get('date')),series=count>1?'series-'+Date.now():null;for(var n=0;n<count;n++){var d=new Date(start);d.setDate(d.getDate()+(n*7));data.appointments.push({id:id(),patientId:fd.get('patientId'),date:dateKey(d),time:fd.get('time'),type:fd.get('type'),mode:fd.get('mode'),duration:Number(fd.get('duration')||50),packageId:fd.get('packageId')||null,notes:fd.get('notes'),status:fd.get('status')||'Agendado',seriesId:series});}syncPackages();save();document.getElementById('modal').remove();if(state.page==='agenda'&&!state.patient)state.agendaDate=fd.get('date');rerenderCurrentView();};
 }
 function appointmentDetails(a){
   var pkg=a.packageId?data.packages.find(function(p){return p.id===a.packageId;}):null;
@@ -154,7 +191,7 @@ function editAppointment(a){
   document.getElementById('editAppointmentForm').onsubmit=function(e){e.preventDefault();var fd=new FormData(e.target);a.patientId=fd.get('patientId');a.date=fd.get('date');a.time=fd.get('time');a.type=fd.get('type');a.mode=fd.get('mode');a.duration=Number(fd.get('duration')||50);a.packageId=fd.get('packageId')||null;a.notes=fd.get('notes');syncPackages();save();document.getElementById('modal').remove();render();};
 }
 function sel(a,b){return a===b?'selected':'';}
-function newPatient(fromAgenda){modal('<small class="overline">NOVO CADASTRO</small><h2>Novo paciente</h2><form id="patientForm"><label>Nome completo<input name="name" required></label><div class="two"><label>Data de nascimento<input type="date" name="birth"></label><label>Telefone<input name="phone"></label></div><div class="two"><label>Responsável<input name="guardian"></label><label>Área principal<select name="area"><option>Linguagem</option><option>Fala / Fonologia</option><option>Voz</option><option>Fluência</option><option>Motricidade Orofacial</option><option>Disfagia</option><option>Audiologia</option><option>Outra</option></select></label></div><label>Queixa principal<textarea name="complaint"></textarea></label><button class="primary">Cadastrar paciente</button></form>');document.getElementById('patientForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),p={id:id(),name:f.get('name'),birth:f.get('birth'),phone:f.get('phone'),guardian:f.get('guardian'),area:f.get('area'),complaint:f.get('complaint'),anamnesis:{},documents:[]};data.patients.push(p);save();document.getElementById('modal').remove();if(fromAgenda)newAppointment(p.id,state.agendaDate);else{state.patient=p.id;app.innerHTML=patientView(p);bind();}};}
+function newPatient(fromAgenda){modal('<small class="overline">NOVO CADASTRO</small><h2>Novo paciente</h2><form id="patientForm"><label>Nome completo<input name="name" required></label><div class="two"><label>Data de nascimento<input type="date" name="birth"></label><label>Telefone<input name="phone"></label></div><div class="two"><label>Responsável<input name="guardian"></label><label>Área principal<select name="area"><option>Linguagem</option><option>Fala / Fonologia</option><option>Voz</option><option>Fluência</option><option>Motricidade Orofacial</option><option>Disfagia</option><option>Audiologia</option><option>Outra</option></select></label></div><label>Queixa principal<textarea name="complaint"></textarea></label><button class="primary">Cadastrar paciente</button></form>');document.getElementById('patientForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),p={id:id(),name:f.get('name'),birth:f.get('birth'),phone:f.get('phone'),guardian:f.get('guardian'),area:f.get('area'),complaint:f.get('complaint'),anamnesis:{},documents:[]};data.patients.push(p);save();document.getElementById('modal').remove();if(fromAgenda)newAppointment(p.id,state.agendaDate);else rerenderCurrentView();};}
 function anamnesis(p){var a=p.anamnesis||{};modal('<small class="overline">PRONTUÁRIO CLÍNICO</small><h2>Anamnese · '+esc(p.name)+'</h2><form id="anamForm"><label>Queixa principal<textarea name="complaint">'+esc(a.complaint||p.complaint||'')+'</textarea></label><label>Gestação, nascimento e desenvolvimento<textarea name="development">'+esc(a.development||'')+'</textarea></label><label>Comunicação, fala e linguagem<textarea name="communication">'+esc(a.communication||'')+'</textarea></label><div class="two"><label>Alimentação / funções orais<textarea name="feeding">'+esc(a.feeding||'')+'</textarea></label><label>Audição / voz<textarea name="hearingVoice">'+esc(a.hearingVoice||'')+'</textarea></label></div><label>Histórico médico / medicamentos / acompanhamentos<textarea name="medical">'+esc(a.medical||'')+'</textarea></label><label>Escola, comportamento, rotina e observações<textarea name="other">'+esc(a.other||'')+'</textarea></label><button class="primary">Salvar anamnese</button></form>');document.getElementById('anamForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);p.anamnesis={complaint:f.get('complaint'),development:f.get('development'),communication:f.get('communication'),feeding:f.get('feeding'),hearingVoice:f.get('hearingVoice'),medical:f.get('medical'),other:f.get('other'),updatedAt:today()};p.complaint=f.get('complaint');save();document.getElementById('modal').remove();app.innerHTML=patientView(p);bind();};}
 function assessmentsPage(){return clinicalListing('Avaliações','assessment');}
 function evolutionsPage(){return clinicalListing('Evoluções','evolution');}
@@ -251,7 +288,7 @@ function finance(){
   (payments.length?'<div class="record-list">'+payments.map(function(p){return '<div class="clinical-record"><div><b>'+esc(patientName(p.patientId))+' · '+money(p.value)+'</b><small>'+shortDate(p.date)+' · '+esc(p.method||'Não informado')+'</small><p>'+esc(p.description||'Pagamento')+'</p></div><mark class="status-'+slug(p.status)+'">'+esc(p.status||'Pago')+'</mark></div>';}).join('')+'</div>':'<div class="empty">Nenhum pagamento lançado.</div>')+'</article>';
   return shell(body,'Financeiro','');
 }
-function packageForm(pid){if(!data.patients.length){alert('Cadastre um paciente primeiro.');return;}pid=pid||state.financePatient||data.patients[0].id;modal('<small class="overline">PACOTE</small><h2>Novo pacote</h2><form id="packageForm"><label>Paciente<select name="patientId">'+patientOptions(pid)+'</select></label><div class="two"><label>Nome do pacote<input name="name" placeholder="Ex.: Pacote mensal" required></label><label>Número de sessões<input type="number" min="1" name="sessions" value="4" required></label></div><div class="two"><label>Valor total<input type="number" step="0.01" min="0" name="value" required></label><label>Data de início<input type="date" name="startDate" value="'+today()+'"></label></div><label>Pagamento inicial<select name="paymentStatus"><option>Pago</option><option>Pendente</option></select></label><button class="primary">Criar pacote</button></form>');document.getElementById('packageForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),pkg={id:id(),patientId:f.get('patientId'),name:f.get('name'),sessions:Number(f.get('sessions')),used:0,value:Number(f.get('value')),startDate:f.get('startDate'),status:'Ativo'};data.packages.push(pkg);data.payments.push({id:id(),patientId:pkg.patientId,packageId:pkg.id,value:pkg.value,date:pkg.startDate,method:'Pacote',description:'Pacote '+pkg.name,status:f.get('paymentStatus')});save();document.getElementById('modal').remove();state.page='financeiro';render();};}
+function packageForm(pid){if(!data.patients.length){alert('Cadastre um paciente primeiro.');return;}pid=pid||state.financePatient||data.patients[0].id;modal('<small class="overline">PACOTE</small><h2>Novo pacote</h2><form id="packageForm"><label>Paciente<select name="patientId">'+patientOptions(pid)+'</select></label><div class="two"><label>Nome do pacote<input name="name" placeholder="Ex.: Pacote mensal" required></label><label>Número de sessões<input type="number" min="1" name="sessions" value="4" required></label></div><div class="two"><label>Valor total<input type="number" step="0.01" min="0" name="value" required></label><label>Data de início<input type="date" name="startDate" value="'+today()+'"></label></div><label>Pagamento inicial<select name="paymentStatus"><option>Pago</option><option>Pendente</option></select></label><button class="primary">Criar pacote</button></form>');document.getElementById('packageForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),pkg={id:id(),patientId:f.get('patientId'),name:f.get('name'),sessions:Number(f.get('sessions')),used:0,value:Number(f.get('value')),startDate:f.get('startDate'),status:'Ativo'};data.packages.push(pkg);data.payments.push({id:id(),patientId:pkg.patientId,packageId:pkg.id,value:pkg.value,date:pkg.startDate,method:'Pacote',description:'Pacote '+pkg.name,status:f.get('paymentStatus')});save();document.getElementById('modal').remove();rerenderCurrentView();};}
 function paymentForm(pid){if(!data.patients.length){alert('Cadastre um paciente primeiro.');return;}pid=pid||state.financePatient||data.patients[0].id;modal('<small class="overline">FINANCEIRO</small><h2>Novo pagamento</h2><form id="paymentForm"><label>Paciente<select name="patientId">'+patientOptions(pid)+'</select></label><div class="two"><label>Valor<input type="number" step="0.01" min="0" name="value" required></label><label>Data<input type="date" name="date" value="'+today()+'"></label></div><div class="two"><label>Forma<select name="method"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Convênio</option><option>Outro</option></select></label><label>Status<select name="status"><option>Pago</option><option>Pendente</option></select></label></div><label>Descrição<input name="description" placeholder="Ex.: sessão avulsa"></label><button class="primary">Salvar pagamento</button></form>');document.getElementById('paymentForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);data.payments.push({id:id(),patientId:f.get('patientId'),value:Number(f.get('value')),date:f.get('date'),method:f.get('method'),status:f.get('status'),description:f.get('description')});save();document.getElementById('modal').remove();state.page='financeiro';render();};}
 function financePatient(p){state.financePatient=p.id;state.page='financeiro';document.getElementById('modal')&&document.getElementById('modal').remove();render();}
 function reportsPage(){
@@ -405,6 +442,7 @@ function bind(){
   var accountButton=document.getElementById('accountMenu');
   if(accountButton&&window.FonelyAccountUI){accountButton.onclick=function(){window.FonelyAccountUI.open();};}
   bindDocActions();
+  persistUIState();
 }
 syncPackages();save();render();
 })();
