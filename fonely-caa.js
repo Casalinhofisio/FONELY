@@ -45,12 +45,16 @@ async function syncPublishedBoard(p){
   var ownerId=c.workspaceOwnerId||window.FONELY_WORKSPACE_OWNER_ID||(c.user&&c.user.id);
   if(!ownerId)throw new Error('Conta não identificada');
   var row={token:p.token,owner_id:ownerId,patient_id:String(p.patientId||''),enabled:!!p.enabled,snapshot:p.published,published_at:p.published.publishedAt||new Date().toISOString(),updated_at:new Date().toISOString()};
-  var op=sb.from('caa_public_boards').upsert(row,{onConflict:'token'}).select('token,updated_at').single();
-  var timeout=new Promise(function(_,reject){setTimeout(function(){reject(new Error('Tempo esgotado'));},9000);});
-  var r=await Promise.race([op,timeout]);
-  if(r.error)throw r.error;
-  if(!r.data||r.data.token!==p.token)throw new Error('Publicação não confirmada');
-  return r.data;
+  var session=await sb.auth.getSession(),jwt=session.data&&session.data.session&&session.data.session.access_token;
+  if(!jwt)throw new Error('Sessão expirada');
+  var ctrl=new AbortController(),timer=setTimeout(function(){ctrl.abort();},6500);
+  try{
+    var res=await fetch('https://apjmkstuffzgfhgcxhvt.supabase.co/functions/v1/caa-publish-board',{method:'POST',signal:ctrl.signal,headers:{'Content-Type':'application/json','Authorization':'Bearer '+jwt,'apikey':window.FONELY_SUPABASE_ANON_KEY||''},body:JSON.stringify({row:row})});
+    var data=await res.json().catch(function(){return {};});
+    if(!res.ok||!data.ok)throw new Error(data.error||'Falha ao publicar');
+    if(data.token&&data.token!==p.token)p=updateProfile(p.patientId,function(x){x.token=data.token;});
+    return data;
+  }finally{clearTimeout(timer);}
 }
 function plan(){return localStorage.getItem(PLAN_KEY)||window.FONELY_PLAN_TIER||'base';}
 function isPro(){return plan()==='pro';}
