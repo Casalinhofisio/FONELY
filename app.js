@@ -4,12 +4,32 @@ var app=document.getElementById('app');
 var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
 var UI_KEY='fonely_ui_state_v2_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||KEY);
 function defaultUIState(){return {page:'inicio',patient:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};}
+function routeFromURL(){
+  try{
+    var q=new URLSearchParams(location.search),out={};
+    if(q.get('view'))out.page=q.get('view');
+    if(q.get('patient'))out.patient=q.get('patient');
+    if(q.get('agenda'))out.agendaDate=q.get('agenda');
+    if(q.get('financePatient'))out.financePatient=q.get('financePatient');
+    return out;
+  }catch(e){return {};}
+}
 function loadUIState(){
   try{
     var saved=JSON.parse(localStorage.getItem(UI_KEY)||'null');
-    if(!saved||typeof saved!=='object')return defaultUIState();
-    return Object.assign(defaultUIState(),saved);
-  }catch(e){return defaultUIState();}
+    var base=saved&&typeof saved==='object'?Object.assign(defaultUIState(),saved):defaultUIState();
+    return Object.assign(base,routeFromURL());
+  }catch(e){return Object.assign(defaultUIState(),routeFromURL());}
+}
+function syncRouteURL(){
+  try{
+    var u=new URL(location.href),q=u.searchParams;
+    q.set('view',state.page||'inicio');
+    if(state.patient)q.set('patient',state.patient);else q.delete('patient');
+    if(state.page==='agenda'&&state.agendaDate)q.set('agenda',state.agendaDate);else q.delete('agenda');
+    if(state.page==='financeiro'&&state.financePatient)q.set('financePatient',state.financePatient);else q.delete('financePatient');
+    history.replaceState(history.state||{},document.title,u.pathname+(q.toString()?'?'+q.toString():'')+u.hash);
+  }catch(e){}
 }
 function persistUIState(){
   try{
@@ -21,6 +41,7 @@ function persistUIState(){
       financePatient:state.financePatient||null
     }));
   }catch(e){}
+  syncRouteURL();
 }
 var state=loadUIState();
 var data=load();
@@ -413,7 +434,7 @@ function choosePatientFor(kind){if(!data.patients.length){newPatient(false);retu
 function choosePatientForDocument(){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">DOCUMENTO</small><h2>Selecionar paciente</h2><label>Paciente<select id="chooseDocPatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmDocPatient">Continuar</button>');document.getElementById('confirmDocPatient').onclick=function(){documentForm(document.getElementById('chooseDocPatient').value);};}
 function bind(){
   document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
-  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
+  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
   document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);if(area==='fin'&&canAccess('finance'))financePatient(p);if(area==='reports'&&canAccess('reports')){state.page='relatorios';render();}};});
   document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
   document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){if(canAccess('agenda'))dayModal(b.getAttribute('data-day'));};});
@@ -426,7 +447,7 @@ function bind(){
   var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){if(!canAccess('assessments'))return;if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(state.patient);else assessmentForm(state.patient);};
   var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){if(canAccess('evolutions'))evolutionForm(state.patient);};
   var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){if(canAccess('documents'))documentForm(state.patient);};
-  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.patient=b.getAttribute('data-patient');var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
+  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
   var prev=document.getElementById('agendaPrev'),next=document.getElementById('agendaNext'),at=document.getElementById('agendaToday');
   if(prev)prev.onclick=function(){var d=parseDate(state.agendaDate);d.setMonth(d.getMonth()-1);state.agendaDate=dateKey(d);render();};
   if(next)next.onclick=function(){var d2=parseDate(state.agendaDate);d2.setMonth(d2.getMonth()+1);state.agendaDate=dateKey(d2);render();};
@@ -444,5 +465,37 @@ function bind(){
   bindDocActions();
   persistUIState();
 }
+window.FonelyAppUI={
+  refresh:function(opts){
+    opts=opts||{};
+    data=load();
+    ['patients','appointments','payments','packages','assessments','evolutions','reports','team'].forEach(function(k){if(!Array.isArray(data[k]))data[k]=[];});
+    data.patients.forEach(function(p){if(!Array.isArray(p.documents))p.documents=[];if(!p.anamnesis)p.anamnesis={};});
+    if(opts.page){
+      state.page=opts.page;
+      if(opts.page==='financeiro'){
+        state.patient=null;
+        if(opts.patientId)state.financePatient=opts.patientId;
+      }else if(opts.page==='pacientes'){
+        state.patient=opts.patientId||null;
+      }else{
+        state.patient=null;
+      }
+    }
+    persistUIState();
+    render();
+    if(opts.open){
+      setTimeout(function(){
+        var q=document.querySelector('[data-parea="'+opts.open+'"]');
+        if(q)q.click();
+      },40);
+    }
+  },
+  current:function(){return Object.assign({},state);}
+};
+window.addEventListener('popstate',function(){
+  state=loadUIState();
+  render();
+});
 syncPackages();save();render();
 })();
