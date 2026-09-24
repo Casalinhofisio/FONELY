@@ -9,6 +9,22 @@ var state={category:'Todas',volumeOverride:null,board:null,offline:false,install
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function cached(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'null');}catch(e){return null;}}
 function cacheBoard(board){try{localStorage.setItem(CACHE_KEY,JSON.stringify(board));}catch(e){}}
+function cacheAACImages(board){
+  try{
+    var cards=board&&board.snapshot&&board.snapshot.cards||[];
+    if(!('caches' in window)||!cards.length)return;
+    caches.open('fonely-caa-images-v1').then(function(cache){
+      cards.forEach(function(c){
+        var url=String(c&&c.image||'');
+        if(!/^https:\/\//i.test(url))return;
+        cache.match(url).then(function(hit){
+          if(hit)return;
+          fetch(url,{mode:'no-cors',cache:'force-cache'}).then(function(resp){cache.put(url,resp).catch(function(){});}).catch(function(){});
+        });
+      });
+    }).catch(function(){});
+  }catch(e){}
+}
 function logEvent(event){try{var a=JSON.parse(localStorage.getItem(USAGE_KEY)||'[]');a.push(Object.assign({at:new Date().toISOString()},event));if(a.length>2000)a=a.slice(-2000);localStorage.setItem(USAGE_KEY,JSON.stringify(a));}catch(e){}}
 function settings(snap){var s=Object.assign({},snap&&snap.settings||{});s.speakOnTap=true;s.addToPhrase=false;if(state.volumeOverride!=null)s.volume=state.volumeOverride;return s;}
 function unavailable(title,text){document.body.innerHTML='<main class="cp-status"><div><h1>'+esc(title)+'</h1><p>'+esc(text)+'</p></div></main>';}
@@ -39,6 +55,7 @@ async function fetchBoard(){
     var d=await r.json().catch(function(){return {};});
     if(!r.ok||!d.board)throw new Error(d.error||'Prancha indisponível');
     cacheBoard(d.board);
+    cacheAACImages(d.board);
     state.board=d.board;state.offline=false;
     return d.board;
   }finally{clearTimeout(timer);}
@@ -52,7 +69,7 @@ function render(){
     var fresh=window.FonelyCAALibrary&&window.FonelyCAALibrary.byId(c.id);
     return fresh?Object.assign({},c,{image:fresh.image,color:fresh.color}):c;
   }),cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),shown=state.category==='Todas'?cards:cards.filter(function(c){return c.category===state.category;}),baseVol=snap.settings&&snap.settings.volume;if(baseVol==null)baseVol=.9;var vol=Math.round((state.volumeOverride==null?baseVol:state.volumeOverride)*100),cols=Number((snap.settings||{}).columns||4);
-  document.body.innerHTML='<main class="cp-shell"><header class="cp-top"><div><div class="cp-brand">Fonely <span>CAA</span></div><small>Toque em um cartão para falar</small></div><div class="cp-spacer"></div>'+installButton()+networkBadge()+'<label class="cp-volume"><span>Volume</span><input id="cpVolume" type="range" min="0" max="100" value="'+vol+'"></label></header><nav class="cp-cats">'+cats.map(function(c){return '<button class="cp-cat '+(c===state.category?'active':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</nav><section class="cp-board" style="--cols:'+cols+'">'+shown.map(function(c){return '<button class="cp-card" data-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><div class="cp-card-copy"><b>'+esc(c.label)+'</b><span>'+esc(c.speech||c.label)+'</span></div></button>';}).join('')+'</section><div id="cpSpoken" class="cp-spoken" aria-live="polite"></div></main>';
+  document.body.innerHTML='<main class="cp-shell"><header class="cp-top"><div><div class="cp-brand">Fonely <span>CAA</span></div><small>Toque em um cartão para falar</small></div><div class="cp-spacer"></div>'+installButton()+networkBadge()+'<label class="cp-volume"><span>Volume</span><input id="cpVolume" type="range" min="0" max="100" value="'+vol+'"></label></header><nav class="cp-cats">'+cats.map(function(c){return '<button class="cp-cat '+(c===state.category?'active':'')+'" data-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</nav><section class="cp-board" style="--cols:'+cols+'">'+shown.map(function(c){return '<button class="cp-card" data-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><div class="cp-card-copy"><b>'+esc(c.label)+'</b><span>'+esc(c.speech||c.label)+'</span></div></button>';}).join('')+'</section><footer class="cp-symbol-credit">Pictogramas padrão: <a href="https://mulberrysymbols.org/" target="_blank" rel="noopener">Mulberry Symbols</a> · CC BY-SA 4.0</footer><div id="cpSpoken" class="cp-spoken" aria-live="polite"></div></main>';
   bind(cards,snap);
 }
 function bind(cards,snap){
