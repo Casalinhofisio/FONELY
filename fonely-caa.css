@@ -91,3 +91,7 @@
 .caa-symbol-credit{padding:16px 4px 8px;color:var(--caa-muted);font-size:10px;text-align:center}
 .caa-symbol-credit a{color:var(--caa-ink);font-weight:900;text-decoration:none}
 .caa-lib-card img,.caa-comm-card img,.caa-board-row img{background:#fff!important;object-fit:contain!important;padding:8px}
+
+.caa-publish-success{display:flex;flex-direction:column;gap:4px;padding:14px 16px;margin-bottom:14px;border:1px solid #cfe7d5;background:#f1faf3;border-radius:14px;color:#355b3f}
+.caa-publish-success b{font-weight:900}.caa-publish-success span{font-size:12px;line-height:1.45}
+[data-caa-publish]:disabled{opacity:.72;cursor:wait}
