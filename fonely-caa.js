@@ -44,13 +44,10 @@ async function syncPublishedBoard(p){
   var c=cloud(),sb=c.supabase;if(!sb||!p||!p.published)throw new Error('Nuvem indisponível');
   var ownerId=c.workspaceOwnerId||window.FONELY_WORKSPACE_OWNER_ID||(c.user&&c.user.id);
   if(!ownerId)throw new Error('Conta não identificada');
-  var existing=await sb.from('caa_public_boards').select('token').eq('owner_id',ownerId).eq('patient_id',String(p.patientId||'')).eq('enabled',true).order('updated_at',{ascending:false}).limit(1).maybeSingle();
-  if(!existing.error&&existing.data&&existing.data.token&&existing.data.token!==p.token){
-    var stableToken=existing.data.token;
-    p=updateProfile(p.patientId,function(x){x.token=stableToken;});
-  }
   var row={token:p.token,owner_id:ownerId,patient_id:String(p.patientId||''),enabled:!!p.enabled,snapshot:p.published,published_at:p.published.publishedAt||new Date().toISOString(),updated_at:new Date().toISOString()};
-  var r=await sb.from('caa_public_boards').upsert(row,{onConflict:'token'}).select('token,updated_at,snapshot').single();
+  var op=sb.from('caa_public_boards').upsert(row,{onConflict:'token'}).select('token,updated_at').single();
+  var timeout=new Promise(function(_,reject){setTimeout(function(){reject(new Error('Tempo esgotado'));},9000);});
+  var r=await Promise.race([op,timeout]);
   if(r.error)throw r.error;
   if(!r.data||r.data.token!==p.token)throw new Error('Publicação não confirmada');
   return r.data;
@@ -167,7 +164,7 @@ function renderUsage(p){
 }
 function renderShare(p){
   var url=shareUrl(p);
-  return '<section class="caa-panel"><h3>Compartilhar com o paciente</h3><p>O link abre somente a prancha publicada. O paciente não acessa o Fonely profissional.</p><div class="caa-share">'+(p.published?'<div class="caa-linkbox"><input id="caaShareLink" readonly value="'+esc(url)+'"><button class="caa-btn primary" data-copy-link>Copiar link</button><a class="caa-btn" href="'+esc(url)+'" target="_blank">Abrir prancha</a></div>':'<div class="caa-locked"><h3>Publique a prancha primeiro</h3><p>Depois da primeira publicação, o link será liberado e continuará o mesmo nas próximas atualizações.</p></div>')+'<div><button class="caa-btn '+(p.enabled?'danger':'primary')+'" data-toggle-enabled>'+(p.enabled?'Desativar CAA':'Reativar CAA')+'</button></div></div></section>';
+  return '<section class="caa-panel"><h3>Compartilhar com o paciente</h3><p>O link abre somente a prancha publicada. O paciente não acessa o Fonely profissional.</p><div class="caa-share">'+(p.published?'<div class="caa-linkbox"><input id="caaShareLink" readonly value="'+esc(url)+'"><button class="caa-btn primary" data-copy-link>Copiar link novamente</button><button class="caa-btn" data-share-link>Compartilhar link</button><a class="caa-btn" href="'+esc(url)+'" target="_blank">Abrir prancha</a></div><small class="caa-link-help">Este link é permanente. Atualizar a prancha não troca o endereço da criança.</small>':'<div class="caa-locked"><h3>Publique a prancha primeiro</h3><p>Depois da primeira publicação, o link será liberado e continuará o mesmo nas próximas atualizações.</p></div>')+'<div><button class="caa-btn '+(p.enabled?'danger':'primary')+'" data-toggle-enabled>'+(p.enabled?'Desativar CAA':'Reativar CAA')+'</button></div></div></section>';
 }
 function communicatorHTML(p,snapshot,preview){
   var cards=snapshot.cards||[],cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),cat=preview?manager.previewCategory:'Todas',shown=cat==='Todas'?cards:cards.filter(function(c){return c.category===cat}),cols=Number((snapshot.settings||{}).columns||4);
@@ -303,7 +300,8 @@ function bindManager(w,p){
     var pc=e.target.closest('[data-preview-card]');if(pc){var c=cardById(profile(manager.patientId),pc.getAttribute('data-preview-card'));if(c){pc.classList.add('is-speaking');setTimeout(function(){pc.classList.remove('is-speaking');},350);var pr=profile(manager.patientId);if(window.FonelyCAASpeech)window.FonelyCAASpeech.speakCard(c,pr.settings);}return;}
     var cat=e.target.closest('[data-preview-cat]');if(cat){manager.previewCategory=cat.getAttribute('data-preview-cat');renderManager();return;}
     if(e.target.closest('[data-test-voice]')){window.FonelyCAASpeech&&window.FonelyCAASpeech.speak('Olá. Esta é a voz selecionada para o Fonely CAA.',profile(manager.patientId).settings);return;}
-    if(e.target.closest('[data-copy-link]')){var inp=w.querySelector('#caaShareLink');if(inp){navigator.clipboard&&navigator.clipboard.writeText(inp.value);e.target.textContent='Copiado ✓';}return;}
+    if(e.target.closest('[data-copy-link]')){var inp=w.querySelector('#caaShareLink');if(inp){if(navigator.clipboard)navigator.clipboard.writeText(inp.value);else{inp.select();document.execCommand('copy');}e.target.textContent='Copiado ✓';}return;}
+    if(e.target.closest('[data-share-link]')){var link=w.querySelector('#caaShareLink');if(link){if(navigator.share)navigator.share({title:'Fonely CAA',text:'Prancha de comunicação',url:link.value}).catch(function(){});else if(navigator.clipboard){navigator.clipboard.writeText(link.value);e.target.textContent='Link copiado ✓';}}return;}
     if(e.target.closest('[data-toggle-enabled]')){var changed=updateProfile(manager.patientId,function(x){x.enabled=!x.enabled;});if(changed&&changed.published)syncPublishedBoard(changed).catch(function(){});renderManager();return;}
     if(e.target.closest('[data-record-audio]')){toggleRecording();return;}
   };
