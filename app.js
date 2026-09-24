@@ -465,6 +465,34 @@ function bind(){
   bindDocActions();
   persistUIState();
 }
+window.FonelyAppUI={
+  refresh:function(opts){
+    opts=opts||{};
+    data=load();
+    ['patients','appointments','payments','packages','assessments','evolutions','reports','team'].forEach(function(k){if(!Array.isArray(data[k]))data[k]=[];});
+    data.patients.forEach(function(p){if(!Array.isArray(p.documents))p.documents=[];if(!p.anamnesis)p.anamnesis={};});
+    if(opts.page){
+      state.page=opts.page;
+      if(opts.page==='financeiro'){
+        state.patient=null;
+        if(opts.patientId)state.financePatient=opts.patientId;
+      }else if(opts.page==='pacientes'){
+        state.patient=opts.patientId||null;
+      }else{
+        state.patient=null;
+      }
+    }
+    persistUIState();
+    render();
+    if(opts.open){
+      setTimeout(function(){
+        var q=document.querySelector('[data-parea="'+opts.open+'"]');
+        if(q)q.click();
+      },40);
+    }
+  },
+  current:function(){return Object.assign({},state);}
+};
 window.addEventListener('popstate',function(){
   state=loadUIState();
   render();
