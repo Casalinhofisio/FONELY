@@ -44,6 +44,11 @@ async function syncPublishedBoard(p){
   var c=cloud(),sb=c.supabase;if(!sb||!p||!p.published)throw new Error('Nuvem indisponível');
   var ownerId=c.workspaceOwnerId||window.FONELY_WORKSPACE_OWNER_ID||(c.user&&c.user.id);
   if(!ownerId)throw new Error('Conta não identificada');
+  var existing=await sb.from('caa_public_boards').select('token').eq('owner_id',ownerId).eq('patient_id',String(p.patientId||'')).eq('enabled',true).order('updated_at',{ascending:false}).limit(1).maybeSingle();
+  if(!existing.error&&existing.data&&existing.data.token&&existing.data.token!==p.token){
+    var stableToken=existing.data.token;
+    p=updateProfile(p.patientId,function(x){x.token=stableToken;});
+  }
   var row={token:p.token,owner_id:ownerId,patient_id:String(p.patientId||''),enabled:!!p.enabled,snapshot:p.published,published_at:p.published.publishedAt||new Date().toISOString(),updated_at:new Date().toISOString()};
   var r=await sb.from('caa_public_boards').upsert(row,{onConflict:'token'}).select('token,updated_at,snapshot').single();
   if(r.error)throw r.error;
