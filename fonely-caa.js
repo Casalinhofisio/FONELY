@@ -1,7 +1,11 @@
 (function(){
 'use strict';
 var APP_KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1',CAA_KEY=window.FONELY_CAA_KEY||'fonely_caa_v1',PLAN_KEY=window.FONELY_PLAN_KEY||'fonely_plan_v1';
-var manager={patientId:null,tab:'board',search:'',category:'Todas',previewCategory:'Todas',customImage:null,customAudio:null,recording:false,recorder:null,chunks:[],draggingId:null};
+var CAA_UI_KEY='fonely_caa_ui_v1_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||CAA_KEY);
+var manager={patientId:null,tab:'board',search:'',category:'Todas',previewCategory:'Todas',customImage:null,customAudio:null,recording:false,recorder:null,chunks:[],draggingId:null,restoring:false};
+function loadCAAUI(){try{return JSON.parse(localStorage.getItem(CAA_UI_KEY)||'null');}catch(e){return null;}}
+function saveCAAUI(mode){try{localStorage.setItem(CAA_UI_KEY,JSON.stringify({open:true,mode:mode||'manager',patientId:manager.patientId||null,tab:manager.tab||'board'}));}catch(e){}}
+function clearCAAUI(){try{localStorage.removeItem(CAA_UI_KEY);}catch(e){}}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function id(){return (crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);}
 function token(){var a=new Uint8Array(18);if(crypto&&crypto.getRandomValues)crypto.getRandomValues(a);else for(var i=0;i<a.length;i++)a[i]=Math.floor(Math.random()*256);return Array.from(a).map(function(x){return x.toString(16).padStart(2,'0');}).join('');}
@@ -56,26 +60,36 @@ function inject(){
   if(nav&&active&&!nav.querySelector('[data-caa-menu]')){
     var n=document.createElement('button');n.setAttribute('data-caa-menu','1');n.innerHTML='<i>◉</i>Fonely CAA <em>PRO</em>';n.onclick=openCAAList;nav.insertBefore(n,nav.lastElementChild||null);
   }
+  var remembered=loadCAAUI();
+  if(!manager.restoring&&remembered&&remembered.open&&!document.getElementById('fonelyCAAOverlay')){
+    if(remembered.mode==='manager'&&p&&remembered.patientId===p.id&&profile(p.id)){
+      manager.restoring=true;
+      setTimeout(function(){manager.restoring=false;if(!document.getElementById('fonelyCAAOverlay'))openManager(p.id,true);},0);
+    }else if(remembered.mode==='list'&&nav&&active){
+      manager.restoring=true;
+      setTimeout(function(){manager.restoring=false;if(!document.getElementById('fonelyCAAOverlay'))openCAAList(true);},0);
+    }
+  }
 }
 function openLocked(pid){
   var p=patient(pid),w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';
   w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA</h2><p>'+esc(p&&p.name||'Paciente')+'</p></div><span class="caa-pro-badge">PRO</span></div><div class="caa-panel" style="margin-top:18px"><div class="caa-locked"><h3>Recurso exclusivo do Fonely Pro</h3><p>O CAA fica disponível apenas para contas Pro. Nenhum dado do paciente é alterado enquanto o recurso estiver bloqueado.</p></div></div></div>';
   document.body.appendChild(w);w.querySelector('[data-caa-close]').onclick=function(){w.remove();};
 }
-function openCAAList(){
+function openCAAList(restoring){saveCAAUI('list');
   if(!canUseCAA())return;
   var d=caaData(),aps=appData(),rows=Object.keys(d.profiles).filter(function(k){return d.profiles[k].enabled;}).map(function(k){var p=(aps.patients||[]).find(function(x){return x.id===k}),pr=d.profiles[k];return p?'<button class="patient" data-open-caa="'+esc(k)+'"><div class="avatar">'+esc((p.name||'?').charAt(0))+'</div><div><b>'+esc(p.name)+'</b><span>'+(pr.published?'Prancha publicada · '+(pr.published.cards||[]).length+' cartões':'CAA ativo · aguardando publicação')+'</span></div><strong>→</strong></button>':'';}).join('');
   var w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA</h2><p>Pacientes com comunicação aumentativa ativada</p></div><span class="caa-pro-badge">PRO</span></div><div class="caa-panel" style="margin-top:18px">'+(rows?'<div class="patient-list">'+rows+'</div>':'<div class="caa-empty"><b>Nenhum CAA ativo</b><span>Ative pelo prontuário de um paciente.</span></div>')+'</div></div>';
-  document.body.appendChild(w);w.onclick=function(e){var b=e.target.closest('[data-open-caa]');if(b){w.remove();openManager(b.getAttribute('data-open-caa'));}if(e.target.closest('[data-caa-close]'))w.remove();};
+  document.body.appendChild(w);w.onclick=function(e){var b=e.target.closest('[data-open-caa]');if(b){w.remove();openManager(b.getAttribute('data-open-caa'));}if(e.target.closest('[data-caa-close]')){clearCAAUI();w.remove();}};
 }
-function openManager(pid){manager.patientId=pid;manager.tab='board';manager.previewCategory='Todas';updateProfile(pid,function(x){x.settings=x.settings||defaultSettings();x.settings.speakOnTap=true;x.settings.addToPhrase=false;});renderManager();}
+function openManager(pid,restoring){var remembered=loadCAAUI();manager.patientId=pid;manager.tab=restoring&&remembered&&remembered.patientId===pid?(remembered.tab||'board'):'board';manager.previewCategory='Todas';updateProfile(pid,function(x){x.settings=x.settings||defaultSettings();x.settings.speakOnTap=true;x.settings.addToPhrase=false;});saveCAAUI('manager');renderManager();}
 function tabs(){return [['board','Prancha'],['library','Biblioteca'],['custom','Personalizar'],['history','Histórico'],['usage','Uso'],['share','Compartilhar']];}
 function renderManager(){
   var p=profile(manager.patientId),pt=patient(manager.patientId);if(!p)return;
   var old=document.getElementById('fonelyCAAOverlay');if(old)old.remove();
   var w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';
   w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA · '+esc(pt&&pt.name||'Paciente')+'</h2><p>'+(p.published?'Publicado '+dateTime(p.published.publishedAt):'Em configuração · ainda não publicado')+'</p></div><span class="caa-pro-badge">PRO</span><button class="caa-btn primary" data-caa-publish>Publicar prancha</button></div><div class="caa-tabs">'+tabs().map(function(t){return '<button data-caa-tab="'+t[0]+'" class="'+(manager.tab===t[0]?'active':'')+'">'+t[1]+'</button>';}).join('')+'</div><div id="caaBody">'+renderTab(p)+'</div><div class="caa-symbol-credit">Pictogramas padrão: <a href="https://mulberrysymbols.org/" target="_blank" rel="noopener">Mulberry Symbols</a> · CC BY-SA 4.0</div></div>';
-  document.body.appendChild(w);bindManager(w,p);
+  document.body.appendChild(w);saveCAAUI('manager');bindManager(w,p);
 }
 function renderTab(p){
   if(manager.tab==='library')return renderLibrary(p);
@@ -239,8 +253,8 @@ function bindBoardDrag(w){
 }
 function bindManager(w,p){
   w.onclick=function(e){
-    var t=e.target.closest('[data-caa-tab]');if(t){manager.tab=t.getAttribute('data-caa-tab');renderManager();return;}
-    if(e.target.closest('[data-caa-close]')){w.remove();inject();return;}
+    var t=e.target.closest('[data-caa-tab]');if(t){manager.tab=t.getAttribute('data-caa-tab');saveCAAUI('manager');renderManager();return;}
+    if(e.target.closest('[data-caa-close]')){clearCAAUI();w.remove();inject();return;}
     if(e.target.closest('[data-caa-publish]')){publish(manager.patientId);return;}
     var tog=e.target.closest('[data-toggle-card]');if(tog){var cid=tog.getAttribute('data-toggle-card');updateProfile(manager.patientId,function(x){x.draft=x.draft||[];var i=x.draft.indexOf(cid);if(i>=0)x.draft.splice(i,1);else x.draft.push(cid);});renderManager();return;}
     var rm=e.target.closest('[data-remove]');if(rm){var rid=rm.getAttribute('data-remove');updateProfile(manager.patientId,function(x){x.draft=(x.draft||[]).filter(function(v){return v!==rid;});});renderManager();return;}
