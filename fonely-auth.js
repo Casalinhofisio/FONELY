@@ -10,9 +10,9 @@ const APP_SCRIPTS=[
   'fonely-package-integration-v2.js?v=3',
   'fonely-full-edit-v1.js?v=2',
   'fonely-logo.js?v=5',
-  'fonely-caa-library.js?v=4',
+  'fonely-caa-library.js?v=5',
   'fonely-caa-speech.js?v=4',
-  'fonely-caa.js?v=7'
+  'fonely-caa.js?v=8'
 ];
 
 let sb=null;

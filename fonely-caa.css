@@ -87,3 +87,7 @@
   .caa-row-actions{grid-column:2;justify-content:flex-end}
   .caa-board-row img{width:74px;height:60px}
 }
+
+.caa-symbol-credit{padding:16px 4px 8px;color:var(--caa-muted);font-size:10px;text-align:center}
+.caa-symbol-credit a{color:var(--caa-ink);font-weight:900;text-decoration:none}
+.caa-lib-card img,.caa-comm-card img,.caa-board-row img{background:#fff!important;object-fit:contain!important;padding:8px}
