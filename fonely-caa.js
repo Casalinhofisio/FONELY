@@ -127,7 +127,7 @@ function communicatorHTML(p,snapshot,preview){
 }
 async function publish(pid){
   var p=profile(pid);if(!p||!isPro())return;
-  var cards=draftCards(p).map(function(c){return JSON.parse(JSON.stringify(c));}),now=new Date().toISOString(),ver=(p.versions||[]).length+1,snap={version:ver,publishedAt:now,cards:cards,settings:JSON.parse(JSON.stringify(p.settings||defaultSettings()))};
+  var cards=draftCards(p).map(function(c){return JSON.parse(JSON.stringify(c));}),now=new Date().toISOString(),ver=(p.versions||[]).length+1,snap={version:ver,visualVersion:3,publishedAt:now,cards:cards,settings:JSON.parse(JSON.stringify(p.settings||defaultSettings()))};
   p=updateProfile(pid,function(x){x.published=snap;x.versions=x.versions||[];x.versions.push({version:ver,publishedAt:now,cards:cards,settings:snap.settings,summary:'Prancha publicada'});});
   try{
     await syncPublishedBoard(p);
@@ -140,6 +140,7 @@ function saveCardCustomization(cid,patch){
   return updateProfile(manager.patientId,function(x){
     x.cardOverrides=x.cardOverrides||{};
     var custom=(x.customCards||[]).find(function(c){return c.id===cid;});
+    patch.fonelyCustomized=true;
     if(custom)Object.assign(custom,patch);
     else x.cardOverrides[cid]=Object.assign({},x.cardOverrides[cid]||{},patch);
   });
