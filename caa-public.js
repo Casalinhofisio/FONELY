@@ -27,6 +27,25 @@ function cacheAACImages(board){
 }
 function logEvent(event){try{var a=JSON.parse(localStorage.getItem(USAGE_KEY)||'[]');a.push(Object.assign({at:new Date().toISOString()},event));if(a.length>2000)a=a.slice(-2000);localStorage.setItem(USAGE_KEY,JSON.stringify(a));}catch(e){}}
 function settings(snap){var s=Object.assign({},snap&&snap.settings||{});s.speakOnTap=true;s.addToPhrase=false;if(state.volumeOverride!=null)s.volume=state.volumeOverride;return s;}
+var ARASAAC_KEY='fonely_caa_arasaac_v1';
+function arasaacCache(){try{return JSON.parse(localStorage.getItem(ARASAAC_KEY)||'{}');}catch(e){return {};}}
+async function upgradePictograms(board){
+  if(!navigator.onLine||!board||!board.snapshot||!board.snapshot.cards)return false;
+  var cache=arasaacCache(),changed=false,cards=board.snapshot.cards;
+  await Promise.all(cards.map(async function(c){
+    if(c.custom||c.fonelyCustomized)return;
+    if(cache[c.id]){if(c.image!==cache[c.id]){c.image=cache[c.id];changed=true;}return;}
+    try{
+      var q=encodeURIComponent(c.label||c.speech||'');
+      var r=await fetch('https://api.arasaac.org/v1/pictograms/pt/search/'+q,{cache:'force-cache'});
+      if(!r.ok)return;var arr=await r.json();if(!arr||!arr[0]||!arr[0]._id)return;
+      var u='https://static.arasaac.org/pictograms/'+arr[0]._id+'/'+arr[0]._id+'_500.png';
+      cache[c.id]=u;c.image=u;changed=true;
+    }catch(e){}
+  }));
+  try{localStorage.setItem(ARASAAC_KEY,JSON.stringify(cache));}catch(e){}
+  return changed;
+}
 function cardTone(c,i){var cat=String(c&&c.category||'').toLowerCase(),label=String(c&&c.label||'').toLowerCase();if(/sim|yes|mais|more|brinc|ação|acao/.test(label+' '+cat))return 'green';if(/não|nao|no|dor|pain|parar|stop/.test(label+' '+cat))return 'pink';if(/comer|eat|casa|home|pessoa|people/.test(label+' '+cat))return 'yellow';if(/beber|water|água|agua|higiene|bath/.test(label+' '+cat))return 'blue';if(/ajuda|help|onde|where|pergunta/.test(label+' '+cat))return 'purple';return ['yellow','aqua','blue','green','pink','purple'][i%6];}
 function unavailable(title,text){document.body.innerHTML='<main class="cp-status"><div><h1>'+esc(title)+'</h1><p>'+esc(text)+'</p></div></main>';}
 function networkBadge(){return '<div class="cp-network '+(state.offline?'offline':'online')+'">'+(state.offline?'Disponível offline':'Sincronizado')+'</div>';}
@@ -59,7 +78,9 @@ async function fetchBoard(){
     var oldStamp=state.lastStamp||boardStamp(state.board),newStamp=boardStamp(d.board),changed=!state.board||oldStamp!==newStamp;
     cacheBoard(d.board);cacheAACImages(d.board);
     state.board=d.board;state.lastStamp=newStamp;state.offline=false;
-    return changed;
+    var visualChanged=await upgradePictograms(state.board);
+    if(visualChanged){cacheBoard(state.board);cacheAACImages(state.board);}
+    return changed||visualChanged;
   }finally{clearTimeout(timer);}
 }
 function render(){
