@@ -17,3 +17,7 @@
 .cp-card b{font-size:19px;font-weight:900}
 .cp-card span{font-size:11px}
 @media(max-width:680px){.cp-card b{font-size:17px}.cp-card-copy{padding-top:8px}}
+
+.cp-symbol-credit{text-align:center;padding:18px 8px 6px;color:var(--muted);font-size:10px}
+.cp-symbol-credit a{color:var(--ink);font-weight:900;text-decoration:none}
+.cp-card img{object-fit:contain!important;padding:8px;background:#fff!important}
