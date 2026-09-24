@@ -3,12 +3,13 @@
 var app=document.getElementById('app');
 var KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1';
 var UI_KEY='fonely_ui_state_v2_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||KEY);
-function defaultUIState(){return {page:'inicio',patient:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};}
+function defaultUIState(){return {page:'inicio',patient:null,patientArea:null,agendaMode:'mes',agendaDate:dateKey(new Date()),financePatient:null};}
 function routeFromURL(){
   try{
     var q=new URLSearchParams(location.search),out={};
     if(q.get('view'))out.page=q.get('view');
     if(q.get('patient'))out.patient=q.get('patient');
+    if(q.get('area'))out.patientArea=q.get('area');
     if(q.get('agenda'))out.agendaDate=q.get('agenda');
     if(q.get('financePatient'))out.financePatient=q.get('financePatient');
     return out;
@@ -26,6 +27,7 @@ function syncRouteURL(){
     var u=new URL(location.href),q=u.searchParams;
     q.set('view',state.page||'inicio');
     if(state.patient)q.set('patient',state.patient);else q.delete('patient');
+    if(state.patient&&state.patientArea)q.set('area',state.patientArea);else q.delete('area');
     if(state.page==='agenda'&&state.agendaDate)q.set('agenda',state.agendaDate);else q.delete('agenda');
     if(state.page==='financeiro'&&state.financePatient)q.set('financePatient',state.financePatient);else q.delete('financePatient');
     history.replaceState(history.state||{},document.title,u.pathname+(q.toString()?'?'+q.toString():'')+u.hash);
@@ -36,6 +38,7 @@ function persistUIState(){
     localStorage.setItem(UI_KEY,JSON.stringify({
       page:state.page||'inicio',
       patient:state.patient||null,
+      patientArea:state.patientArea||null,
       agendaMode:state.agendaMode||'mes',
       agendaDate:state.agendaDate||dateKey(new Date()),
       financePatient:state.financePatient||null
@@ -99,6 +102,7 @@ function render(){
       persistUIState();
       app.innerHTML=patientView(openPatient);
       bind();
+      restorePatientArea();
       return;
     }
     state.patient=null;
@@ -107,6 +111,17 @@ function render(){
   persistUIState();
   app.innerHTML=fn();
   bind();
+}
+function restorePatientArea(){
+  if(!state.patient||!state.patientArea)return;
+  var p=patient(state.patient),area=state.patientArea;
+  if(!p)return;
+  setTimeout(function(){
+    if(area==='anam'&&canAccess('patients'))anamnesis(p);
+    if(area==='assess'&&canAccess('assessments'))assessmentArea(p);
+    if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);
+    if(area==='docs'&&canAccess('documents'))documentsArea(p);
+  },0);
 }
 function rerenderCurrentView(){persistUIState();render();}
 function patient(pid){return data.patients.find(function(x){return x.id===pid;});}
@@ -213,7 +228,7 @@ function editAppointment(a){
 }
 function sel(a,b){return a===b?'selected':'';}
 function newPatient(fromAgenda){modal('<small class="overline">NOVO CADASTRO</small><h2>Novo paciente</h2><form id="patientForm"><label>Nome completo<input name="name" required></label><div class="two"><label>Data de nascimento<input type="date" name="birth"></label><label>Telefone<input name="phone"></label></div><div class="two"><label>Responsável<input name="guardian"></label><label>Área principal<select name="area"><option>Linguagem</option><option>Fala / Fonologia</option><option>Voz</option><option>Fluência</option><option>Motricidade Orofacial</option><option>Disfagia</option><option>Audiologia</option><option>Outra</option></select></label></div><label>Queixa principal<textarea name="complaint"></textarea></label><button class="primary">Cadastrar paciente</button></form>');document.getElementById('patientForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),p={id:id(),name:f.get('name'),birth:f.get('birth'),phone:f.get('phone'),guardian:f.get('guardian'),area:f.get('area'),complaint:f.get('complaint'),anamnesis:{},documents:[]};data.patients.push(p);save();document.getElementById('modal').remove();if(fromAgenda)newAppointment(p.id,state.agendaDate);else rerenderCurrentView();};}
-function anamnesis(p){var a=p.anamnesis||{};modal('<small class="overline">PRONTUÁRIO CLÍNICO</small><h2>Anamnese · '+esc(p.name)+'</h2><form id="anamForm"><label>Queixa principal<textarea name="complaint">'+esc(a.complaint||p.complaint||'')+'</textarea></label><label>Gestação, nascimento e desenvolvimento<textarea name="development">'+esc(a.development||'')+'</textarea></label><label>Comunicação, fala e linguagem<textarea name="communication">'+esc(a.communication||'')+'</textarea></label><div class="two"><label>Alimentação / funções orais<textarea name="feeding">'+esc(a.feeding||'')+'</textarea></label><label>Audição / voz<textarea name="hearingVoice">'+esc(a.hearingVoice||'')+'</textarea></label></div><label>Histórico médico / medicamentos / acompanhamentos<textarea name="medical">'+esc(a.medical||'')+'</textarea></label><label>Escola, comportamento, rotina e observações<textarea name="other">'+esc(a.other||'')+'</textarea></label><button class="primary">Salvar anamnese</button></form>');document.getElementById('anamForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);p.anamnesis={complaint:f.get('complaint'),development:f.get('development'),communication:f.get('communication'),feeding:f.get('feeding'),hearingVoice:f.get('hearingVoice'),medical:f.get('medical'),other:f.get('other'),updatedAt:today()};p.complaint=f.get('complaint');save();document.getElementById('modal').remove();app.innerHTML=patientView(p);bind();};}
+function anamnesis(p){var a=p.anamnesis||{};modal('<small class="overline">PRONTUÁRIO CLÍNICO</small><h2>Anamnese · '+esc(p.name)+'</h2><form id="anamForm"><label>Queixa principal<textarea name="complaint">'+esc(a.complaint||p.complaint||'')+'</textarea></label><label>Gestação, nascimento e desenvolvimento<textarea name="development">'+esc(a.development||'')+'</textarea></label><label>Comunicação, fala e linguagem<textarea name="communication">'+esc(a.communication||'')+'</textarea></label><div class="two"><label>Alimentação / funções orais<textarea name="feeding">'+esc(a.feeding||'')+'</textarea></label><label>Audição / voz<textarea name="hearingVoice">'+esc(a.hearingVoice||'')+'</textarea></label></div><label>Histórico médico / medicamentos / acompanhamentos<textarea name="medical">'+esc(a.medical||'')+'</textarea></label><label>Escola, comportamento, rotina e observações<textarea name="other">'+esc(a.other||'')+'</textarea></label><button class="primary">Salvar anamnese</button></form>');document.getElementById('anamForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target);p.anamnesis={complaint:f.get('complaint'),development:f.get('development'),communication:f.get('communication'),feeding:f.get('feeding'),hearingVoice:f.get('hearingVoice'),medical:f.get('medical'),other:f.get('other'),updatedAt:today()};p.complaint=f.get('complaint');save();document.getElementById('modal').remove();rerenderCurrentView();};}
 function assessmentsPage(){return clinicalListing('Avaliações','assessment');}
 function evolutionsPage(){return clinicalListing('Evoluções','evolution');}
 function documentsPage(){
@@ -428,17 +443,17 @@ async function removeTeamMember(memberId){
   }catch(err){alert('Não foi possível remover agora. '+String(err&&err.message||err||''));}
 }
 function academy(){return shell('<article class="academy"><div>✦</div><h2>Fonely <span>Academy</span></h2><p>Conteúdos e cursos para transformar conhecimento em prática clínica.</p><em>EM BREVE</em></article>','Fonely Academy','');}
-function modal(html){var old=document.getElementById('modal');if(old)old.remove();var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div class="modal-card"><button class="close" id="closeModal">×</button>'+html+'</div>';document.body.appendChild(m);document.getElementById('closeModal').onclick=function(){m.remove();};}
+function modal(html){var old=document.getElementById('modal');if(old)old.remove();var m=document.createElement('div');m.className='modal';m.id='modal';m.innerHTML='<div class="modal-card"><button class="close" id="closeModal">×</button>'+html+'</div>';document.body.appendChild(m);document.getElementById('closeModal').onclick=function(){m.remove();if(state.patientArea){state.patientArea=null;persistUIState();}};}
 function bindModalRows(){document.querySelectorAll('#modal [data-ap]').forEach(function(b){b.onclick=function(){var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a){document.getElementById('modal').remove();appointmentDetails(a);}};});}
 function choosePatientFor(kind){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">SELECIONAR PACIENTE</small><h2>'+esc(kind==='assessment'?'Nova avaliação':'Nova evolução')+'</h2><label>Paciente<select id="choosePatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmChoose">Continuar</button>');document.getElementById('confirmChoose').onclick=function(){var pid=document.getElementById('choosePatient').value;kind==='assessment'?assessmentForm(pid):evolutionForm(pid);};}
 function choosePatientForDocument(){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">DOCUMENTO</small><h2>Selecionar paciente</h2><label>Paciente<select id="chooseDocPatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmDocPatient">Continuar</button>');document.getElementById('confirmDocPatient').onclick=function(){documentForm(document.getElementById('chooseDocPatient').value);};}
 function bind(){
-  document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
-  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
-  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);if(area==='fin'&&canAccess('finance'))financePatient(p);if(area==='reports'&&canAccess('reports')){state.page='relatorios';render();}};});
+  document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;state.patientArea=null;render();};});
+  document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');state.patientArea=null;persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
+  document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='fin'){state.patientArea=null;persistUIState();if(canAccess('finance'))financePatient(p);return;}if(area==='reports'){state.patientArea=null;persistUIState();if(canAccess('reports')){state.page='relatorios';render();}return;}state.patientArea=area;persistUIState();if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);};});
   document.querySelectorAll('[data-ap]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var a=data.appointments.find(function(x){return x.id===b.getAttribute('data-ap');});if(a)appointmentDetails(a);};});
   document.querySelectorAll('[data-day]').forEach(function(b){b.onclick=function(){if(canAccess('agenda'))dayModal(b.getAttribute('data-day'));};});
-  document.querySelectorAll('[data-home-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-home-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;render();};});
+  document.querySelectorAll('[data-home-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-home-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;state.patientArea=null;render();};});
   document.querySelectorAll('[data-home-list]').forEach(function(b){b.onclick=function(){if(!canAccess('agenda'))return;var mode=b.getAttribute('data-home-list'),list=appointmentsForDate(today());if(mode==='done')list=list.filter(function(a){return a.status==='Concluído';});modal('<small class="overline">'+(mode==='done'?'CONCLUÍDOS HOJE':'ATENDIMENTOS DE HOJE')+'</small><h2>'+esc(parseDate(today()).toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'}))+'</h2>'+appointmentRows(list)+'<div class="modal-actions"><button class="soft-btn" id="homeOpenAgenda">Abrir agenda completa</button></div>');var go=document.getElementById('homeOpenAgenda');if(go)go.onclick=function(){document.getElementById('modal').remove();state.page='agenda';state.agendaDate=today();render();};bindModalRows();};});
   var np=document.getElementById('newPatient');if(np)np.onclick=function(){if(canAccess('patients'))newPatient(false);};
   var na=document.getElementById('newAppointment');if(na)na.onclick=function(){if(canAccess('agenda'))newAppointment(null,today());};
@@ -447,7 +462,7 @@ function bind(){
   var pna=document.getElementById('patientNewAssessment');if(pna)pna.onclick=function(){if(!canAccess('assessments'))return;if(window.FonelyAssessments&&window.FonelyAssessments.newForPatient)window.FonelyAssessments.newForPatient(state.patient);else assessmentForm(state.patient);};
   var pne=document.getElementById('patientNewEvolution');if(pne)pne.onclick=function(){if(canAccess('evolutions'))evolutionForm(state.patient);};
   var pnd=document.getElementById('patientNewDocument');if(pnd)pnd.onclick=function(){if(canAccess('documents'))documentForm(state.patient);};
-  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
+  var ps=document.getElementById('patientSearch');if(ps)ps.oninput=function(){var q=ps.value.toLowerCase();document.getElementById('patientList').innerHTML=patientList(data.patients.filter(function(p){return [p.name,p.area,p.guardian].join(' ').toLowerCase().indexOf(q)>=0;}));document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');state.patientArea=null;persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});};
   var prev=document.getElementById('agendaPrev'),next=document.getElementById('agendaNext'),at=document.getElementById('agendaToday');
   if(prev)prev.onclick=function(){var d=parseDate(state.agendaDate);d.setMonth(d.getMonth()-1);state.agendaDate=dateKey(d);render();};
   if(next)next.onclick=function(){var d2=parseDate(state.agendaDate);d2.setMonth(d2.getMonth()+1);state.agendaDate=dateKey(d2);render();};
@@ -485,6 +500,8 @@ window.FonelyAppUI={
     persistUIState();
     render();
     if(opts.open){
+      state.patientArea=opts.open;
+      persistUIState();
       setTimeout(function(){
         var q=document.querySelector('[data-parea="'+opts.open+'"]');
         if(q)q.click();
