@@ -65,7 +65,7 @@ function render(){
   if(!token){unavailable('Link inválido','Este endereço não contém uma prancha do Fonely CAA.');return;}
   if(!board||!board.enabled||!snap){unavailable('Prancha indisponível','Abra este link uma vez com internet para preparar o uso offline.');return;}
   var cards=(snap.cards||[]).map(function(c){
-    if(Number(snap.visualVersion||0)>=3||c.fonelyCustomized||c.custom)return c;
+    if(Number(snap.visualVersion||0)>=4||c.fonelyCustomized||c.custom)return c;
     var fresh=window.FonelyCAALibrary&&window.FonelyCAALibrary.byId(c.id);
     return fresh?Object.assign({},c,{image:fresh.image,color:fresh.color}):c;
   }),cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),shown=state.category==='Todas'?cards:cards.filter(function(c){return c.category===state.category;}),baseVol=snap.settings&&snap.settings.volume;if(baseVol==null)baseVol=.9;var vol=Math.round((state.volumeOverride==null?baseVol:state.volumeOverride)*100),cols=Number((snap.settings||{}).columns||4);
