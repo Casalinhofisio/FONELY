@@ -102,7 +102,7 @@ async function sync(force){
 }
 function startAutoSync(){
   if(state.pollTimer)clearInterval(state.pollTimer);
-  state.pollTimer=setInterval(function(){if(!document.hidden&&navigator.onLine)sync(false);},5000);
+  state.pollTimer=setInterval(function(){if(!document.hidden&&navigator.onLine)sync(false);},1500);
 }
 function registerOffline(){
   if('serviceWorker' in navigator)navigator.serviceWorker.register('./caa-sw.js',{scope:'./'}).catch(function(){});
