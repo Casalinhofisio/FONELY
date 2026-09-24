@@ -157,3 +157,6 @@
   .caa-board-row{grid-template-columns:52px minmax(0,1fr) auto!important}
   .caa-board-row img{width:50px!important;height:48px!important}
 }
+
+.caa-link-help{display:block;color:var(--caa-muted);font-size:11px;line-height:1.45;margin-top:-5px}
+@media(max-width:700px){.caa-linkbox{grid-template-columns:1fr!important}.caa-linkbox input{grid-column:1/-1}.caa-linkbox .caa-btn{width:100%;text-align:center}}
