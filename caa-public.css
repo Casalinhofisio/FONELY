@@ -21,3 +21,35 @@
 .cp-symbol-credit{text-align:center;padding:18px 8px 6px;color:var(--muted);font-size:10px}
 .cp-symbol-credit a{color:var(--ink);font-weight:900;text-decoration:none}
 .cp-card img{object-fit:contain!important;padding:8px;background:#fff!important}
+
+
+/* CAA Public V4 — prancha de comunicação, inspirada na referência enviada */
+body{background:linear-gradient(180deg,#edf8e9 0,#f6fbf3 34%,#eef7ec 100%)!important}
+.cp-shell{max-width:1500px!important;padding:10px 12px 22px!important}
+.cp-top{background:linear-gradient(90deg,#bcebb6,#d8f5cf)!important;border-color:#a9dda4!important;border-radius:18px!important;padding:10px 13px!important;box-shadow:0 5px 16px rgba(53,110,57,.10)!important}
+.cp-brand{color:#245b32!important}.cp-brand span{color:#368548!important}.cp-top small{color:#4d7857!important}
+.cp-cat{border:0!important;background:#fff!important;color:#315e3c!important;box-shadow:0 2px 7px rgba(45,92,50,.08)}
+.cp-cat.active{background:#378a4a!important;color:#fff!important}
+.cp-board{grid-template-columns:repeat(var(--cols,4),minmax(125px,1fr))!important;gap:9px!important}
+.cp-card{border:0!important;border-radius:13px!important;padding:8px 8px 9px!important;box-shadow:0 3px 9px rgba(46,70,48,.10)!important;text-align:center!important}
+.cp-card img{width:100%!important;aspect-ratio:1.35!important;object-fit:contain!important;padding:5px!important;background:rgba(255,255,255,.72)!important;border:0!important;border-radius:9px!important}
+.cp-card-copy{padding:5px 2px 0!important}.cp-card b{font-size:18px!important;color:#17251a!important}.cp-card span{display:none!important}
+.cp-card.tone-yellow{background:#f7d978!important}.cp-card.tone-aqua{background:#79d9d5!important}.cp-card.tone-blue{background:#8fd1ee!important}.cp-card.tone-green{background:#9ce08f!important}.cp-card.tone-pink{background:#f2a7c0!important}.cp-card.tone-purple{background:#c7a5e8!important}
+.cp-card:active,.cp-card.active{transform:scale(.96)!important;box-shadow:0 0 0 4px rgba(50,128,65,.25)!important}
+.cp-symbol-credit{color:#64816a!important}
+@media(min-width:900px){.cp-board{grid-template-columns:repeat(5,minmax(130px,1fr))!important}}
+@media(max-width:680px){
+ body{background:linear-gradient(180deg,#e7f7e3,#f5fbf2)!important}
+ .cp-shell{padding:6px 6px calc(62px + env(safe-area-inset-bottom))!important}
+ .cp-top{top:3px!important;border-radius:13px!important;padding:7px 8px!important;gap:6px!important}
+ .cp-brand{font-size:17px!important}.cp-top small{font-size:9px!important}
+ .cp-install{font-size:0!important;padding:8px!important}.cp-install:after{content:'＋';font-size:17px}
+ .cp-volume{padding:6px!important}.cp-volume input{width:52px!important}
+ .cp-cats{padding:7px 1px!important;gap:5px!important}.cp-cat{padding:7px 10px!important;font-size:10px!important}
+ .cp-board{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+ .cp-card{border-radius:9px!important;padding:5px!important;min-width:0!important}
+ .cp-card img{aspect-ratio:1.05!important;padding:2px!important;border-radius:6px!important}
+ .cp-card-copy{padding:3px 1px 1px!important}.cp-card b{font-size:13px!important;line-height:1.05!important}
+ .cp-network{font-size:8px!important;padding:5px 7px!important}
+}
+@media(max-width:370px){.cp-board{grid-template-columns:repeat(3,minmax(0,1fr))!important}.cp-card b{font-size:12px!important}}
