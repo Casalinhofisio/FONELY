@@ -41,12 +41,14 @@ function caaData(){try{var d=JSON.parse(localStorage.getItem(CAA_KEY))||{profile
 function saveCAA(d){localStorage.setItem(CAA_KEY,JSON.stringify(d));}
 function cloud(){return window.FonelyCloud||{};}
 async function syncPublishedBoard(p){
-  var c=cloud(),sb=c.supabase;if(!sb||!p||!p.published)return;
+  var c=cloud(),sb=c.supabase;if(!sb||!p||!p.published)throw new Error('Nuvem indisponível');
   var ownerId=c.workspaceOwnerId||window.FONELY_WORKSPACE_OWNER_ID||(c.user&&c.user.id);
-  if(!ownerId)return;
+  if(!ownerId)throw new Error('Conta não identificada');
   var row={token:p.token,owner_id:ownerId,patient_id:String(p.patientId||''),enabled:!!p.enabled,snapshot:p.published,published_at:p.published.publishedAt||new Date().toISOString(),updated_at:new Date().toISOString()};
-  var r=await sb.from('caa_public_boards').upsert(row,{onConflict:'token'});
+  var r=await sb.from('caa_public_boards').upsert(row,{onConflict:'token'}).select('token,updated_at,snapshot').single();
   if(r.error)throw r.error;
+  if(!r.data||r.data.token!==p.token)throw new Error('Publicação não confirmada');
+  return r.data;
 }
 function plan(){return localStorage.getItem(PLAN_KEY)||window.FONELY_PLAN_TIER||'base';}
 function isPro(){return plan()==='pro';}
@@ -115,7 +117,7 @@ function renderManager(){
   var p=profile(manager.patientId),pt=patient(manager.patientId);if(!p)return;
   var old=document.getElementById('fonelyCAAOverlay');if(old)old.remove();
   var w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';
-  w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA · '+esc(pt&&pt.name||'Paciente')+'</h2><p>'+(p.published?'Publicado '+dateTime(p.published.publishedAt):'Em configuração · ainda não publicado')+'</p></div><span class="caa-pro-badge">PRO</span><button class="caa-btn primary" data-caa-publish>Publicar prancha</button></div><div class="caa-tabs">'+tabs().map(function(t){return '<button data-caa-tab="'+t[0]+'" class="'+(manager.tab===t[0]?'active':'')+'">'+t[1]+'</button>';}).join('')+'</div><div id="caaBody">'+renderTab(p)+'</div><div class="caa-symbol-credit">Pictogramas padrão: <a href="https://mulberrysymbols.org/" target="_blank" rel="noopener">Mulberry Symbols</a> · CC BY-SA 4.0</div></div>';
+  w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA · '+esc(pt&&pt.name||'Paciente')+'</h2><p>'+(p.published?'Publicado '+dateTime(p.published.publishedAt):'Em configuração · ainda não publicado')+'</p></div><span class="caa-pro-badge">PRO</span><button class="caa-btn primary" data-caa-publish>'+(p.published?'Atualizar prancha':'Publicar prancha')+'</button></div><div class="caa-tabs">'+tabs().map(function(t){return '<button data-caa-tab="'+t[0]+'" class="'+(manager.tab===t[0]?'active':'')+'">'+t[1]+'</button>';}).join('')+'</div><div id="caaBody">'+renderTab(p)+'</div><div class="caa-symbol-credit">Pictogramas padrão: <a href="https://mulberrysymbols.org/" target="_blank" rel="noopener">Mulberry Symbols</a> · CC BY-SA 4.0</div></div>';
   document.body.appendChild(w);saveCAAUI('manager');bindManager(w,p);
 }
 function renderTab(p){
@@ -168,13 +170,20 @@ function communicatorHTML(p,snapshot,preview){
 }
 async function publish(pid){
   var p=profile(pid);if(!p||!isPro())return;
+  var btn=document.querySelector('[data-caa-publish]');
+  if(btn){btn.disabled=true;btn.textContent=p.published?'Atualizando...':'Publicando...';}
   var cards=draftCards(p).map(function(c){return JSON.parse(JSON.stringify(c));}),now=new Date().toISOString(),ver=(p.versions||[]).length+1,snap={version:ver,visualVersion:4,publishedAt:now,cards:cards,settings:JSON.parse(JSON.stringify(p.settings||defaultSettings()))};
-  p=updateProfile(pid,function(x){x.published=snap;x.versions=x.versions||[];x.versions.push({version:ver,publishedAt:now,cards:cards,settings:snap.settings,summary:'Prancha publicada'});});
+  p=updateProfile(pid,function(x){x.published=snap;x.versions=x.versions||[];x.versions.push({version:ver,publishedAt:now,cards:cards,settings:snap.settings,summary:ver===1?'Prancha publicada':'Prancha atualizada'});});
   try{
     await syncPublishedBoard(p);
-    manager.tab='share';renderManager();
+    manager.tab='share';saveCAAUI('manager');renderManager();
+    setTimeout(function(){
+      var box=document.querySelector('.caa-share');
+      if(box){var ok=document.createElement('div');ok.className='caa-publish-success';ok.innerHTML='<b>Atualização enviada ✓</b><span>Este é o mesmo link da família. A prancha aberta recebe a nova versão automaticamente.</span>';box.insertBefore(ok,box.firstChild);}
+    },0);
   }catch(err){
-    alert('A prancha ficou salva no Fonely, mas não foi possível atualizar o link da família agora. Conecte-se à internet e publique novamente.');
+    if(btn){btn.disabled=false;btn.textContent=p.published?'Atualizar prancha':'Publicar prancha';}
+    alert('Não consegui atualizar o link da família. Verifique a internet e tente publicar novamente.');
   }
 }
 function saveCardCustomization(cid,patch){
