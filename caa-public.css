@@ -53,3 +53,11 @@ body{background:linear-gradient(180deg,#edf8e9 0,#f6fbf3 34%,#eef7ec 100%)!impor
  .cp-network{font-size:8px!important;padding:5px 7px!important}
 }
 @media(max-width:370px){.cp-board{grid-template-columns:repeat(3,minmax(0,1fr))!important}.cp-card b{font-size:12px!important}}
+
+/* CAA Public V5 — visual AAC limpo: pictograma direto sobre o fundo sem caixa branca */
+body{background:#e5f3df!important}
+.cp-shell{background:#eef8e9!important;min-height:100dvh!important}
+.cp-card{border:2px solid rgba(33,50,35,.12)!important;box-shadow:0 2px 5px rgba(33,50,35,.12)!important}
+.cp-card img{background:transparent!important;border:0!important;padding:3px!important;mix-blend-mode:multiply}
+.cp-card-copy{background:transparent!important}
+@media(max-width:680px){.cp-shell{background:#e9f6e4!important}.cp-card img{padding:1px!important}}
