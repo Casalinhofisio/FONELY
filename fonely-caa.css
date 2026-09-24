@@ -43,3 +43,47 @@
 .caa-direct-mode b{display:block;font:900 18px Nunito;margin:3px 0}.caa-direct-mode span{display:block;color:var(--caa-muted);font-size:11px;line-height:1.4}
 @media(max-width:1000px){.caa-library{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.caa-library{grid-template-columns:repeat(2,1fr)}.caa-board{grid-template-columns:repeat(2,1fr)}.caa-lib-card{min-height:175px}.caa-preview-note{align-items:flex-start;flex-direction:column}}
+
+/* CAA v3 — cartões lúdicos, edição visual e arrastar/soltar */
+.caa-lib-card img,.caa-comm-card img{object-fit:contain!important;background:#fff!important}
+.caa-lib-card{border-radius:24px!important;padding:11px!important}
+.caa-lib-card b{font-size:16px!important}
+.caa-board-row{grid-template-columns:92px minmax(0,1fr) auto!important;transition:transform .16s,box-shadow .16s,opacity .16s;background:#fff}
+.caa-board-row img{object-fit:contain!important;background:#fff;border:1px solid var(--caa-line)}
+.caa-drag-main{min-width:0;cursor:grab;touch-action:none;user-select:none;padding:4px 8px;border-radius:12px}
+.caa-drag-main:active{cursor:grabbing}
+.caa-drag-main b{display:flex!important;align-items:center;gap:7px;flex-wrap:wrap}
+.caa-drag-main small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.caa-drag-main em{display:block;font-style:normal;font-size:10px;color:#a18e86;font-weight:800;margin-top:5px}
+.caa-board-row.drag-ready{box-shadow:0 0 0 3px rgba(199,109,82,.12)}
+.caa-board-row.dragging{opacity:.72;transform:scale(.985);box-shadow:0 14px 28px rgba(62,43,37,.14);border-color:var(--caa-terra);z-index:2}
+.caa-row-actions{align-items:center}.caa-row-actions .caa-edit-card{width:auto!important;padding:0 11px;font-weight:900;color:var(--caa-terra)}
+.caa-audio-badge{font-size:9px;color:#7a5a4f;background:#fff0e8;padding:4px 7px;border-radius:999px}
+.caa-setting small{display:block;margin-top:7px;color:var(--caa-muted);font-size:10px;line-height:1.4}
+.caa-record-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+.caa-card-editor-overlay{position:fixed;inset:0;background:rgba(62,43,37,.34);z-index:180;display:grid;place-items:center;padding:18px;overflow:auto}
+.caa-card-editor{width:min(920px,100%);max-height:94vh;overflow:auto;background:#fff;border:1px solid var(--caa-line);border-radius:26px;box-shadow:0 30px 80px rgba(62,43,37,.25);padding:20px}
+.caa-card-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.caa-card-editor-head small{display:block;color:var(--caa-terra);font-size:10px;font-weight:900;letter-spacing:.7px}
+.caa-card-editor-head h2{margin:3px 0 0;font:900 24px Nunito}
+.caa-card-editor-head>button{border:0;background:#f6f0ec;width:38px;height:38px;border-radius:50%;font-size:24px;color:var(--caa-ink);cursor:pointer}
+.caa-editor-layout{display:grid;grid-template-columns:260px 1fr;gap:22px;align-items:start}
+.caa-editor-image{width:100%;aspect-ratio:1;border:1px solid var(--caa-line);border-radius:24px;background:#faf7f4;display:grid;place-items:center;overflow:hidden}
+.caa-editor-image img{width:100%;height:100%;object-fit:contain;background:#fff}
+.caa-editor-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.caa-editor-photo-actions .caa-btn{text-align:center}
+.caa-editor-audio{border:1px solid var(--caa-line);background:#faf8f6;border-radius:15px;padding:14px}
+.caa-editor-audio>b,.caa-editor-audio>span{display:block}.caa-editor-audio>span{color:var(--caa-muted);font-size:11px;margin:3px 0 10px;line-height:1.4}
+.caa-editor-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--caa-line)}
+.caa-editor-footer>div{display:flex;gap:8px}
+.caa-btn.danger{border-color:#f1d5d0!important}
+@media(max-width:760px){
+  .caa-editor-layout{grid-template-columns:1fr}
+  .caa-editor-image{max-width:300px;margin:auto}
+  .caa-editor-footer{align-items:stretch;flex-direction:column}
+  .caa-editor-footer>div{display:grid;grid-template-columns:1fr 1fr}
+  .caa-board-row{grid-template-columns:78px minmax(0,1fr)!important}
+  .caa-row-actions{grid-column:2;justify-content:flex-end}
+  .caa-board-row img{width:74px;height:60px}
+}
