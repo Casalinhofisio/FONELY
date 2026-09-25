@@ -79,6 +79,7 @@ function allCards(p){
 }
 function cardById(p,cid){return allCards(p).find(function(c){return c.id===cid;})||null;}
 function draftCards(p){return (p.draft||[]).map(function(cid){return cardById(p,cid);}).filter(Boolean);}
+function toneClass(c,i){var cat=String(c&&c.category||'').toLowerCase(),label=String(c&&c.label||'').toLowerCase(),v=label+' '+cat;if(/sim|yes|mais|more|brinc|ação|acao/.test(v))return 'tone-green';if(/não|nao|no|dor|pain|parar|stop/.test(v))return 'tone-pink';if(/comer|eat|casa|home|pessoa|people/.test(v))return 'tone-yellow';if(/beber|water|água|agua|higiene|bath/.test(v))return 'tone-blue';if(/ajuda|help|onde|where|pergunta/.test(v))return 'tone-purple';return ['tone-yellow','tone-aqua','tone-blue','tone-green','tone-pink','tone-purple'][i%6];}
 function dateTime(v){try{return new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});}catch(e){return '—';}}
 function shareUrl(p){var base=location.href.split('?')[0].replace(/[^/]*$/,'');return base+'caa.html?token='+encodeURIComponent(p.token);}
 function patientFromView(){var h=document.querySelector('.patient-head h2');if(!h)return null;var name=h.textContent.trim();return (appData().patients||[]).find(function(p){return String(p.name||'').trim()===name})||null;}
@@ -172,7 +173,7 @@ function renderShare(p){
 }
 function communicatorHTML(p,snapshot,preview){
   var cards=snapshot.cards||[],cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),cat=preview?manager.previewCategory:'Todas',shown=cat==='Todas'?cards:cards.filter(function(c){return c.category===cat}),cols=Number((snapshot.settings||{}).columns||4);
-  return '<div class="caa-preview-note"><b>Toque para falar</b><span>Cada cartão reproduz a fala imediatamente.</span></div><div class="caa-categories">'+cats.map(function(c){return '<button class="caa-category '+(c===cat?'active':'')+'" data-preview-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><div class="caa-board" style="--caa-cols:'+cols+'">'+shown.map(function(c){return '<button class="caa-comm-card" data-preview-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.speech||c.label)+'</small></button>';}).join('')+'</div>';
+  return '<div class="caa-preview-note"><b>Toque para falar</b><span>Cada cartão reproduz a fala imediatamente.</span></div><div class="caa-categories">'+cats.map(function(c){return '<button class="caa-category '+(c===cat?'active':'')+'" data-preview-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><div class="caa-board" style="--caa-cols:'+cols+'">'+shown.map(function(c,i){return '<button class="caa-comm-card '+toneClass(c,i)+'" data-preview-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.speech||c.label)+'</small></button>';}).join('')+'</div>';
 }
 async function publish(pid){
   var p=profile(pid);if(!p||!isPro())return;
