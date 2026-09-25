@@ -160,3 +160,14 @@
 
 .caa-link-help{display:block;color:var(--caa-muted);font-size:11px;line-height:1.45;margin-top:-5px}
 @media(max-width:700px){.caa-linkbox{grid-template-columns:1fr!important}.caa-linkbox input{grid-column:1/-1}.caa-linkbox .caa-btn{width:100%;text-align:center}}
+
+/* CAA integrated color system — same visual language in library and preview */
+.caa-lib-card,.caa-comm-card{border-color:rgba(62,43,37,.10)!important}
+.caa-lib-card.tone-yellow,.caa-comm-card.tone-yellow{background:#f7d978!important}
+.caa-lib-card.tone-aqua,.caa-comm-card.tone-aqua{background:#79d9d5!important}
+.caa-lib-card.tone-blue,.caa-comm-card.tone-blue{background:#8fd1ee!important}
+.caa-lib-card.tone-green,.caa-comm-card.tone-green{background:#9ce08f!important}
+.caa-lib-card.tone-pink,.caa-comm-card.tone-pink{background:#f2a7c0!important}
+.caa-lib-card.tone-purple,.caa-comm-card.tone-purple{background:#c7a5e8!important}
+.caa-lib-card img,.caa-comm-card img{background:transparent!important;border:0!important}
+.caa-public-preview{background:#e9f6e4!important}

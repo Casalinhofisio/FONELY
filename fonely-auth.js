@@ -4,6 +4,7 @@
 const SUPABASE_URL='https://apjmkstuffzgfhgcxhvt.supabase.co';
 const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://casalinhofisio.github.io/FONELY/';
+window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
   'app.js?v=18',
   'fonely-assessments-v2.js?v=6',
@@ -12,7 +13,7 @@ const APP_SCRIPTS=[
   'fonely-logo.js?v=5',
   'fonely-caa-library.js?v=5',
   'fonely-caa-speech.js?v=4',
-  'fonely-caa.js?v=15'
+  'fonely-caa.js?v=16'
 ];
 
 let sb=null;
