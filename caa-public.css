@@ -61,3 +61,13 @@ body{background:#e5f3df!important}
 .cp-card img{background:transparent!important;border:0!important;padding:3px!important;mix-blend-mode:multiply}
 .cp-card-copy{background:transparent!important}
 @media(max-width:680px){.cp-shell{background:#e9f6e4!important}.cp-card img{padding:1px!important}}
+
+/* Fitzgerald semantic colors — public CAA */
+.cp-card.tone-yellow{background:#f6dc72!important}
+.cp-card.tone-green{background:#a8df8e!important}
+.cp-card.tone-blue{background:#9fc9ee!important}
+.cp-card.tone-orange{background:#f3b56f!important}
+.cp-card.tone-pink{background:#efb0cb!important}
+.cp-card.tone-purple{background:#cbb1e8!important}
+.cp-card.tone-red{background:#efa09a!important}
+.cp-card.tone-white{background:#f7f7f5!important}

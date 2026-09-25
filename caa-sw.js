@@ -1,5 +1,5 @@
-const CACHE='fonely-caa-shell-v9';
-const SHELL=['./caa.html','./caa-public.css?v=7','./caa-public.js?v=10','./fonely-caa-library.js?v=5','./fonely-caa-speech.js?v=4','./fonely-icon.svg','./caa-manifest.webmanifest'];
+const CACHE='fonely-caa-shell-v10';
+const SHELL=['./caa.html','./caa-public.css?v=8','./caa-public.js?v=11','./fonely-caa-library.js?v=5','./fonely-caa-speech.js?v=4','./fonely-icon.svg','./caa-manifest.webmanifest'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('fonely-caa-shell-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{

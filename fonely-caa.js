@@ -78,8 +78,23 @@ function allCards(p){
   return base.concat(p.customCards||[]);
 }
 function cardById(p,cid){return allCards(p).find(function(c){return c.id===cid;})||null;}
-function draftCards(p){return (p.draft||[]).map(function(cid){return cardById(p,cid);}).filter(Boolean);}
-function toneClass(c,i){var cat=String(c&&c.category||'').toLowerCase(),label=String(c&&c.label||'').toLowerCase(),v=label+' '+cat;if(/sim|yes|mais|more|brinc|ação|acao/.test(v))return 'tone-green';if(/não|nao|no|dor|pain|parar|stop/.test(v))return 'tone-pink';if(/comer|eat|casa|home|pessoa|people/.test(v))return 'tone-yellow';if(/beber|water|água|agua|higiene|bath/.test(v))return 'tone-blue';if(/ajuda|help|onde|where|pergunta/.test(v))return 'tone-purple';return ['tone-yellow','tone-aqua','tone-blue','tone-green','tone-pink','tone-purple'][i%6];}
+function draftCards(p){return (p.draft||[]).map(function(cid){var c=cardById(p,cid);return c?Object.assign({},c,{aacTone:semanticTone(c)}):null;}).filter(Boolean);}
+function semanticTone(c){
+  var id=String(c&&c.id||'').toLowerCase(),cat=String(c&&c.category||'').toLowerCase(),label=String(c&&c.label||'').toLowerCase();
+  if(/^(no|dont-want|pain|help)$/.test(id)||/não|nao|dor|ajuda|socorro|parar/.test(label))return 'red';
+  if(/^(more)$/.test(id))return 'blue';
+  if(/^(yes|finished)$/.test(id))return 'pink';
+  if(/^(eat|sleep|want|go-out|play)$/.test(id))return 'green';
+  if(/^(water|toilet|phone|ball|bread|rice|beans|fruit|milk|juice|home|school)$/.test(id))return 'orange';
+  if(cat==='pessoas')return 'yellow';
+  if(cat==='ações'||cat==='acoes'||cat==='atividades')return 'green';
+  if(cat==='emoções'||cat==='emocoes')return 'blue';
+  if(cat==='lugares'||cat==='objetos'||cat==='alimentação'||cat==='alimentacao'||cat==='bebidas'||cat==='necessidades')return 'orange';
+  if(cat==='respostas')return 'pink';
+  if(/onde|quem|qual|quando|por que|porque/.test(label))return 'purple';
+  return 'white';
+}
+function toneClass(c){return 'tone-'+semanticTone(c);}
 function dateTime(v){try{return new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});}catch(e){return '—';}}
 function shareUrl(p){var base=location.href.split('?')[0].replace(/[^/]*$/,'');return base+'caa.html?token='+encodeURIComponent(p.token);}
 function patientFromView(){var h=document.querySelector('.patient-head h2');if(!h)return null;var name=h.textContent.trim();return (appData().patients||[]).find(function(p){return String(p.name||'').trim()===name})||null;}
@@ -145,7 +160,8 @@ function renderBoardTab(p){
 function renderLibrary(p){
   var cards=allCards(p).filter(function(c){var q=(manager.search||'').toLowerCase();return (!q||String(c.label+' '+c.category).toLowerCase().includes(q))&&(manager.category==='Todas'||c.category===manager.category);});
   var cats=['Todas'].concat(Array.from(new Set(allCards(p).map(function(c){return c.category;}))));
-  return '<section class="caa-panel"><h3>Biblioteca de comunicação</h3><p>Imagem própria, palavra embaixo e áudio. Clique para adicionar ou remover da prancha.</p><div class="caa-library-tools"><input id="caaSearch" value="'+esc(manager.search)+'" placeholder="Buscar palavra"><select id="caaCategory">'+cats.map(function(c){return '<option '+(c===manager.category?'selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select><span class="caa-pro-badge">'+(p.draft||[]).length+' SELECIONADOS</span></div><div class="caa-library">'+cards.map(function(c){var sel=(p.draft||[]).indexOf(c.id)>=0;return '<button class="caa-lib-card '+(sel?'selected':'')+'" data-toggle-card="'+c.id+'" style="background:'+esc(c.color||'#fff')+'"><span class="caa-check">'+(sel?'✓':'+')+'</span><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.category)+'</small></button>';}).join('')+'</div></section>';
+  var legend='<div class="caa-color-legend"><span class="tone-yellow">Pessoas</span><span class="tone-green">Ações</span><span class="tone-blue">Descrições / emoções</span><span class="tone-orange">Objetos / lugares / alimentos</span><span class="tone-pink">Social / respostas</span><span class="tone-purple">Perguntas</span><span class="tone-red">Negação / importante</span></div>';
+  return '<section class="caa-panel"><h3>Biblioteca de comunicação</h3><p>As cores têm significado e seguem a organização da CAA: ajudam a localizar rapidamente o tipo de palavra.</p>'+legend+'<div class="caa-library-tools"><input id="caaSearch" value="'+esc(manager.search)+'" placeholder="Buscar palavra"><select id="caaCategory">'+cats.map(function(c){return '<option '+(c===manager.category?'selected':'')+'>'+esc(c)+'</option>';}).join('')+'</select><span class="caa-pro-badge">'+(p.draft||[]).length+' SELECIONADOS</span></div><div class="caa-library">'+cards.map(function(c){var sel=(p.draft||[]).indexOf(c.id)>=0;return '<button class="caa-lib-card '+toneClass(c)+' '+(sel?'selected':'')+'" data-toggle-card="'+c.id+'"><span class="caa-check">'+(sel?'✓':'+')+'</span><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.category)+'</small></button>';}).join('')+'</div></section>';
 }
 function renderCustom(p){
   var voices=window.FonelyCAASpeech?window.FonelyCAASpeech.voices():[];
@@ -173,7 +189,7 @@ function renderShare(p){
 }
 function communicatorHTML(p,snapshot,preview){
   var cards=snapshot.cards||[],cats=['Todas'].concat(Array.from(new Set(cards.map(function(c){return c.category;})))),cat=preview?manager.previewCategory:'Todas',shown=cat==='Todas'?cards:cards.filter(function(c){return c.category===cat}),cols=Number((snapshot.settings||{}).columns||4);
-  return '<div class="caa-preview-note"><b>Toque para falar</b><span>Cada cartão reproduz a fala imediatamente.</span></div><div class="caa-categories">'+cats.map(function(c){return '<button class="caa-category '+(c===cat?'active':'')+'" data-preview-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><div class="caa-board" style="--caa-cols:'+cols+'">'+shown.map(function(c,i){return '<button class="caa-comm-card '+toneClass(c,i)+'" data-preview-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.speech||c.label)+'</small></button>';}).join('')+'</div>';
+  return '<div class="caa-preview-note"><b>Toque para falar</b><span>Cada cartão reproduz a fala imediatamente.</span></div><div class="caa-categories">'+cats.map(function(c){return '<button class="caa-category '+(c===cat?'active':'')+'" data-preview-cat="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><div class="caa-board" style="--caa-cols:'+cols+'">'+shown.map(function(c){return '<button class="caa-comm-card '+toneClass(c)+'" data-preview-card="'+esc(c.id)+'"><img src="'+esc(c.image)+'" alt=""><b>'+esc(c.label)+'</b><small>'+esc(c.speech||c.label)+'</small></button>';}).join('')+'</div>';
 }
 async function publish(pid){
   var p=profile(pid);if(!p||!isPro())return;

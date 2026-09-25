@@ -171,3 +171,16 @@
 .caa-lib-card.tone-purple,.caa-comm-card.tone-purple{background:#c7a5e8!important}
 .caa-lib-card img,.caa-comm-card img{background:transparent!important;border:0!important}
 .caa-public-preview{background:#e9f6e4!important}
+
+/* Fitzgerald semantic colors — professional CAA */
+.caa-lib-card.tone-yellow,.caa-comm-card.tone-yellow,.caa-color-legend .tone-yellow{background:#f6dc72!important}
+.caa-lib-card.tone-green,.caa-comm-card.tone-green,.caa-color-legend .tone-green{background:#a8df8e!important}
+.caa-lib-card.tone-blue,.caa-comm-card.tone-blue,.caa-color-legend .tone-blue{background:#9fc9ee!important}
+.caa-lib-card.tone-orange,.caa-comm-card.tone-orange,.caa-color-legend .tone-orange{background:#f3b56f!important}
+.caa-lib-card.tone-pink,.caa-comm-card.tone-pink,.caa-color-legend .tone-pink{background:#efb0cb!important}
+.caa-lib-card.tone-purple,.caa-comm-card.tone-purple,.caa-color-legend .tone-purple{background:#cbb1e8!important}
+.caa-lib-card.tone-red,.caa-comm-card.tone-red,.caa-color-legend .tone-red{background:#efa09a!important}
+.caa-lib-card.tone-white,.caa-comm-card.tone-white,.caa-color-legend .tone-white{background:#f7f7f5!important}
+.caa-color-legend{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+.caa-color-legend span{display:inline-flex;align-items:center;min-height:29px;padding:6px 9px;border-radius:9px;border:1px solid rgba(62,43,37,.12);font-size:10px;font-weight:900;color:#3e2b25}
+.caa-lib-card img,.caa-comm-card img{background:rgba(255,255,255,.35)!important}
