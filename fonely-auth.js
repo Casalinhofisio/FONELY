@@ -13,7 +13,7 @@ const APP_SCRIPTS=[
   'fonely-logo.js?v=5',
   'fonely-caa-library.js?v=5',
   'fonely-caa-speech.js?v=4',
-  'fonely-caa.js?v=16'
+  'fonely-caa.js?v=17'
 ];
 
 let sb=null;
