@@ -452,6 +452,12 @@ function readMap(obj){
 
 function detail(pid,aid){
   var d=load(),a=d.assessments.find(function(x){return x.id===aid;});if(!a)return;
+  if(a.protocolId){
+    var x=protocolById(a.protocolId)||{name:a.protocolName||a.protocols||'Protocolo',area:a.mainArea||'Geral'},subs=a.subtests?Object.keys(a.subtests).filter(function(k){return a.subtests[k];}).map(function(k){return k.charAt(0).toUpperCase()+k.slice(1);}).join(' · '):'';
+    var wProtocol=modal('<div class="assessment-v3-head"><div><small>PROTOCOLO / TESTE</small><h2>'+esc(x.name)+'</h2><p>'+esc(pname(d,pid))+' · '+fmt(a.date)+'</p></div><span>'+esc(x.area)+'</span></div>'+(subs?'<div class="assessment-protocol-subtests-read"><b>Subtestes registrados</b><span>'+esc(subs)+'</span></div>':'')+(a.protocolAttachment?'<section class="assessment-protocol-document"><div><b>Documento anexado</b><span>'+esc(a.protocolAttachment.name)+'</span></div><button class="soft-btn" data-open-protocol-attachment>Abrir documento</button></section>':'')+'<div class="assessment-v3-read-grid"><div><small>Resultados / escores</small><p>'+esc(a.results||'—')+'</p></div><div><small>Observações</small><p>'+esc(a.notes||'—')+'</p></div><div><small>Síntese</small><p>'+esc(a.summary||'—')+'</p></div><div><small>Conduta</small><p>'+esc(a.plan||'—')+'</p></div></div><div class="assessment-v3-actions"><button class="primary" data-edit-protocol>Editar registro</button></div>');
+    var op=wProtocol.querySelector('[data-open-protocol-attachment]');if(op)op.onclick=function(){openProtocolAttachment(a.protocolAttachment);};
+    wProtocol.querySelector('[data-edit-protocol]').onclick=function(){protocolForm(pid,a.protocolId,a);};return;
+  }
   if(a.customTemplateId||a.customMode){
     var currentTemplate=(d.assessmentTemplates||[]).find(function(x){return x.id===a.customTemplateId;});
     var t=normalizeTemplate(JSON.parse(JSON.stringify(a.customSnapshot||currentTemplate||{id:a.customTemplateId||uid(),name:a.customTemplateName||'Modelo personalizado',mode:a.customMode||'form',sections:[]})));
@@ -803,14 +809,73 @@ function customAssessmentRead(a){
     }).join('')+'</div>',si===0);
   }).join('');
 }
+
+var PROTOCOL_LIBRARY=[
+ {id:'abfw',icon:'📚',name:'ABFW — Linguagem Infantil',meta:'2–7 anos · Fonologia, Vocabulário, Fluência e Pragmática',area:'Linguagem',licensed:true},
+ {id:'idv10',icon:'🎙️',name:'IDV-10 — Desvantagem Vocal',meta:'Auto-relato · 10 itens · Voz',area:'Voz'},
+ {id:'fois',icon:'🍽️',name:'FOIS — Ingestão Oral',meta:'Nível funcional de ingestão oral',area:'Disfagia'},
+ {id:'auditory',icon:'👂',name:'Triagem de Processamento Auditivo',meta:'Escolares · registro clínico de triagem',area:'Audição'}
+];
+function protocolCards(pid){
+ return '<div class="assessment-protocol-grid">'+PROTOCOL_LIBRARY.map(function(x){return '<button class="assessment-protocol-card" data-protocol="'+x.id+'"><i>'+x.icon+'</i><span><b>'+esc(x.name)+'</b><small>'+esc(x.meta)+'</small></span>'+(x.licensed?'<em>ANEXAR MATERIAL</em>':'')+'<strong>›</strong></button>';}).join('')+'</div>';
+}
+function protocolById(id){return PROTOCOL_LIBRARY.find(function(x){return x.id===id;})||null;}
+async function uploadProtocolAttachment(file,pid,protocolId,msg){
+ var cloud=window.FonelyCloud,sb=cloud&&cloud.supabase,user=cloud&&cloud.user;if(!sb||!user)throw new Error('Nuvem indisponível');
+ var mime=file.type||'',ok=/pdf|msword|officedocument/i.test(mime)||/\.(pdf|doc|docx)$/i.test(file.name);
+ if(!ok)throw new Error('Use PDF, DOC ou DOCX.');
+ if(file.size>10*1024*1024)throw new Error('O arquivo pode ter no máximo 10 MB.');
+ var safe=String(file.name||'documento').replace(/[^a-zA-Z0-9._-]+/g,'-'),path=user.id+'/protocols/'+pid+'/'+protocolId+'-'+Date.now()+'-'+safe;
+ if(msg)msg.textContent='Enviando documento...';
+ var up=await sb.storage.from('form-template-files').upload(path,file,{contentType:mime||'application/octet-stream',upsert:false});
+ if(up.error)throw up.error;
+ return {name:file.name,path:path,mime:mime,size:file.size,uploadedAt:new Date().toISOString()};
+}
+async function openProtocolAttachment(att){
+ var cloud=window.FonelyCloud,sb=cloud&&cloud.supabase;if(!sb||!att||!att.path)return;
+ var r=await sb.storage.from('form-template-files').createSignedUrl(att.path,120);
+ if(r.error){alert('Não foi possível abrir o documento.');return;}
+ window.open(r.data.signedUrl,'_blank','noopener');
+}
+function protocolForm(pid,protocolId,existing){
+ var x=protocolById(protocolId),d=load(),p=d.patients.find(function(q){return q.id===pid;});if(!x||!p)return;
+ existing=existing||{};var attachment=existing.protocolAttachment||null,pro=currentProfessional();
+ var abfw=x.id==='abfw';
+ var body=abfw
+ ?'<div class="assessment-protocol-license"><b>ABFW — registro de aplicação</b><p>O Fonely não reproduz estímulos, figuras, tabelas normativas ou conteúdo protegido do instrumento. Use seu material/licença oficial e anexe aqui o documento preenchido ou relatório gerado.</p></div>'+
+  '<div class="assessment-protocol-subtests"><label><input type="checkbox" name="sub_fonologia" '+(existing.subtests&&existing.subtests.fonologia?'checked':'')+'> Fonologia</label><label><input type="checkbox" name="sub_vocabulario" '+(existing.subtests&&existing.subtests.vocabulario?'checked':'')+'> Vocabulário</label><label><input type="checkbox" name="sub_fluencia" '+(existing.subtests&&existing.subtests.fluencia?'checked':'')+'> Fluência</label><label><input type="checkbox" name="sub_pragmatica" '+(existing.subtests&&existing.subtests.pragmatica?'checked':'')+'> Pragmática</label></div>'
+ :'';
+ var w=modal('<div class="assessment-v3-head"><div><small>PROTOCOLOS E TESTES</small><h2>'+esc(x.name)+'</h2><p>'+esc(p.name)+' · '+esc(x.meta)+'</p></div><span>'+esc(x.area)+'</span></div>'+
+ '<form id="protocolAssessmentForm"><div class="assessment-v3-top-grid"><label>Data<input type="date" name="date" value="'+esc(existing.date||today())+'" required></label><label>Profissional<input value="'+esc(existing.professional||pro.name)+'" readonly></label><label>Tipo<select name="kind">'+selectOptions(['Avaliação','Reavaliação','Triagem'],existing.kind||'Avaliação')+'</select></label></div>'+body+
+ '<section class="assessment-protocol-document"><div><b>Documento do protocolo</b><span>'+(attachment?esc(attachment.name):'Anexe PDF, DOC ou DOCX · até 10 MB')+'</span></div><button type="button" class="soft-btn" data-protocol-file-btn>'+(attachment?'Trocar documento':'Anexar documento')+'</button>'+(attachment?'<button type="button" class="soft-btn" data-protocol-open>Abrir</button>':'')+'<input type="file" data-protocol-file accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden></section><div class="assessment-builder-message" data-protocol-message></div>'+
+ '<div class="assessment-v3-grid"><label>Resultados / escores<textarea name="results" placeholder="Registre os resultados obtidos no instrumento oficial.">'+esc(existing.results||'')+'</textarea></label><label>Observações clínicas<textarea name="notes" placeholder="Comportamento, condições de aplicação e achados relevantes.">'+esc(existing.notes||'')+'</textarea></label><label>Síntese<textarea name="summary" placeholder="Síntese clínica do resultado.">'+esc(existing.summary||'')+'</textarea></label><label>Conduta<textarea name="plan" placeholder="Conduta, orientações e próximos passos.">'+esc(existing.plan||'')+'</textarea></label></div>'+
+ '<div class="assessment-v3-actions"><button type="button" class="soft-btn" data-protocol-cancel>Cancelar</button><button class="primary">Salvar no prontuário</button></div></form>');
+ var form=w.querySelector('#protocolAssessmentForm'),input=w.querySelector('[data-protocol-file]'),msg=w.querySelector('[data-protocol-message]');
+ w.querySelector('[data-protocol-file-btn]').onclick=function(){input.click();};
+ input.onchange=async function(){if(!input.files||!input.files[0])return;try{attachment=await uploadProtocolAttachment(input.files[0],pid,x.id,msg);msg.className='assessment-builder-message success';msg.textContent='Documento anexado. Ele será vinculado a este registro ao salvar.';}catch(err){msg.className='assessment-builder-message error';msg.textContent=String(err.message||err);}};
+ var open=w.querySelector('[data-protocol-open]');if(open)open.onclick=function(){openProtocolAttachment(attachment);};
+ w.querySelector('[data-protocol-cancel]').onclick=function(){w.remove();};
+ form.onsubmit=function(e){e.preventDefault();var fd=new FormData(form),obj={
+   id:existing.id||uid(),patientId:pid,kind:fd.get('kind'),date:fd.get('date'),professional:existing.professional||pro.name,professionalId:existing.professionalId||pro.id,professionalName:existing.professionalName||pro.name,
+   mainArea:x.area,protocolId:x.id,protocolName:x.name,protocols:x.name,protocolAttachment:attachment,
+   subtests:abfw?{fonologia:!!fd.get('sub_fonologia'),vocabulario:!!fd.get('sub_vocabulario'),fluencia:!!fd.get('sub_fluencia'),pragmatica:!!fd.get('sub_pragmatica')}:null,
+   results:fd.get('results'),notes:fd.get('notes'),summary:fd.get('summary'),conclusion:fd.get('summary'),plan:fd.get('plan'),createdAt:existing.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()
+ };var idx=d.assessments.findIndex(function(a){return a.id===obj.id;});if(idx>=0)d.assessments[idx]=obj;else d.assessments.push(obj);save(d);w.remove();renderPatientAssessments(pid);mountPage(true);};
+}
+function chooseProtocol(pid){
+ var w=modal('<div class="assessment-v3-head"><div><small>BIBLIOTECA CLÍNICA</small><h2>Protocolos e testes</h2><p>Escolha um instrumento para registrar a aplicação no prontuário.</p></div></div>'+protocolCards(pid));
+ w.querySelectorAll('[data-protocol]').forEach(function(b){b.onclick=function(){protocolForm(pid,b.getAttribute('data-protocol'));};});
+}
 function chooseAssessmentType(pid){
   var d=load(),templates=d.assessmentTemplates||[];
   var w=modal(
     '<div class="assessment-v3-head"><div><small>NOVA AVALIAÇÃO</small><h2>Escolha o modelo</h2><p>Use a avaliação completa do Fonely ou um modelo criado pela profissional.</p></div></div>'+
+    '<button class="assessment-model-choice protocol" data-use-protocol><div>▦</div><span><small>BIBLIOTECA CLÍNICA</small><b>Protocolos e testes</b><p>ABFW, IDV-10, FOIS e outros registros clínicos.</p></span><strong>→</strong></button>'+
     '<button class="assessment-model-choice fonely" data-use-fonely><div>◇</div><span><small>MODELO FONELY</small><b>Avaliação clínica completa</b><p>Parte geral + módulo específico por área.</p></span><strong>→</strong></button>'+
     '<div class="assessment-model-divider"><span>MEUS MODELOS</span></div>'+
     (templates.length?'<div class="assessment-model-choices">'+templates.map(function(t){return '<button class="assessment-model-choice" data-use-custom="'+t.id+'"><div>'+(t.mode==='document'?'▤':'☷')+'</div><span><small>'+(t.mode==='document'?'DOCUMENTO':'FORMULÁRIO')+'</small><b>'+esc(t.name)+'</b><p>'+esc(t.description||'Modelo personalizado')+'</p></span><strong>→</strong></button>';}).join('')+'</div>':'<div class="assessment-template-empty compact"><b>Você ainda não criou modelos</b><span>Crie um em Avaliações → Criar meu modelo.</span></div>')
   );
+  w.querySelector('[data-use-protocol]').onclick=function(){chooseProtocol(pid);};
   w.querySelector('[data-use-fonely]').onclick=function(){assessmentForm(pid);};
   w.querySelectorAll('[data-use-custom]').forEach(function(btn){btn.onclick=function(){var id=btn.getAttribute('data-use-custom'),t=load().assessmentTemplates.find(function(x){return x.id===id;});if(t)customAssessmentForm(pid,t);};});
 }
@@ -840,6 +905,7 @@ function pageHTML(){
   var latest=d.assessments.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');});
   return '<section class="fonely-assessment-v3">'+
     '<div class="assessment-v3-page-hero"><div><small>AVALIAÇÃO CLÍNICA · FONELY</small><h2>Avaliação completa ou do seu jeito</h2><p>Use o modelo clínico do Fonely ou crie seus próprios formulários e documentos para reutilizar em qualquer paciente.</p></div><div class="assessment-v3-hero-actions"><button class="soft-btn" data-page-new-template>+ Criar meu modelo</button><button class="primary" data-page-new>+ Nova avaliação</button></div></div>'+
+    '<article class="panel assessment-protocol-panel"><div class="panel-title"><div><small>BIBLIOTECA CLÍNICA</small><h3>Protocolos e testes</h3></div><span class="assessment-protocol-note">Registre resultados sem reproduzir material protegido</span></div>'+protocolCards('')+'</article>'+
     '<div class="assessment-v3-stats"><div><b>'+total+'</b><span>Avaliações</span></div><div><b>'+re+'</b><span>Reavaliações</span></div><div><b>'+Object.keys(patients).length+'</b><span>Pacientes avaliados</span></div></div>'+
     '<article class="panel assessment-template-panel"><div class="panel-title"><div><small>PERSONALIZAÇÃO</small><h3>Meus modelos</h3></div><button class="soft-btn" data-page-new-template>+ Novo modelo</button></div>'+templateCards(d)+'</article>'+
     '<article class="panel assessment-v3-page-panel"><div class="panel-title"><h3>Histórico de avaliações</h3><select data-assessment-filter><option value="">Todos os pacientes</option>'+d.patients.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('')+'</select></div><div data-assessment-page-list>'+pageList(d,latest)+'</div></article>'+
@@ -855,6 +921,7 @@ function bindPageList(host){
 }
 function bindPage(host){
   var d=load(),newBtn=host.querySelector('[data-page-new]');if(newBtn)newBtn.onclick=choosePatient;
+  host.querySelectorAll('.assessment-protocol-panel [data-protocol]').forEach(function(btn){btn.onclick=function(){var id=btn.getAttribute('data-protocol');if(!d.patients.length){alert('Cadastre um paciente antes de registrar um protocolo.');return;}var w=modal('<div class="assessment-v3-head"><div><small>'+esc(protocolById(id).name)+'</small><h2>Escolha o paciente</h2></div></div><label>Paciente<select data-protocol-patient>'+d.patients.map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>';}).join('')+'</select></label><div class="assessment-v3-actions"><button class="primary" data-protocol-go>Continuar</button></div>');w.querySelector('[data-protocol-go]').onclick=function(){protocolForm(w.querySelector('[data-protocol-patient]').value,id);};};});
   host.querySelectorAll('[data-page-new-template]').forEach(function(btn){btn.onclick=function(){templateBuilder();};});
   bindTemplateCards(host);
   var filter=host.querySelector('[data-assessment-filter]');
