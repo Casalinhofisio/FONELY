@@ -325,7 +325,13 @@ function normalize(a){
   return a;
 }
 
+function finishAssessmentSave(pid,openedFromAssessmentsPage){
+  if(openedFromAssessmentsPage){mountPage(true);return;}
+  renderPatientAssessments(pid);
+  mountPage(true);
+}
 function assessmentForm(pid,existing){
+  var openedFromAssessmentsPage=!!document.querySelector('.fonely-assessment-v3');
   var d=load(),p=d.patients.find(function(x){return x.id===pid;});if(!p)return;
   existing=normalize(existing||{});
   var pro=currentProfessional(),authorName=existing.professionalName||existing.professional||pro.name,authorId=existing.professionalId||pro.id;
@@ -425,8 +431,7 @@ function assessmentForm(pid,existing){
     if(idx>=0)d.assessments[idx]=obj;else d.assessments.push(obj);
     save(d);
     w.remove();
-    renderPatientAssessments(pid);
-    mountPage(true);
+    finishAssessmentSave(pid,openedFromAssessmentsPage);
   };
 }
 
@@ -745,6 +750,7 @@ function collectCustomAnswers(form,t){
   return out;
 }
 function customAssessmentForm(pid,t,existing){
+  var openedFromAssessmentsPage=!!document.querySelector('.fonely-assessment-v3');
   var d=load(),p=d.patients.find(function(x){return x.id===pid;});if(!p)return;
   t=normalizeTemplate(JSON.parse(JSON.stringify(t)));existing=existing||{};
   var pro=currentProfessional(),authorName=existing.professionalName||existing.professional||pro.name,authorId=existing.professionalId||pro.id;
@@ -796,7 +802,7 @@ function customAssessmentForm(pid,t,existing){
       createdAt:existing.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()
     };
     var data=load(),idx=data.assessments.findIndex(function(x){return x.id===obj.id;});if(idx>=0)data.assessments[idx]=obj;else data.assessments.push(obj);
-    save(data);w.remove();renderPatientAssessments(pid);mountPage(true);
+    save(data);w.remove();finishAssessmentSave(pid,openedFromAssessmentsPage);
   };
 }
 function customAssessmentRead(a){
@@ -838,6 +844,7 @@ async function openProtocolAttachment(att){
  window.open(r.data.signedUrl,'_blank','noopener');
 }
 function protocolForm(pid,protocolId,existing){
+ var openedFromAssessmentsPage=!!document.querySelector('.fonely-assessment-v3');
  var x=protocolById(protocolId),d=load(),p=d.patients.find(function(q){return q.id===pid;});if(!x||!p)return;
  existing=existing||{};var attachment=existing.protocolAttachment||null,pro=currentProfessional();
  var abfw=x.id==='abfw';
@@ -860,7 +867,7 @@ function protocolForm(pid,protocolId,existing){
    mainArea:x.area,protocolId:x.id,protocolName:x.name,protocols:x.name,protocolAttachment:attachment,
    subtests:abfw?{fonologia:!!fd.get('sub_fonologia'),vocabulario:!!fd.get('sub_vocabulario'),fluencia:!!fd.get('sub_fluencia'),pragmatica:!!fd.get('sub_pragmatica')}:null,
    results:fd.get('results'),notes:fd.get('notes'),summary:fd.get('summary'),conclusion:fd.get('summary'),plan:fd.get('plan'),createdAt:existing.createdAt||new Date().toISOString(),updatedAt:new Date().toISOString()
- };var idx=d.assessments.findIndex(function(a){return a.id===obj.id;});if(idx>=0)d.assessments[idx]=obj;else d.assessments.push(obj);save(d);w.remove();renderPatientAssessments(pid);mountPage(true);};
+ };var idx=d.assessments.findIndex(function(a){return a.id===obj.id;});if(idx>=0)d.assessments[idx]=obj;else d.assessments.push(obj);save(d);w.remove();finishAssessmentSave(pid,openedFromAssessmentsPage);};
 }
 function chooseProtocol(pid){
  var w=modal('<div class="assessment-v3-head"><div><small>BIBLIOTECA CLÍNICA</small><h2>Protocolos e testes</h2><p>Escolha um instrumento para registrar a aplicação no prontuário.</p></div></div>'+protocolCards(pid));
