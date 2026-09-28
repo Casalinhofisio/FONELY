@@ -74,11 +74,11 @@ function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;ret
 function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
-function hasProPlan(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
+function hasTeamAccess(){var e=window.FonelyEntitlements||{};return !!(e.active&&Number(e.teamSeats||0)>0);}
 function canOpenPage(page){
-  if(page==='equipe'&&!hasProPlan())return false;
+  if(page==='equipe'&&!hasTeamAccess())return false;
   var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
-  if(page==='equipe')return isWorkspaceOwner()&&hasProPlan();
+  if(page==='equipe')return isWorkspaceOwner()&&hasTeamAccess();
   return map[page]?canAccess(map[page]):true;
 }
 
@@ -89,7 +89,7 @@ function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
-  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico');
+  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.status==='active'||access.status==='trialing'?'Fonely':'Assinatura inativa');
   var avatar=profile.avatar_url
     ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
     :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
