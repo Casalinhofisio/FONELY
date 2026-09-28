@@ -115,3 +115,31 @@ grant execute on function public.billing_create_order(text,text) to authenticate
 -- O webhook deverá marcar billing_orders como paid usando service_role e então:
 -- base: ativa por 365 dias; pro: ativa Pro e mantém/estende a validade conforme a regra do pedido.
 -- Nunca confiar no redirecionamento do navegador para liberar acesso.
+
+
+-- Atomic payment activation: call only from a verified provider webhook/service role.
+create or replace function public.billing_activate_paid_order(p_order_id uuid)
+returns void language plpgsql security definer set search_path=pg_catalog,public as $$
+declare o public.billing_orders;
+begin
+  if auth.role() <> 'service_role' then raise exception 'service role required'; end if;
+  select * into o from public.billing_orders where id=p_order_id for update;
+  if o.id is null or o.status<>'paid' then raise exception 'paid order required'; end if;
+
+  insert into public.account_access(user_id,plan_tier,status,plan_started_at,plan_ends_at,plan_price_cents,last_order_id,coupon_code)
+  values(o.user_id,o.to_plan,'active',coalesce(o.paid_at,now()),coalesce(o.paid_at,now())+interval '1 year',o.amount_cents,o.id,o.coupon_code)
+  on conflict(user_id) do update set
+    plan_tier=excluded.plan_tier,
+    status='active',
+    plan_started_at=case when o.kind='upgrade' then public.account_access.plan_started_at else excluded.plan_started_at end,
+    plan_ends_at=case when o.kind='upgrade' and public.account_access.plan_ends_at>now() then public.account_access.plan_ends_at else excluded.plan_ends_at end,
+    plan_price_cents=excluded.plan_price_cents,
+    last_order_id=o.id,
+    coupon_code=o.coupon_code,
+    updated_at=now();
+
+  if o.coupon_code is not null then
+    update public.billing_coupons set redemptions=redemptions+1 where upper(code)=upper(o.coupon_code);
+  end if;
+end $$;
+revoke all on function public.billing_activate_paid_order(uuid) from public,anon,authenticated;
