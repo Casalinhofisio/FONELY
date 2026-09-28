@@ -2,6 +2,13 @@
 'use strict';
 var APP_KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1',CAA_KEY=window.FONELY_CAA_KEY||'fonely_caa_v1',PLAN_KEY=window.FONELY_PLAN_KEY||'fonely_plan_v1';
 var CAA_UI_KEY='fonely_caa_ui_v1_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||CAA_KEY);
+function hasPro(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
+function requirePro(){
+  if(hasPro())return true;
+  if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();
+  else alert('O Fonely CAA é exclusivo do plano Pro.');
+  return false;
+}
 var manager={patientId:null,tab:'board',search:'',category:'Todas',previewCategory:'Todas',customImage:null,customAudio:null,recording:false,recorder:null,chunks:[],draggingId:null,restoring:false};
 function caaRouteFromURL(){
   try{
@@ -134,7 +141,7 @@ function openCAAList(restoring){saveCAAUI('list');
   var w=document.createElement('div');w.className='caa-overlay';w.id='fonelyCAAOverlay';w.innerHTML='<div class="caa-shell"><div class="caa-topbar"><button class="caa-btn" data-caa-close>← Voltar</button><div class="grow"><h2>Fonely CAA</h2><p>Pacientes com comunicação aumentativa ativada</p></div><span class="caa-pro-badge">PRO</span></div><div class="caa-panel" style="margin-top:18px">'+(rows?'<div class="patient-list">'+rows+'</div>':'<div class="caa-empty"><b>Nenhum CAA ativo</b><span>Ative pelo prontuário de um paciente.</span></div>')+'</div></div>';
   document.body.appendChild(w);w.onclick=function(e){var b=e.target.closest('[data-open-caa]');if(b){w.remove();openManager(b.getAttribute('data-open-caa'));}if(e.target.closest('[data-caa-close]')){clearCAAUI();w.remove();}};
 }
-function openManager(pid,restoring){var remembered=loadCAAUI();manager.patientId=pid;manager.tab=restoring&&remembered&&remembered.patientId===pid?(remembered.tab||'board'):'board';manager.previewCategory='Todas';updateProfile(pid,function(x){x.settings=x.settings||defaultSettings();x.settings.speakOnTap=true;x.settings.addToPhrase=false;});saveCAAUI('manager');renderManager();}
+function openManager(pid,restoring){if(!requirePro())return;var remembered=loadCAAUI();manager.patientId=pid;manager.tab=restoring&&remembered&&remembered.patientId===pid?(remembered.tab||'board'):'board';manager.previewCategory='Todas';updateProfile(pid,function(x){x.settings=x.settings||defaultSettings();x.settings.speakOnTap=true;x.settings.addToPhrase=false;});saveCAAUI('manager');renderManager();}
 function tabs(){return [['board','Prancha'],['library','Biblioteca'],['custom','Personalizar'],['history','Histórico'],['usage','Uso'],['share','Compartilhar']];}
 function renderManager(){
   var p=profile(manager.patientId),pt=patient(manager.patientId);if(!p)return;
