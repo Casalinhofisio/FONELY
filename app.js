@@ -74,9 +74,11 @@ function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;ret
 function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
+function hasProPlan(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
 function canOpenPage(page){
+  if(page==='equipe'&&!hasProPlan())return false;
   var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
-  if(page==='equipe')return isWorkspaceOwner();
+  if(page==='equipe')return isWorkspaceOwner()&&hasProPlan();
   return map[page]?canAccess(map[page]):true;
 }
 
