@@ -449,16 +449,15 @@ async function prepareWorkspace(user){
   }
 
   // Server-loaded plan is the single source of truth. Never elevate access from localStorage.
-  var serverPlan=(accessData.status==='active'||accessData.status==='trialing')&&accessData.plan_tier==='pro'?'pro':'base';
+  var hasActiveAccess=(accessData.status==='active'||accessData.status==='trialing');
+  var serverPlan=hasActiveAccess?'fonely':'inactive';
   accessData.plan_tier=serverPlan;
   window.FONELY_PLAN_TIER=serverPlan;
   window.FonelyEntitlements={
     plan:serverPlan,
-    isPro:serverPlan==='pro',
-    can:function(feature){
-      var proOnly={caa:true,team:true,advanced_protocols:true};
-      return !proOnly[feature]||serverPlan==='pro';
-    }
+    active:hasActiveAccess,
+    teamSeats:Number(accessData.team_member_limit||0),
+    can:function(){return hasActiveAccess;}
   };
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
