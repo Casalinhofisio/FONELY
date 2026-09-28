@@ -209,3 +209,8 @@
   .layout>aside nav button{min-width:62px!important;flex-basis:62px!important;font-size:8px!important}
   .patient-map,.clinical-grid,.quick{grid-template-columns:1fr!important}
 }
+
+/* Anamnese estruturada */
+.anam-head{display:flex;justify-content:space-between;gap:16px;margin-bottom:14px}.anam-updated{display:block;margin-top:4px;font-size:12px;color:var(--muted,#776d67)}
+.anam-form{display:grid;gap:10px}.anam-section{border:1px solid rgba(74,52,42,.12);border-radius:16px;background:#fff;overflow:hidden}.anam-section summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:15px 16px;list-style:none;background:#fbf7f2}.anam-section summary::-webkit-details-marker{display:none}.anam-section[open] summary{border-bottom:1px solid rgba(74,52,42,.09)}.anam-section-body{padding:16px;display:grid;gap:12px}.anam-yn{display:grid;grid-template-columns:1fr 1fr;gap:12px}.anam-doc-note{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.anam-doc-note span{flex:1;min-width:220px;color:var(--muted,#776d67);font-size:13px}.anam-history{padding:12px 15px;border:1px dashed rgba(74,52,42,.2);border-radius:14px}.anam-history summary{cursor:pointer;font-weight:700}.anam-history p{margin:8px 0;font-size:13px}.anam-savebar{position:sticky;bottom:0;padding:10px 0;background:linear-gradient(transparent,#fff 30%);z-index:2}.anam-savebar .primary{width:100%}
+@media(max-width:680px){.anam-section-body{padding:13px}.anam-yn{grid-template-columns:1fr}.anam-section summary{padding:13px}.anam-form .two{grid-template-columns:1fr}.anam-savebar{padding-bottom:max(10px,env(safe-area-inset-bottom))}}
