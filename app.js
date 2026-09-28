@@ -506,6 +506,7 @@ function bind(){
   var nf=document.getElementById('financeFilter');if(nf){nf.value=state.financePatient||'';nf.onchange=function(){state.financePatient=this.value||null;render();};}
   var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){if(canAccess('finance'))packageForm();};
   var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){if(canAccess('finance'))paymentForm();};
+  var subBilling=document.getElementById('subscriptionOpenBilling');if(subBilling)subBilling.onclick=function(){if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();};
   var nt=document.getElementById('newTeam');if(nt&&!nt.disabled)nt.onclick=function(){teamForm();};
   document.querySelectorAll('[data-team-edit]').forEach(function(b){b.onclick=function(){var t=(window.FonelyTeamMembers||[]).find(function(x){return x.id===b.getAttribute('data-team-edit');});if(t)teamForm(t);};});
   document.querySelectorAll('[data-team-remove]').forEach(function(b){b.onclick=function(){removeTeamMember(b.getAttribute('data-team-remove'));};});
