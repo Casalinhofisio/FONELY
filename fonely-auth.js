@@ -448,7 +448,18 @@ async function prepareWorkspace(user){
     }catch(e){console.warn('Fonely: não foi possível carregar a equipe.',e);}
   }
 
-  window.FONELY_PLAN_TIER=accessData.plan_tier||'base';
+  // Server-loaded plan is the single source of truth. Never elevate access from localStorage.
+  var serverPlan=(accessData.status==='active'||accessData.status==='trialing')&&accessData.plan_tier==='pro'?'pro':'base';
+  accessData.plan_tier=serverPlan;
+  window.FONELY_PLAN_TIER=serverPlan;
+  window.FonelyEntitlements={
+    plan:serverPlan,
+    isPro:serverPlan==='pro',
+    can:function(feature){
+      var proOnly={caa:true,team:true,advanced_protocols:true};
+      return !proOnly[feature]||serverPlan==='pro';
+    }
+  };
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
   window.FonelyAccount={user:user,profile:profileData,access:accessData,team:teamContext};
