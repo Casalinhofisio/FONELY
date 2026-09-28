@@ -48,18 +48,19 @@ async function upgradePictograms(board){
 }
 function cardTone(c){
   if(c&&c.aacTone)return String(c.aacTone);
-  var id=String(c&&c.id||'').toLowerCase(),cat=String(c&&c.category||'').toLowerCase(),label=String(c&&c.label||'').toLowerCase();
-  if(/^(no|dont-want|pain|help)$/.test(id)||/não|nao|dor|ajuda|socorro|parar/.test(label))return 'red';
-  if(id==='more')return 'blue';
-  if(/^(yes|finished)$/.test(id))return 'pink';
-  if(/^(eat|sleep|want|go-out|play)$/.test(id))return 'green';
-  if(/^(water|toilet|phone|ball|bread|rice|beans|fruit|milk|juice|home|school)$/.test(id))return 'orange';
+  var cls=String(c&&c.wordClass||'').toLowerCase(),cat=String(c&&c.category||'').toLowerCase();
+  if(cls==='person'||cls==='pronoun')return 'yellow';
+  if(cls==='verb'||cls==='action')return 'green';
+  if(cls==='noun')return 'orange';
+  if(cls==='descriptor'||cls==='adjective'||cls==='emotion')return 'blue';
+  if(cls==='social')return 'pink';
+  if(cls==='question')return 'purple';
+  if(cls==='negative'||cls==='important')return 'red';
   if(cat==='pessoas')return 'yellow';
   if(cat==='ações'||cat==='acoes'||cat==='atividades')return 'green';
   if(cat==='emoções'||cat==='emocoes')return 'blue';
   if(cat==='lugares'||cat==='objetos'||cat==='alimentação'||cat==='alimentacao'||cat==='bebidas'||cat==='necessidades')return 'orange';
   if(cat==='respostas')return 'pink';
-  if(/onde|quem|qual|quando|por que|porque/.test(label))return 'purple';
   return 'white';
 }
 function unavailable(title,text){document.body.innerHTML='<main class="cp-status"><div><h1>'+esc(title)+'</h1><p>'+esc(text)+'</p></div></main>';}
