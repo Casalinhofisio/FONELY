@@ -23,7 +23,15 @@
 </head>
 <body>
 <div id="app"><div class="boot"><img src="fonely-logo-official.svg" alt="Fonely"><span>Preparando seu espaço</span><div class="boot-loader"><i></i></div></div></div>
-<script src="fonely-auth.js?v=33"></script>
+<script>
+setTimeout(function(){
+  var app=document.getElementById('app');
+  if(app&&app.querySelector('.boot')){
+    app.innerHTML='<div style="max-width:520px;margin:15vh auto;padding:28px;font-family:DM Sans,Arial;text-align:center"><img src="fonely-logo-official.svg" alt="Fonely" style="width:190px;max-width:80%;margin-bottom:22px"><h2 style="color:#46382f">O carregamento demorou demais</h2><p style="color:#8c7971;line-height:1.6">Não vamos deixar o Fonely preso nesta tela. Tente entrar novamente.</p><button onclick="localStorage.removeItem(\'sb-apjmkstuffzgfhgcxhvt-auth-token\');location.reload()" style="border:0;border-radius:12px;padding:13px 20px;background:#c98a70;color:white;font-weight:800;cursor:pointer">Voltar ao login</button></div>';
+  }
+},15000);
+</script>
+<script src="fonely-auth.js?v=34"></script>
 <script src="fonely-billing.js?v=2"></script>
 </body>
 </html>
