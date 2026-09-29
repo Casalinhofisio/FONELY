@@ -200,7 +200,7 @@ function accountDate(value){
   if(!value)return 'Sem vencimento';
   try{return new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return '—';}
 }
-function accountPlanLabel(){return 'Fonely';}
+function accountPlanLabel(tier){return tier==='pro'?'Fonely Pro':'Fonely Básico';}
 function accountStatusLabel(status){
   return {active:'Ativo',trialing:'Período de teste',past_due:'Pagamento pendente',inactive:'Inativo'}[status]||'Ativo';
 }
@@ -301,13 +301,13 @@ function openAccountPanel(){
     ?'<div class="fe-account-grid">'+
        '<div><small>VÍNCULO</small><b>Membro da equipe</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+((access.status==='active'||access.status==='trialing')?'Liberado pela clínica':'Assinatura inativa')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado pela clínica':'Conforme o plano da clínica')+'</b></div>'+
        '<div><small>FINANCEIRO GERAL</small><b>'+(team.permissions&&team.permissions.finance?'Liberado pela proprietária':'Sem acesso')+'</b></div>'+
       '</div>'
     :'<div class="fe-account-grid">'+
        '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+((access.status==='active'||access.status==='trialing')?'Liberado':'Assinatura inativa')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
        '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
       '</div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
@@ -346,15 +346,6 @@ window.FonelyAccountUI={open:openAccountPanel};
 
 async function prepareWorkspace(user){
   window.FONELY_USER_ID=user.id;
-  var bootFallback=setTimeout(function(){
-    if(!appLoaded){
-      console.warn('Fonely: workspace remoto lento; liberando carregamento local.');
-      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
-      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
-      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
-      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
-    }
-  },4000);
 
   var membership=null;
   try{
@@ -471,7 +462,6 @@ async function prepareWorkspace(user){
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
   window.FonelyAccount={user:user,profile:profileData,access:accessData,team:teamContext};
-  clearTimeout(bootFallback);
 
   window.FonelyCloud={
     saveWorkspace:function(data){
@@ -530,17 +520,7 @@ async function loadApp(user){
   if(appLoaded)return;
   if(appLoadPromise)return appLoadPromise;
   appLoadPromise=(async function(){
-    // Do not let a slow workspace/network request hold the whole UI on the splash screen.
-    var workspaceReady=false;
-    var workspacePromise=prepareWorkspace(user).then(function(){workspaceReady=true;}).catch(function(e){console.warn('Fonely workspace:',e);});
-    await Promise.race([workspacePromise,new Promise(function(resolve){setTimeout(resolve,5000);})]);
-    if(!workspaceReady){
-      window.FONELY_USER_ID=user.id;
-      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
-      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
-      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
-      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
-    }
+    await prepareWorkspace(user);
     var entry=document.getElementById('fonelyEntry');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
@@ -666,10 +646,8 @@ try{
       setTab('login');
       return;
     }
-    // SIGNED_IN can fire while getSession() is still resolving.
-    // Let the single bootstrap path below load the app to avoid two concurrent workspace loads.
     if(event==='SIGNED_IN'&&session&&session.user&&!recoveryMode){
-      return;
+      loadApp(session.user);
     }
   });
 
