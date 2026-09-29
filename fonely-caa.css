@@ -196,3 +196,11 @@
 .caa-board-row.tone-white{background:#f7f7f5!important}
 .caa-board-row img{background:rgba(255,255,255,.48)!important;border-color:rgba(62,43,37,.12)!important}
 .caa-board-row .caa-row-actions button{background:rgba(255,255,255,.68)!important}
+
+/* visual polish */
+.caa-overlay{background:linear-gradient(180deg,#faf7f4,#f6f0ec)}.caa-topbar{box-shadow:0 12px 36px rgba(62,43,37,.075)}
+.caa-panel{box-shadow:0 8px 24px rgba(62,43,37,.035)}
+.caa-btn:hover{background:#fff8f4;border-color:#d9c6bc;transform:translateY(-1px)}.caa-btn.primary:hover{background:#b85f47}
+.caa-tabs button:hover{border-color:#d9c6bc;background:#fffaf7}.caa-tabs button.active:hover{background:#3e2b25}
+.caa-lib-card,.caa-comm-card,.caa-board-row{transition:.18s ease}.caa-lib-card:hover,.caa-comm-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(62,43,37,.075)}
+@media(max-width:700px){.caa-overlay{background:#f8f3ef}.caa-panel{border-radius:18px}.caa-topbar{border-radius:17px}}
