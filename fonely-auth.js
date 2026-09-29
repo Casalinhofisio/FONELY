@@ -29,12 +29,6 @@ function esc(v){
   });
 }
 
-function withTimeout(promise,ms,label){
-  return Promise.race([
-    promise,
-    new Promise(function(_,reject){setTimeout(function(){reject(new Error((label||'Operação')+' demorou demais.'));},ms);})
-  ]);
-}
 function loadScript(src){
   return new Promise(function(resolve,reject){
     if(document.querySelector('script[data-fonely-app="'+src+'"]')){resolve();return;}
@@ -307,13 +301,13 @@ function openAccountPanel(){
     ?'<div class="fe-account-grid">'+
        '<div><small>VÍNCULO</small><b>Membro da equipe</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.active?'Liberado pela clínica':'Assinatura inativa')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+((access.status==='active'||access.status==='trialing')?'Liberado pela clínica':'Assinatura inativa')+'</b></div>'+
        '<div><small>FINANCEIRO GERAL</small><b>'+(team.permissions&&team.permissions.finance?'Liberado pela proprietária':'Sem acesso')+'</b></div>'+
       '</div>'
     :'<div class="fe-account-grid">'+
        '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.active?'Liberado':'Assinatura inativa')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+((access.status==='active'||access.status==='trialing')?'Liberado':'Assinatura inativa')+'</b></div>'+
        '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
       '</div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
@@ -458,7 +452,6 @@ async function prepareWorkspace(user){
   var hasActiveAccess=(accessData.status==='active'||accessData.status==='trialing');
   var serverPlan=hasActiveAccess?'fonely':'inactive';
   accessData.plan_tier=serverPlan;
-  accessData.active=hasActiveAccess;
   window.FONELY_PLAN_TIER=serverPlan;
   window.FonelyEntitlements={
     plan:serverPlan,
@@ -527,22 +520,11 @@ async function loadApp(user){
   if(appLoaded)return;
   if(appLoadPromise)return appLoadPromise;
   appLoadPromise=(async function(){
-    try{
-      await withTimeout(prepareWorkspace(user),12000,'Carregamento do espaço');
-    }catch(e){
-      console.warn('Fonely: seguindo com modo de recuperação local.',e);
-      window.FONELY_USER_ID=user.id;
-      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
-      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
-      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
-      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
-      window.FonelyEntitlements=window.FonelyEntitlements||{plan:'fonely',active:true,teamSeats:0,can:function(){return true;}};
-      window.FonelyAccount=window.FonelyAccount||{user:user,profile:{full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email||''},access:{status:'active',active:true,plan_tier:'fonely'},team:{isOwner:true,ownerId:user.id,permissions:{patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:true,reports:true,manage_team:true}}};
-    }
+    await prepareWorkspace(user);
     var entry=document.getElementById('fonelyEntry');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
-    for(var i=0;i<APP_SCRIPTS.length;i++)await withTimeout(loadScript(APP_SCRIPTS[i]),10000,'Arquivo '+APP_SCRIPTS[i]);
+    for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
     appLoaded=true;
     mountAccount(user);
     if(inviteMode)setTimeout(showTeamInviteSetup,80);
@@ -645,7 +627,7 @@ function bindAuth(w){
 }
 
 try{
-  await withTimeout(ensureSupabase(),8000,'Conexão com o servidor');
+  await ensureSupabase();
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
@@ -669,15 +651,7 @@ try{
     }
   });
 
-  var sessionResult;
-  try{
-    sessionResult=await withTimeout(sb.auth.getSession(),8000,'Verificação da sessão');
-  }catch(sessionErr){
-    console.warn('Fonely: sessão demorou demais; exibindo login.',sessionErr);
-    mountAuth();
-    setMessage('A conexão demorou mais que o esperado. Entre novamente para continuar.','error');
-    return;
-  }
+  var sessionResult=await sb.auth.getSession();
   if(recoveryMode){
     showRecovery();
   }else if(sessionResult.data&&sessionResult.data.session){
@@ -686,7 +660,7 @@ try{
     mountAuth();
   }
 }catch(err){
-  console.error('Fonely bootstrap error:',err);
+  console.error(err);
   mountAuth();
   setMessage('Não foi possível conectar ao servidor do Fonely agora. Atualize a página e tente novamente.','error');
 }
