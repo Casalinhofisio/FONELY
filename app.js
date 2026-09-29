@@ -84,7 +84,7 @@ function canOpenPage(page){
 
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
-var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','
+var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe'],['assinatura','◈','Assinatura e equipe']];
 function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
