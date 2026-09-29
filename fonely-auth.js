@@ -649,15 +649,8 @@ function bindAuth(w){
   };
 }
 
-setTimeout(function(){
-  var app=document.getElementById('app');
-  if(app&&app.querySelector('.boot')&&!authMounted&&!appLoaded){
-    try{
-      mountAuth();
-      setMessage('O carregamento demorou mais que o esperado. Entre novamente para continuar.','error');
-    }catch(e){console.error(e);}
-  }
-},12000);
+// Never leave the user stuck on the splash screen while network/auth starts.
+try{mountAuth();}catch(e){console.error(e);}
 
 try{
   await ensureSupabase();
