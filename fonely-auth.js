@@ -29,28 +29,44 @@ function esc(v){
   });
 }
 
+function withTimeout(promise,ms,label){
+  return Promise.race([
+    promise,
+    new Promise(function(_,reject){setTimeout(function(){reject(new Error((label||'Operação')+' demorou demais.'));},ms);})
+  ]);
+}
 function loadScript(src){
   return new Promise(function(resolve,reject){
     if(document.querySelector('script[data-fonely-app="'+src+'"]')){resolve();return;}
-    var s=document.createElement('script');
+    var s=document.createElement('script'),done=false;
+    var timer=setTimeout(function(){if(done)return;done=true;s.remove();reject(new Error('Tempo esgotado ao carregar '+src));},10000);
     s.src=src;
     s.async=false;
     s.dataset.fonelyApp=src;
-    s.onload=resolve;
-    s.onerror=reject;
+    s.onload=function(){if(done)return;done=true;clearTimeout(timer);resolve();};
+    s.onerror=function(){if(done)return;done=true;clearTimeout(timer);reject(new Error('Falha ao carregar '+src));};
     document.body.appendChild(s);
   });
 }
 
 async function ensureSupabase(){
   if(window.supabase)return;
-  await new Promise(function(resolve,reject){
-    var s=document.createElement('script');
-    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    s.onload=resolve;
-    s.onerror=reject;
-    document.head.appendChild(s);
-  });
+  var urls=['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js'];
+  var last=null;
+  for(var i=0;i<urls.length;i++){
+    try{
+      await new Promise(function(resolve,reject){
+        var s=document.createElement('script'),done=false;
+        var timer=setTimeout(function(){if(done)return;done=true;s.remove();reject(new Error('Tempo esgotado ao conectar ao servidor.'));},8000);
+        s.src=urls[i];
+        s.onload=function(){if(done)return;done=true;clearTimeout(timer);resolve();};
+        s.onerror=function(){if(done)return;done=true;clearTimeout(timer);reject(new Error('Falha ao carregar conexão.'));};
+        document.head.appendChild(s);
+      });
+      if(window.supabase)return;
+    }catch(e){last=e;}
+  }
+  throw last||new Error('Não foi possível carregar a conexão do Fonely.');
 }
 
 function authHTML(){
@@ -521,7 +537,13 @@ async function loadApp(user){
   if(appLoaded)return;
   if(appLoadPromise)return appLoadPromise;
   appLoadPromise=(async function(){
-    await prepareWorkspace(user);
+    window.FONELY_USER_ID=user.id;
+    window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
+    window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
+    window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
+    window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
+    if(!window.FonelyAccount)window.FonelyAccount={user:user,profile:{full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email||''},access:{status:'active',plan_tier:'base',team_member_limit:0},team:{isOwner:true,ownerId:user.id,permissions:{patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:true,reports:true,manage_team:true}}};
+    try{await withTimeout(prepareWorkspace(user),7000,'Carregamento da conta');}catch(e){console.warn('Fonely: seguindo com carregamento local após demora do servidor.',e);}
     var entry=document.getElementById('fonelyEntry');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
@@ -627,6 +649,16 @@ function bindAuth(w){
   };
 }
 
+setTimeout(function(){
+  var app=document.getElementById('app');
+  if(app&&app.querySelector('.boot')&&!authMounted&&!appLoaded){
+    try{
+      mountAuth();
+      setMessage('O carregamento demorou mais que o esperado. Entre novamente para continuar.','error');
+    }catch(e){console.error(e);}
+  }
+},12000);
+
 try{
   await ensureSupabase();
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
@@ -652,7 +684,7 @@ try{
     }
   });
 
-  var sessionResult=await sb.auth.getSession();
+  var sessionResult=await withTimeout(sb.auth.getSession(),6000,'Verificação da sessão');
   if(recoveryMode){
     showRecovery();
   }else if(sessionResult.data&&sessionResult.data.session){
