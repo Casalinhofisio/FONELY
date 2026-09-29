@@ -200,7 +200,7 @@ function accountDate(value){
   if(!value)return 'Sem vencimento';
   try{return new Date(value).toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});}catch(e){return '—';}
 }
-function accountPlanLabel(tier){return tier==='pro'?'Fonely Pro':'Fonely Básico';}
+function accountPlanLabel(){return 'Fonely';}
 function accountStatusLabel(status){
   return {active:'Ativo',trialing:'Período de teste',past_due:'Pagamento pendente',inactive:'Inativo'}[status]||'Ativo';
 }
@@ -301,13 +301,13 @@ function openAccountPanel(){
     ?'<div class="fe-account-grid">'+
        '<div><small>VÍNCULO</small><b>Membro da equipe</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado pela clínica':'Conforme o plano da clínica')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.active?'Liberado pela clínica':'Assinatura inativa')+'</b></div>'+
        '<div><small>FINANCEIRO GERAL</small><b>'+(team.permissions&&team.permissions.finance?'Liberado pela proprietária':'Sem acesso')+'</b></div>'+
       '</div>'
     :'<div class="fe-account-grid">'+
        '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>'+(access.active?'Liberado':'Assinatura inativa')+'</b></div>'+
        '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
       '</div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
