@@ -645,7 +645,7 @@ function bindAuth(w){
 }
 
 try{
-  await ensureSupabase();
+  await withTimeout(ensureSupabase(),8000,'Conexão com o servidor');
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
@@ -669,7 +669,15 @@ try{
     }
   });
 
-  var sessionResult=await sb.auth.getSession();
+  var sessionResult;
+  try{
+    sessionResult=await withTimeout(sb.auth.getSession(),8000,'Verificação da sessão');
+  }catch(sessionErr){
+    console.warn('Fonely: sessão demorou demais; exibindo login.',sessionErr);
+    mountAuth();
+    setMessage('A conexão demorou mais que o esperado. Entre novamente para continuar.','error');
+    return;
+  }
   if(recoveryMode){
     showRecovery();
   }else if(sessionResult.data&&sessionResult.data.session){
