@@ -346,6 +346,15 @@ window.FonelyAccountUI={open:openAccountPanel};
 
 async function prepareWorkspace(user){
   window.FONELY_USER_ID=user.id;
+  var bootFallback=setTimeout(function(){
+    if(!appLoaded){
+      console.warn('Fonely: workspace remoto lento; liberando carregamento local.');
+      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
+      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
+      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
+      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
+    }
+  },4000);
 
   var membership=null;
   try{
@@ -462,6 +471,7 @@ async function prepareWorkspace(user){
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
   window.FonelyAccount={user:user,profile:profileData,access:accessData,team:teamContext};
+  clearTimeout(bootFallback);
 
   window.FonelyCloud={
     saveWorkspace:function(data){
@@ -520,7 +530,17 @@ async function loadApp(user){
   if(appLoaded)return;
   if(appLoadPromise)return appLoadPromise;
   appLoadPromise=(async function(){
-    await prepareWorkspace(user);
+    // Do not let a slow workspace/network request hold the whole UI on the splash screen.
+    var workspaceReady=false;
+    var workspacePromise=prepareWorkspace(user).then(function(){workspaceReady=true;}).catch(function(e){console.warn('Fonely workspace:',e);});
+    await Promise.race([workspacePromise,new Promise(function(resolve){setTimeout(resolve,5000);})]);
+    if(!workspaceReady){
+      window.FONELY_USER_ID=user.id;
+      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
+      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
+      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
+      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
+    }
     var entry=document.getElementById('fonelyEntry');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
