@@ -2,11 +2,11 @@
 'use strict';
 var APP_KEY=window.FONELY_STORAGE_KEY||'fonely_clean_v1',CAA_KEY=window.FONELY_CAA_KEY||'fonely_caa_v1',PLAN_KEY=window.FONELY_PLAN_KEY||'fonely_plan_v1';
 var CAA_UI_KEY='fonely_caa_ui_v1_'+String(window.FONELY_WORKSPACE_OWNER_ID||window.FONELY_USER_ID||CAA_KEY);
-function hasPro(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
+function hasFonelyAccess(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.active);}
 function requirePro(){
-  if(hasPro())return true;
+  if(hasFonelyAccess())return true;
   if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();
-  else alert('O Fonely CAA é exclusivo do plano Pro.');
+  else alert('Ative sua assinatura Fonely para usar o CAA.');
   return false;
 }
 var manager={patientId:null,tab:'board',search:'',category:'Todas',previewCategory:'Todas',customImage:null,customAudio:null,recording:false,recorder:null,chunks:[],draggingId:null,restoring:false};
