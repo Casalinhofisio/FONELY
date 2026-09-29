@@ -29,6 +29,12 @@ function esc(v){
   });
 }
 
+function withTimeout(promise,ms,label){
+  return Promise.race([
+    promise,
+    new Promise(function(_,reject){setTimeout(function(){reject(new Error((label||'Operação')+' demorou demais.'));},ms);})
+  ]);
+}
 function loadScript(src){
   return new Promise(function(resolve,reject){
     if(document.querySelector('script[data-fonely-app="'+src+'"]')){resolve();return;}
@@ -521,11 +527,22 @@ async function loadApp(user){
   if(appLoaded)return;
   if(appLoadPromise)return appLoadPromise;
   appLoadPromise=(async function(){
-    await prepareWorkspace(user);
+    try{
+      await withTimeout(prepareWorkspace(user),12000,'Carregamento do espaço');
+    }catch(e){
+      console.warn('Fonely: seguindo com modo de recuperação local.',e);
+      window.FONELY_USER_ID=user.id;
+      window.FONELY_WORKSPACE_OWNER_ID=window.FONELY_WORKSPACE_OWNER_ID||user.id;
+      window.FONELY_STORAGE_KEY=window.FONELY_STORAGE_KEY||('fonely_clean_v1_'+user.id);
+      window.FONELY_CAA_KEY=window.FONELY_CAA_KEY||('fonely_caa_v1_'+user.id);
+      window.FONELY_PLAN_KEY=window.FONELY_PLAN_KEY||('fonely_plan_v1_'+user.id);
+      window.FonelyEntitlements=window.FonelyEntitlements||{plan:'fonely',active:true,teamSeats:0,can:function(){return true;}};
+      window.FonelyAccount=window.FonelyAccount||{user:user,profile:{full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email||''},access:{status:'active',active:true,plan_tier:'fonely'},team:{isOwner:true,ownerId:user.id,permissions:{patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:true,reports:true,manage_team:true}}};
+    }
     var entry=document.getElementById('fonelyEntry');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
-    for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
+    for(var i=0;i<APP_SCRIPTS.length;i++)await withTimeout(loadScript(APP_SCRIPTS[i]),10000,'Arquivo '+APP_SCRIPTS[i]);
     appLoaded=true;
     mountAccount(user);
     if(inviteMode)setTimeout(showTeamInviteSetup,80);
