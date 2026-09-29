@@ -74,22 +74,22 @@ function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;ret
 function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
-function hasTeamAccess(){var e=window.FonelyEntitlements||{};return !!(e.active&&Number(e.teamSeats||0)>0);}
+function hasProPlan(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
 function canOpenPage(page){
-  if(page==='equipe'&&!hasTeamAccess())return false;
+  if(page==='equipe'&&!hasProPlan())return false;
   var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
-  if(page==='equipe')return isWorkspaceOwner()&&hasTeamAccess();
+  if(page==='equipe')return isWorkspaceOwner()&&hasProPlan();
   return map[page]?canAccess(map[page]):true;
 }
 
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="fonely-logo-official.svg" alt="Fonely"></div>';}
-var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe'],['assinatura','◈','Assinatura e equipe']];
+var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','
 function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
-  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.status==='active'||access.status==='trialing'?'Fonely':'Assinatura inativa');
+  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico');
   var avatar=profile.avatar_url
     ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
     :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
@@ -109,7 +109,7 @@ function render(){
     }
     state.patient=null;
   }
-  var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,assinatura:subscriptionPage,academy:academy}[state.page]||home;
+  var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;
   persistUIState();
   app.innerHTML=fn();
   bind();
@@ -506,7 +506,6 @@ function bind(){
   var nf=document.getElementById('financeFilter');if(nf){nf.value=state.financePatient||'';nf.onchange=function(){state.financePatient=this.value||null;render();};}
   var pkg=document.getElementById('newPackage');if(pkg)pkg.onclick=function(){if(canAccess('finance'))packageForm();};
   var pay=document.getElementById('newPayment');if(pay)pay.onclick=function(){if(canAccess('finance'))paymentForm();};
-  var subBilling=document.getElementById('subscriptionOpenBilling');if(subBilling)subBilling.onclick=function(){if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();};
   var nt=document.getElementById('newTeam');if(nt&&!nt.disabled)nt.onclick=function(){teamForm();};
   document.querySelectorAll('[data-team-edit]').forEach(function(b){b.onclick=function(){var t=(window.FonelyTeamMembers||[]).find(function(x){return x.id===b.getAttribute('data-team-edit');});if(t)teamForm(t);};});
   document.querySelectorAll('[data-team-remove]').forEach(function(b){b.onclick=function(){removeTeamMember(b.getAttribute('data-team-remove'));};});
@@ -550,12 +549,12 @@ window.addEventListener('popstate',function(){
   render();
 });
 syncPackages();save();render();
-})();,'Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe'],['assinatura','◈','Assinatura']];
+})();,'Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe'],['assinatura','◈','Assinatura e equipe']];
 function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
-  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.status==='active'||access.status==='trialing'?'Fonely':'Assinatura inativa');
+  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico');
   var avatar=profile.avatar_url
     ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
     :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
@@ -623,6 +622,10 @@ function home(){
     '</article></div><article class="panel fhome-alerts"><div class="panel-title"><div><small>ATENÇÃO</small><h3>O que merece olhar hoje</h3></div></div>'+alerts()+'</article>',
     'Início',''
   );
+}
+function subscriptionPage(){
+ var a=window.FonelyAccount||{},access=a.access||{},active=access.status==='active'||access.status==='trialing',seats=Number(access.team_member_limit||0);
+ return shell('<section class="panel fsubscription"><div class="panel-title"><div><small>MINHA ASSINATURA</small><h3>Fonely</h3></div></div><div class="fsubscription-status"><div><small>STATUS</small><b>'+(active?'Assinatura ativa':'Assinatura não ativa')+'</b><span>Sua assinatura do Fonely.</span></div><div><small>EQUIPE CONTRATADA</small><b>'+(seats?('+'+seats+' profissionais'):'Somente titular')+'</b><span>Todos no mesmo espaço da clínica.</span></div></div><div class="fsubscription-offer"><h2>Escolha sua assinatura</h2><p><b>R$ 199,90/ano no Pix</b> ou <b>R$ 39,90/mês</b> na cobrança recorrente. Inclui agenda, pacientes, prontuário, avaliações, evoluções, documentos, financeiro, relatórios e Fonely CAA.</p><button class="primary" id="subscriptionOpenBilling">Ver assinatura e adicionais de equipe</button></div><div class="fsubscription-team"><small>ADICIONAIS ANUAIS DE EQUIPE</small><h3>Mais profissionais, o mesmo espaço da clínica.</h3><p>Adicione profissionais à sua clínica para trabalhar com a mesma agenda e os mesmos pacientes. O titular administra os acessos e permissões.</p><div><span><b>+1</b> R$ 29,90/ano</span><span><b>+3</b> R$ 49,99/ano</span><span><b>+7</b> R$ 69,99/ano</span><span><b>+10</b> R$ 79,99/ano</span></div></div></section>','Assinatura','');
 }
 function alerts(){var arr=[];data.packages.forEach(function(p){var r=remainingPackage(p);if(p.status!=='Encerrado'&&r<=2)arr.push('<div class="alert"><b>'+esc(patientName(p.patientId))+'</b><span>Pacote com '+r+' sessão'+(r===1?'':'ões')+' restante'+(r===1?'':'s')+'.</span></div>');});data.payments.filter(function(p){return p.status==='Pendente';}).slice(0,3).forEach(function(p){arr.push('<div class="alert warn"><b>Pagamento pendente · '+esc(patientName(p.patientId))+'</b><span>'+money(p.value)+' · '+shortDate(p.date)+'</span></div>');});return arr.length?arr.join(''):'<div class="alert"><b>Tudo organizado ✦</b><span>Sem alertas importantes neste momento.</span></div>';}
 function appointmentRows(list){if(!list.length)return '<div class="empty"><b>Nenhum atendimento</b><span>Use a agenda para adicionar um horário.</span></div>';return '<div class="rows">'+list.map(function(a){var pkg=a.packageId?data.packages.find(function(p){return p.id===a.packageId;}):null;return '<button class="row appointment-row" data-ap="'+a.id+'"><div class="time">'+esc(a.time||'—')+'</div><div><b>'+esc(patientName(a.patientId))+'</b><span>'+esc(a.type||'Atendimento')+' · '+esc(a.mode||'Presencial')+(pkg?' · Pacote '+remainingPackage(pkg)+' restantes':'')+'</span></div><mark class="status-'+slug(a.status)+'">'+esc(a.status||'Agendado')+'</mark></button>';}).join('')+'</div>';}
