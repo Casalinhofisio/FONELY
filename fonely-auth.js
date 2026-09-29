@@ -6,14 +6,14 @@ const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://casalinhofisio.github.io/FONELY/';
 window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
-  'app.js?v=19',
-  'fonely-assessments-v2.js?v=8',
-  'fonely-package-integration-v2.js?v=3',
-  'fonely-full-edit-v1.js?v=5',
-  'fonely-logo.js?v=5',
-  'fonely-caa-library.js?v=5',
-  'fonely-caa-speech.js?v=4',
-  'fonely-caa.js?v=19'
+  'app.js?v=42',
+  'fonely-assessments-v2.js?v=42',
+  'fonely-package-integration-v2.js?v=42',
+  'fonely-full-edit-v1.js?v=42',
+  'fonely-logo.js?v=42',
+  'fonely-caa-library.js?v=42',
+  'fonely-caa-speech.js?v=42',
+  'fonely-caa.js?v=42'
 ];
 
 let sb=null;
@@ -545,9 +545,11 @@ async function loadApp(user){
     if(!window.FonelyAccount)window.FonelyAccount={user:user,profile:{full_name:(user.user_metadata&&user.user_metadata.full_name)||'',email:user.email||''},access:{status:'active',plan_tier:'base',team_member_limit:0},team:{isOwner:true,ownerId:user.id,permissions:{patients:true,agenda:true,assessments:true,evolutions:true,documents:true,caa:true,finance:true,reports:true,manage_team:true}}};
     try{await withTimeout(prepareWorkspace(user),7000,'Carregamento da conta');}catch(e){console.warn('Fonely: seguindo com carregamento local após demora do servidor.',e);}
     var entry=document.getElementById('fonelyEntry');
+    for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
+    var appRoot=document.getElementById('app');
+    if(!appRoot||appRoot.querySelector('.boot'))throw new Error('O aplicativo não iniciou corretamente.');
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
-    for(var i=0;i<APP_SCRIPTS.length;i++)await loadScript(APP_SCRIPTS[i]);
     appLoaded=true;
     mountAccount(user);
     if(inviteMode)setTimeout(showTeamInviteSetup,80);
@@ -578,7 +580,10 @@ function bindAuth(w){
       var r=await sb.auth.signInWithPassword({email:email,password:password});
       if(r.error)throw r.error;
       await loadApp(r.data.user);
-    }catch(err){setMessage(friendlyError(err),'error');}
+    }catch(err){
+      console.error('Fonely login/app load error:',err);
+      setMessage('Entrou na conta, mas o sistema não conseguiu abrir. Atualize a página e tente novamente. '+String(err&&err.message||''),'error');
+    }
     finally{btn.disabled=false;btn.textContent='Entrar no Fonely';}
   };
 
