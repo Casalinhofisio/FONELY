@@ -6,7 +6,7 @@ const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://casalinhofisio.github.io/FONELY/';
 window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
-  'app.js?v=21',
+  'app.js?v=19',
   'fonely-assessments-v2.js?v=8',
   'fonely-package-integration-v2.js?v=3',
   'fonely-full-edit-v1.js?v=5',
@@ -449,15 +449,16 @@ async function prepareWorkspace(user){
   }
 
   // Server-loaded plan is the single source of truth. Never elevate access from localStorage.
-  var hasActiveAccess=(accessData.status==='active'||accessData.status==='trialing');
-  var serverPlan=hasActiveAccess?'fonely':'inactive';
+  var serverPlan=(accessData.status==='active'||accessData.status==='trialing')&&accessData.plan_tier==='pro'?'pro':'base';
   accessData.plan_tier=serverPlan;
   window.FONELY_PLAN_TIER=serverPlan;
   window.FonelyEntitlements={
     plan:serverPlan,
-    active:hasActiveAccess,
-    teamSeats:Number(accessData.team_member_limit||0),
-    can:function(){return hasActiveAccess;}
+    isPro:serverPlan==='pro',
+    can:function(feature){
+      var proOnly={caa:true,team:true,advanced_protocols:true};
+      return !proOnly[feature]||serverPlan==='pro';
+    }
   };
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
