@@ -551,6 +551,7 @@ async function loadApp(user){
     if(entry)entry.remove();
     document.body.classList.remove('fonely-entry-open');
     appLoaded=true;
+    if(typeof bootFallbackTimer!=='undefined')clearTimeout(bootFallbackTimer);
     mountAccount(user);
     if(inviteMode)setTimeout(showTeamInviteSetup,80);
   })();
@@ -654,8 +655,16 @@ function bindAuth(w){
   };
 }
 
-// Never leave the user stuck on the splash screen while network/auth starts.
-try{mountAuth();}catch(e){console.error(e);}
+// Keep the splash visible until we know whether there is an active session.
+// If auth/network takes too long, fall back to the login screen instead of hanging forever.
+var bootFallbackTimer=setTimeout(function(){
+  if(!appLoaded&&!authMounted){
+    try{
+      mountAuth();
+      setMessage('O carregamento demorou mais que o esperado. Você pode entrar novamente.','error');
+    }catch(e){console.error(e);}
+  }
+},10000);
 
 try{
   await ensureSupabase();
@@ -683,6 +692,7 @@ try{
   });
 
   var sessionResult=await withTimeout(sb.auth.getSession(),6000,'Verificação da sessão');
+  clearTimeout(bootFallbackTimer);
   if(recoveryMode){
     showRecovery();
   }else if(sessionResult.data&&sessionResult.data.session){
@@ -691,6 +701,7 @@ try{
     mountAuth();
   }
 }catch(err){
+  clearTimeout(bootFallbackTimer);
   console.error(err);
   mountAuth();
   setMessage('Não foi possível conectar ao servidor do Fonely agora. Atualize a página e tente novamente.','error');
