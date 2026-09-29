@@ -646,8 +646,10 @@ try{
       setTab('login');
       return;
     }
+    // SIGNED_IN can fire while getSession() is still resolving.
+    // Let the single bootstrap path below load the app to avoid two concurrent workspace loads.
     if(event==='SIGNED_IN'&&session&&session.user&&!recoveryMode){
-      loadApp(session.user);
+      return;
     }
   });
 
