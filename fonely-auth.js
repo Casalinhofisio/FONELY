@@ -202,6 +202,15 @@ function showRecovery(){
   clearMessage();
 }
 
+async function waitForAuthClient(){
+  var started=Date.now();
+  while(!sb&&Date.now()-started<10000){
+    await new Promise(function(resolve){setTimeout(resolve,80);});
+  }
+  if(!sb)throw new Error('Não foi possível conectar ao servidor agora.');
+  return sb;
+}
+
 function friendlyError(err){
   var m=String(err&&err.message||err||'');
   if(/Invalid login credentials/i.test(m))return 'E-mail ou senha incorretos.';
@@ -578,6 +587,7 @@ function bindAuth(w){
     var fd=new FormData(login),email=String(fd.get('email')||'').trim(),password=String(fd.get('password')||'');
     var btn=login.querySelector('.fe-primary');btn.disabled=true;btn.textContent='Entrando...';
     try{
+      await waitForAuthClient();
       var r=await sb.auth.signInWithPassword({email:email,password:password});
       if(r.error)throw r.error;
       await loadApp(r.data.user);
@@ -596,6 +606,7 @@ function bindAuth(w){
     if(password!==password2){setMessage('As duas senhas precisam ser iguais.','error');return;}
     var btn=signup.querySelector('.fe-primary');btn.disabled=true;btn.textContent='Criando conta...';
     try{
+      await waitForAuthClient();
       var r=await sb.auth.signUp({
         email:email,
         password:password,
@@ -628,6 +639,7 @@ function bindAuth(w){
     var email=String(new FormData(reset).get('email')||'').trim();
     var btn=reset.querySelector('.fe-primary');btn.disabled=true;btn.textContent='Enviando...';
     try{
+      await waitForAuthClient();
       var r=await sb.auth.resetPasswordForEmail(email,{redirectTo:APP_URL});
       if(r.error)throw r.error;
       setMessage('Link enviado. Abra o e-mail do Fonely para criar uma nova senha.','success');
@@ -655,8 +667,21 @@ function bindAuth(w){
   };
 }
 
-// Keep the splash visible until we know whether there is an active session.
-// If auth/network takes too long, fall back to the login screen instead of hanging forever.
+// Avoid both problems: no login flash for users with a saved session,
+// and no long splash for users who actually need the login screen.
+var storedSessionHint=false;
+try{
+  var rawSession=localStorage.getItem('sb-apjmkstuffzgfhgcxhvt-auth-token');
+  if(rawSession){
+    var parsedSession=JSON.parse(rawSession);
+    storedSessionHint=!!(parsedSession&&(parsedSession.access_token||(parsedSession.currentSession&&parsedSession.currentSession.access_token)));
+  }
+}catch(e){}
+
+if(!storedSessionHint&&!recoveryMode&&!inviteMode){
+  try{mountAuth();}catch(e){console.error(e);}
+}
+
 var bootFallbackTimer=setTimeout(function(){
   if(!appLoaded&&!authMounted){
     try{
@@ -664,7 +689,7 @@ var bootFallbackTimer=setTimeout(function(){
       setMessage('O carregamento demorou mais que o esperado. Você pode entrar novamente.','error');
     }catch(e){console.error(e);}
   }
-},10000);
+},8000);
 
 try{
   await ensureSupabase();
