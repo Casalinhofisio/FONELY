@@ -452,6 +452,7 @@ async function prepareWorkspace(user){
   var hasActiveAccess=(accessData.status==='active'||accessData.status==='trialing');
   var serverPlan=hasActiveAccess?'fonely':'inactive';
   accessData.plan_tier=serverPlan;
+  accessData.active=hasActiveAccess;
   window.FONELY_PLAN_TIER=serverPlan;
   window.FonelyEntitlements={
     plan:serverPlan,
@@ -660,7 +661,7 @@ try{
     mountAuth();
   }
 }catch(err){
-  console.error(err);
+  console.error('Fonely bootstrap error:',err);
   mountAuth();
   setMessage('Não foi possível conectar ao servidor do Fonely agora. Atualize a página e tente novamente.','error');
 }
