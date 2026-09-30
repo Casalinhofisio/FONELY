@@ -116,8 +116,8 @@ function authHTML(){
         '<aside class="fe-card" id="feCard">'+
           '<div class="fe-auth-brand"><img src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_08_48.png" alt="Fonely"></div>'+
           '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar sua agenda, pacientes, prontuários, avaliações e Fonely CAA.</p></div>'+
-          '<div class="fe-auth-meta"><span><i></i>Seu espaço clínico</span><span><i></i>Dados sincronizados</span><span><i></i>Acesso profissional</span></div>'+
-          '<div class="fe-login-summary"><b>Um único sistema para sua rotina clínica.</b><span>Organize atendimentos, acompanhe pacientes, registre evoluções e centralize as principais informações do consultório.</span></div>'+
+          
+          
           '<button class="fe-google" type="button" data-fe-google><span class="fe-google-mark">G</span><span>Continuar com Google</span></button>'+
           '<div class="fe-oauth-divider"><span>ou continue com e-mail e senha</span></div>'+
           '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
