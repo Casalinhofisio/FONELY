@@ -117,6 +117,8 @@ function authHTML(){
           '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar sua agenda, pacientes, prontuários, avaliações e Fonely CAA.</p></div>'+
           '<div class="fe-auth-meta"><span><i></i>Seu espaço clínico</span><span><i></i>Dados sincronizados</span><span><i></i>Acesso profissional</span></div>'+
           '<div class="fe-login-summary"><b>Um único sistema para sua rotina clínica.</b><span>Organize atendimentos, acompanhe pacientes, registre evoluções e centralize as principais informações do consultório.</span></div>'+
+          '<button class="fe-google" type="button" data-fe-google><span class="fe-google-mark">G</span><span>Continuar com Google</span></button>'+
+          '<div class="fe-oauth-divider"><span>ou continue com e-mail e senha</span></div>'+
           '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
           '<form class="fe-form active" data-fe-form="login">'+
             '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
@@ -242,6 +244,7 @@ function friendlyError(err){
   if(/already registered|already been registered|User already registered/i.test(m))return 'Esse e-mail já está cadastrado. Tente entrar ou recuperar a senha.';
   if(/Password should be at least/i.test(m))return 'A senha precisa ter pelo menos 8 caracteres.';
   if(/rate limit/i.test(m))return 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.';
+  if(/provider.*not enabled|unsupported provider|provider is not enabled/i.test(m))return 'O acesso com Google ainda precisa ser ativado no servidor do Fonely.';
   return 'Não foi possível continuar. '+m;
 }
 
@@ -596,6 +599,28 @@ function mountAccount(user){
 }
 
 function bindAuth(w){
+  var googleButton=w.querySelector('[data-fe-google]');
+  if(googleButton){
+    googleButton.onclick=async function(){
+      clearMessage();
+      googleButton.disabled=true;
+      var oldText=googleButton.innerHTML;
+      googleButton.innerHTML='<span class="fe-google-mark">G</span><span>Conectando ao Google...</span>';
+      try{
+        var client=await waitForAuthClient();
+        var r=await client.auth.signInWithOAuth({
+          provider:'google',
+          options:{redirectTo:APP_URL}
+        });
+        if(r.error)throw r.error;
+      }catch(err){
+        console.error('Fonely Google auth error:',err);
+        setMessage(friendlyError(err),'error');
+        googleButton.disabled=false;
+        googleButton.innerHTML=oldText;
+      }
+    };
+  }
   w.querySelectorAll('[data-fe-tab]').forEach(function(b){b.onclick=function(){setTab(b.dataset.feTab);};});
   w.querySelectorAll('[data-fe-show]').forEach(function(b){
     b.onclick=function(){
