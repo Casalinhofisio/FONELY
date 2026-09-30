@@ -1,0 +1,85 @@
+/* Fonely Login Premium v8 — expanded product information */
+.fe-hero{margin-top:52px!important}
+.fe-benefits{margin-top:24px!important}
+.fe-benefits>div{padding:10px 0!important}
+
+.fe-suite{
+  margin-top:18px!important;
+  padding:16px!important;
+  border:1px solid rgba(255,255,255,.085)!important;
+  border-radius:16px!important;
+  background:rgba(255,255,255,.035)!important;
+  backdrop-filter:blur(12px)!important
+}
+.fe-suite>small{
+  display:block!important;
+  margin-bottom:12px!important;
+  color:#a9958b!important;
+  font-size:6px!important;
+  font-weight:900!important;
+  letter-spacing:.17em!important
+}
+.fe-suite>div.fe-suite-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important
+}
+.fe-suite-grid>span{
+  display:block!important;
+  min-width:0!important;
+  padding:10px 11px!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:12px!important;
+  background:rgba(255,255,255,.045)!important
+}
+.fe-suite-grid b{
+  display:block!important;
+  color:#f7eee8!important;
+  font-size:8px!important;
+  font-weight:850!important;
+  line-height:1.2!important
+}
+.fe-suite-grid em{
+  display:block!important;
+  margin-top:3px!important;
+  color:#ad9b92!important;
+  font-size:6.5px!important;
+  font-style:normal!important;
+  line-height:1.35!important
+}
+.fe-brand-note{padding-top:18px!important}
+
+.fe-login-summary{
+  margin:-3px 0 20px!important;
+  padding:13px 14px!important;
+  border:1px solid #eaded7!important;
+  border-radius:13px!important;
+  background:#fbf6f2!important
+}
+.fe-login-summary b{
+  display:block!important;
+  margin-bottom:3px!important;
+  color:#4c392f!important;
+  font-size:9px!important;
+  font-weight:850!important
+}
+.fe-login-summary span{
+  display:block!important;
+  color:#8e7a70!important;
+  font-size:8px!important;
+  line-height:1.45!important
+}
+.fe-auth-meta{margin-bottom:12px!important}
+.fe-tabs{margin-top:0!important}
+
+@media(max-width:1180px){
+  .fe-suite-grid>span{padding:9px!important}
+  .fe-suite-grid em{display:none!important}
+}
+@media(max-width:1020px){
+  .fe-suite{display:none!important}
+  .fe-login-summary{display:block!important}
+}
+@media(max-width:680px){
+  .fe-login-summary{padding:12px!important}
+}
