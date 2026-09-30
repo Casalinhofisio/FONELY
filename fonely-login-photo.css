@@ -324,3 +324,43 @@
 @media(min-width:1021px) and (max-width:1280px){
   .fe-photo-stage{right:-8px!important;width:37%!important;min-width:250px!important}
 }
+
+
+/* v7 — enlarge Nath portrait on desktop */
+@media(min-width:1021px){
+  .fe-photo-stage{
+    right:-22px!important;
+    width:46%!important;
+    min-width:360px!important;
+    top:96px!important;
+    bottom:-6px!important
+  }
+
+  .fe-photo-stage img{
+    width:106%!important;
+    height:106%!important;
+    right:-4%!important;
+    bottom:-2%!important;
+    object-fit:contain!important;
+    object-position:right bottom!important
+  }
+
+  .fe-hero{
+    width:52%!important;
+    max-width:500px!important
+  }
+}
+
+@media(min-width:1021px) and (max-width:1280px){
+  .fe-photo-stage{
+    right:-18px!important;
+    width:42%!important;
+    min-width:300px!important;
+    top:108px!important
+  }
+  .fe-photo-stage img{
+    width:104%!important;
+    height:104%!important
+  }
+  .fe-hero{width:55%!important}
+}
