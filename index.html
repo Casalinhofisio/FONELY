@@ -543,6 +543,13 @@ document.addEventListener('click',function(e){
  if(menu&&!e.target.closest('.mobile-more-menu'))menu.classList.remove('open');
 });
 </script>
+<style id="fonely-mobile-nav-emergency-fix">
+@media(max-width:720px){
+ .mobile-bottom-nav{display:grid!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:fixed!important;grid-template-columns:repeat(5,1fr)!important;left:8px!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;height:64px!important;z-index:2147483000!important;background:#fff!important;border:1px solid #eadfd8!important;border-radius:18px!important;box-shadow:0 8px 30px rgba(60,35,25,.18)!important}
+ .mobile-bottom-nav button{display:flex!important;visibility:visible!important;opacity:1!important;flex-direction:column!important;align-items:center!important;justify-content:center!important}
+ .mobile-bottom-nav span,.mobile-bottom-nav i{display:block!important;visibility:visible!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
