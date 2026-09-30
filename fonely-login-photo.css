@@ -9,18 +9,18 @@
     content:""!important;
     position:absolute!important;
     z-index:-2!important;
-    right:-2%!important;
+    right:0!important;
     bottom:0!important;
-    width:46%!important;
-    height:69%!important;
+    width:48%!important;
+    height:78%!important;
     background:
-      linear-gradient(90deg,rgba(48,33,27,1) 0%,rgba(48,33,27,.30) 24%,rgba(48,33,27,0) 46%),
-      linear-gradient(0deg,rgba(48,33,27,.98) 0%,rgba(48,33,27,.12) 28%,rgba(48,33,27,0) 55%),
-      url("assets/Imagem%20do%20ChatGPT%2029%20de%20set.%20de%202026%2C%2023_46_37.jpg") center 18%/cover no-repeat!important;
-    opacity:.92!important;
-    filter:saturate(.88) contrast(.98)!important;
-    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%)!important;
-    mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%)!important
+      linear-gradient(90deg,rgba(48,33,27,.98) 0%,rgba(48,33,27,.22) 18%,rgba(48,33,27,0) 36%),
+      linear-gradient(0deg,rgba(48,33,27,.95) 0%,rgba(48,33,27,.10) 22%,rgba(48,33,27,0) 48%),
+      url("assets/Imagem%20do%20ChatGPT%2029%20de%20set.%20de%202026%2C%2023_46_37.jpg") right bottom/contain no-repeat!important;
+    opacity:.96!important;
+    filter:saturate(.9) contrast(.99)!important;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.35) 16%,#000 34%,#000 100%)!important;
+    mask-image:linear-gradient(to right,transparent 0%,rgba(0,0,0,.35) 16%,#000 34%,#000 100%)!important
   }
   .fe-brand-side:after{
     content:"Feito para quem cuida da comunicação todos os dias."!important;
@@ -45,12 +45,12 @@
   .fe-brand-content{
     position:relative!important;
     z-index:3!important;
-    width:61%!important
+    width:58%!important
   }
   .fe-suite{max-width:96%!important}
 }
 @media(min-width:1021px) and (max-width:1280px){
-  .fe-brand-side:before{width:42%!important;height:62%!important;opacity:.78!important}
+  .fe-brand-side:before{width:45%!important;height:72%!important;opacity:.84!important}
   .fe-brand-side:after{display:none!important}
-  .fe-brand-content{width:67%!important}
+  .fe-brand-content{width:62%!important}
 }
