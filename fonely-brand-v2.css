@@ -7,7 +7,12 @@
 }
 
 /* dark surfaces */
-.layout>aside .fonely-official-logo,
+.layout>aside .fonely-official-logo{
+  content:var(--fonely-icon-orange)!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+
 .fe-brand-side .fe-logo{
   content:var(--fonely-logo-orange)!important;
   object-fit:contain!important;
@@ -23,7 +28,7 @@
 }
 
 /* keep logo proportions consistent across product */
-.layout>aside .fonely-official-logo{width:165px!important;height:auto!important}
+.layout>aside .fonely-official-logo{width:72px!important;max-width:72px!important;height:auto!important}
 .fe-brand-side .fe-logo{width:195px!important;height:auto!important}
 .fe-auth-brand img{width:170px!important;height:auto!important}
 
@@ -73,5 +78,31 @@
   .fe-brand-side .fe-logo{
     width:72px!important;
     max-width:72px!important;
+  }
+}
+
+
+/* Sidebar brand is icon-only */
+.layout>aside .brand{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  min-height:78px!important;
+  padding:8px 10px 22px!important;
+}
+.layout>aside .fonely-sidebar-icon,
+.layout>aside .fonely-official-logo{
+  content:var(--fonely-icon-orange)!important;
+  width:72px!important;
+  max-width:72px!important;
+  height:auto!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+}
+@media(max-width:900px){
+  .layout>aside .fonely-sidebar-icon,
+  .layout>aside .fonely-official-logo{
+    width:58px!important;
+    max-width:58px!important;
   }
 }
