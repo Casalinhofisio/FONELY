@@ -914,11 +914,11 @@ document.addEventListener('DOMContentLoaded',function(){
 </head>
 <body>
 <div id="app"></div>
-<script src="fonely-auth.js?v=63"></script>
+<script src="fonely-auth.js?v=64"></script>
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
-  var v='1790777800000';
+  var v='1790778600000';
   document.querySelectorAll('link[rel="stylesheet"]').forEach(function(el){
     try{var u=new URL(el.href);if(u.origin===location.origin){u.searchParams.set('force',v);el.href=u.toString();}}catch(e){}
   });
@@ -952,29 +952,32 @@ document.addEventListener('DOMContentLoaded',function(){
 .agenda-controlbar .force-month-nav{margin-left:auto!important}
 @media(max-width:720px){.agenda-controlbar{display:grid!important;grid-template-columns:1fr!important}.agenda-controlbar .force-agenda-tabs{width:100%!important}.agenda-controlbar .force-month-nav{width:100%!important;margin:0!important}}
 </style>
-<script id="abfw-remove-legacy-subtests-v19">
+<script id="abfw-remove-legacy-subtests-v20">
 (function(){
+ function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
  function cleanABFW(){
    var root=document.getElementById('fonelyAssessmentModal');
-   if(!root)return;
-   var txt=(root.textContent||'').toLowerCase();
-   if(txt.indexOf('abfw')<0)return;
-   var boxes=[].slice.call(root.querySelectorAll('input[type="checkbox"]'));
-   boxes.forEach(function(box){
-     var el=box.closest('label')||box.parentElement;if(!el)return;
-     var t=(el.textContent||'').trim().toLowerCase();
-     if(['fonologia','vocabulário','vocabulario','fluência','fluencia','pragmática','pragmatica'].indexOf(t)>=0){
-       var group=el.parentElement;
-       if(group){
-         var gt=(group.textContent||'').toLowerCase();
-         if(gt.indexOf('fonologia')>=0&&gt.indexOf('vocabul')>=0&&gt.indexOf('flu')>=0&&gt.indexOf('pragm')>=0){group.remove();return;}
-       }
-       el.remove();
-     }
+   if(!root||norm(root.textContent).indexOf('abfw')<0)return;
+   var wanted=['fonologia','vocabulario','fluencia','pragmatica'];
+   var labels=[].slice.call(root.querySelectorAll('label'));
+   var matched=labels.filter(function(el){var t=norm(el.textContent);return wanted.indexOf(t)>=0&&el.querySelector('input[type="checkbox"]');});
+   if(matched.length){
+     var parents=matched.map(function(el){return el.parentElement;});
+     var same=parents.every(function(p){return p===parents[0];});
+     if(same&&parents[0])parents[0].remove(); else matched.forEach(function(el){el.remove();});
+   }
+   [].slice.call(root.querySelectorAll('div,section')).forEach(function(el){
+     if(!el.isConnected)return;
+     var direct=[].slice.call(el.children);
+     if(direct.length!==4)return;
+     var names=direct.map(function(ch){return norm(ch.textContent);});
+     if(wanted.every(function(x){return names.indexOf(x)>=0;})&&direct.every(function(ch){return !!ch.querySelector('input[type="checkbox"]');}))el.remove();
    });
  }
- new MutationObserver(cleanABFW).observe(document.documentElement,{childList:true,subtree:true});
- document.addEventListener('click',function(){setTimeout(cleanABFW,0);setTimeout(cleanABFW,100);},true);
+ var obs=new MutationObserver(function(){cleanABFW();});
+ obs.observe(document.body,{childList:true,subtree:true});
+ document.addEventListener('click',function(){setTimeout(cleanABFW,0);setTimeout(cleanABFW,50);setTimeout(cleanABFW,250);},true);
+ window.addEventListener('load',cleanABFW);
  cleanABFW();
 })();
 </script>
