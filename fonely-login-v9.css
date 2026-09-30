@@ -1,0 +1,145 @@
+/* Fonely Login Premium v9 — auth section refinement */
+.fe-login-summary{
+  position:relative!important;
+  margin:0 0 18px!important;
+  padding:14px 16px 14px 17px!important;
+  border:1px solid #eaded6!important;
+  border-radius:15px!important;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.76),rgba(250,244,239,.92))!important;
+  box-shadow:0 8px 22px rgba(69,45,36,.035)!important;
+  overflow:hidden!important
+}
+.fe-login-summary:before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;top:11px!important;bottom:11px!important;
+  width:3px!important;
+  border-radius:0 999px 999px 0!important;
+  background:linear-gradient(180deg,#d98c6d,#af6249)!important
+}
+.fe-login-summary b{
+  display:block!important;
+  margin:0 0 4px!important;
+  color:#45332b!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  letter-spacing:-.01em!important
+}
+.fe-login-summary span{
+  display:block!important;
+  color:#8f7b72!important;
+  font-size:8px!important;
+  line-height:1.5!important
+}
+
+.fe-google{
+  position:relative!important;
+  width:100%!important;
+  min-height:50px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:11px!important;
+  margin:0!important;
+  border:1px solid #dacbc2!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,#fff,#fffdfb)!important;
+  color:#3f3029!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.005em!important;
+  cursor:pointer!important;
+  box-shadow:
+    0 8px 20px rgba(67,44,35,.045),
+    inset 0 1px 0 rgba(255,255,255,.95)!important;
+  transition:.16s ease!important
+}
+.fe-google:hover{
+  transform:translateY(-1px)!important;
+  border-color:#cdb6aa!important;
+  background:#fff!important;
+  box-shadow:
+    0 12px 26px rgba(67,44,35,.075),
+    inset 0 1px 0 rgba(255,255,255,1)!important
+}
+.fe-google-mark{
+  display:grid!important;
+  place-items:center!important;
+  width:27px!important;
+  height:27px!important;
+  flex:0 0 27px!important;
+  border:1px solid #e8ded8!important;
+  border-radius:50%!important;
+  background:#fff!important;
+  font:900 14px/1 Arial,sans-serif!important;
+  color:transparent!important;
+  background-image:
+    conic-gradient(from -45deg,#4285f4 0 25%,#34a853 25% 50%,#fbbc05 50% 75%,#ea4335 75% 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  box-shadow:0 3px 8px rgba(67,44,35,.045)!important
+}
+
+.fe-oauth-divider{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:1fr auto 1fr!important;
+  align-items:center!important;
+  gap:12px!important;
+  margin:17px 0 15px!important;
+  color:#a08d83!important;
+  font-size:7px!important;
+  font-weight:800!important;
+  text-transform:uppercase!important;
+  letter-spacing:.08em!important
+}
+.fe-oauth-divider:before,.fe-oauth-divider:after{
+  content:""!important;
+  height:1px!important;
+  background:linear-gradient(90deg,transparent,#e8ddd7)!important
+}
+.fe-oauth-divider:after{
+  background:linear-gradient(90deg,#e8ddd7,transparent)!important
+}
+.fe-oauth-divider span{
+  white-space:nowrap!important;
+  padding:0 2px!important
+}
+
+.fe-tabs{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:5px!important;
+  margin:0 0 22px!important;
+  padding:5px!important;
+  border:1px solid rgba(96,69,57,.055)!important;
+  border-radius:15px!important;
+  background:#ece4df!important;
+  box-shadow:inset 0 1px 2px rgba(65,42,34,.035)!important
+}
+.fe-tabs button{
+  min-height:42px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  color:#9d887d!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  transition:.16s ease!important
+}
+.fe-tabs button:hover{color:#654c41!important}
+.fe-tabs button.active{
+  background:linear-gradient(180deg,#fff,#fffdfb)!important;
+  color:#3f3029!important;
+  box-shadow:
+    0 6px 16px rgba(63,40,32,.08),
+    inset 0 1px 0 rgba(255,255,255,1)!important
+}
+
+@media(max-width:680px){
+  .fe-login-summary{padding:13px 14px 13px 16px!important}
+  .fe-google{min-height:49px!important}
+  .fe-oauth-divider{margin:15px 0 14px!important}
+}
