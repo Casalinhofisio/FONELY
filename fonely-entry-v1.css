@@ -270,3 +270,7 @@
   .fe-hero h1{font-size:35px}
   .fe-auth-side{padding-left:17px;padding-right:17px}
 }
+
+/* Session bootstrap: mounted but invisible until auth state is known */
+#fonelyEntry.fe-session-pending{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#fonelyEntry:not(.fe-session-pending){opacity:1;visibility:visible;transition:opacity .14s ease}
