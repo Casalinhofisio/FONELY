@@ -1,0 +1,26 @@
+/* Fonely Brand System v2 */
+:root{
+  --fonely-logo-orange:url("assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_11_38.png");
+  --fonely-logo-brown:url("assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_08_48.png");
+}
+
+/* dark surfaces */
+.layout>aside .fonely-official-logo,
+.fe-brand-side .fe-logo{
+  content:var(--fonely-logo-orange)!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+
+/* light surfaces */
+.fe-auth-brand img,
+.fe-card-head>img{
+  content:var(--fonely-logo-brown)!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+
+/* keep logo proportions consistent across product */
+.layout>aside .fonely-official-logo{width:165px!important;height:auto!important}
+.fe-brand-side .fe-logo{width:195px!important;height:auto!important}
+.fe-auth-brand img{width:170px!important;height:auto!important}
