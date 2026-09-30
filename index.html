@@ -584,6 +584,53 @@ document.addEventListener('click',function(e){
  if((close||e.target===back)&&menu){menu.classList.remove('open');if(back)back.classList.remove('open');}
 });
 </script>
+<style id="fonely-mobile-force-match-v4">
+@media(max-width:720px){
+ html,body{background:#f4f4f5!important}
+ .layout>main,.main{padding:14px 14px 105px!important;background:#f4f4f5!important}
+ .layout>main>header,.main>header{position:relative!important;top:auto!important;margin:0 0 14px!important;padding:18px 18px!important;min-height:90px!important;border-radius:22px!important;background:#fff!important;border:1px solid #e4e4e7!important;box-shadow:0 10px 28px rgba(20,20,24,.06)!important}
+ .layout>main>header .overline,.main>header .overline{font-size:7px!important;letter-spacing:1.8px!important}
+ .layout>main>header h1,.main>header h1{font-size:29px!important;color:#18191d!important}
+ .fhome-welcome{padding:20px!important;border:1px solid #e3e3e6!important;border-radius:22px!important;background:#fff!important;box-shadow:0 10px 28px rgba(20,20,24,.06)!important}
+ .fhome-hero-copy h2{font-size:29px!important;color:#18191d!important}
+ .fhome-hero-actions button{border-radius:12px!important}
+ .fhome-stats{gap:9px!important}
+ .fhome-stat{border:1px solid #e3e3e6!important;border-radius:20px!important;background:#fff!important;box-shadow:0 8px 22px rgba(20,20,24,.05)!important}
+ .panel{border-color:#e3e3e6!important;box-shadow:0 8px 22px rgba(20,20,24,.05)!important}
+ .mobile-menu-fab{left:20px!important;bottom:calc(22px + env(safe-area-inset-bottom))!important;width:auto!important;height:54px!important;padding:0 20px!important;border-radius:28px!important;background:#17191e!important;color:#fff!important;box-shadow:0 12px 32px rgba(0,0,0,.22)!important;flex-direction:row!important;gap:8px!important}
+ .mobile-menu-fab i{font-size:15px!important}
+ .mobile-menu-fab span{font-size:15px!important;font-weight:800!important}
+ .mobile-menu-backdrop{background:rgba(20,21,25,.35)!important;backdrop-filter:none!important}
+ .mobile-more-menu{left:0!important;right:auto!important;top:0!important;bottom:0!important;width:min(82vw,360px)!important;height:100dvh!important;padding:28px 20px 90px!important;border:0!important;border-radius:0!important;background:#111217!important;color:#fff!important;box-shadow:14px 0 35px rgba(0,0,0,.22)!important;transform:translateX(-105%)!important;overflow-y:auto!important;transition:transform .22s ease!important}
+ .mobile-more-menu.open{transform:translateX(0)!important}
+ .mobile-menu-head{padding:8px 8px 24px!important;border-bottom:0!important}
+ .mobile-menu-head>div{display:block!important}
+ .mobile-menu-head .brand img{filter:brightness(0) invert(1)!important;width:135px!important;max-width:135px!important}
+ .mobile-menu-head small{display:block!important;margin-top:26px!important;color:#777b85!important;font-size:8px!important;letter-spacing:2.2px!important}
+ #mobileMenuClose{display:none!important}
+ .mobile-more-menu>nav{display:flex!important;flex-direction:column!important;gap:5px!important;padding:0!important}
+ .mobile-more-menu>nav button{width:100%!important;min-height:55px!important;padding:8px 12px!important;border-radius:13px!important;background:transparent!important;color:#d9d9dc!important;font-size:14px!important;font-weight:800!important}
+ .mobile-more-menu>nav button i{width:36px!important;height:36px!important;min-width:36px!important;border-radius:10px!important;background:#1c1e24!important;color:#a9abb1!important;font-size:15px!important}
+ .mobile-more-menu>nav button.active{background:#563027!important;color:#fff!important;box-shadow:inset 4px 0 #dc7658!important}
+ .mobile-more-menu>nav button.active i{background:#6d352b!important;color:#ef9a7f!important}
+ .mobile-more-menu>nav button em{right:10px!important;top:19px!important;color:#8e9097!important}
+ .force-agenda-head{padding:2px 1px!important;margin-bottom:12px!important}
+ .force-agenda-head h2{font-size:28px!important;color:#18191d!important}
+ .force-agenda-head #newAppointment{background:#57362b!important;border-radius:11px!important}
+ .force-agenda-tabs{display:flex!important;grid-template-columns:none!important;width:max-content!important;gap:7px!important;padding:0!important;background:transparent!important}
+ .force-agenda-tabs button{padding:0 18px!important;background:#e7e7e9!important;color:#24252a!important;border-radius:11px!important}
+ .force-agenda-tabs button.active{background:#1c1e23!important;color:#fff!important}
+ .force-month-card{padding:14px!important;border-radius:20px!important;border-color:#dedfe2!important;box-shadow:0 9px 25px rgba(20,20,24,.06)!important}
+ .force-month-nav{grid-template-columns:46px 1fr 46px!important;gap:9px!important;margin:8px 0 13px!important}
+ .force-month-nav button{height:44px!important;background:#f0f0f2!important;border:0!important;border-radius:12px!important;color:#202126!important}
+ .force-month-nav #agendaToday{background:#fff!important;border:1px solid #dfe0e3!important}
+ .force-month-card .month-weekdays{border-top:1px solid #e2e3e5!important;border-bottom:1px solid #e2e3e5!important;padding:5px 0!important}
+ .force-month-card .month-cell{min-height:58px!important;border-radius:6px!important;border-color:#e5e5e7!important}
+ .force-month-card .month-cell.is-selected{border:2px solid #57362b!important;background:#faf5f2!important}
+ .mobile-event-dot{background:#a75e48!important}
+ .force-day-list{border-radius:20px!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
