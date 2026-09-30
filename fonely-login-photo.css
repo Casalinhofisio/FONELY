@@ -291,3 +291,36 @@
   }
   .fe-card{padding:38px 36px 30px!important}
 }
+
+
+/* v6 — transparent Nath portrait integrated directly into brown panel */
+@media(min-width:1021px){
+  .fe-photo-stage{
+    top:112px!important;
+    right:-12px!important;
+    bottom:0!important;
+    width:40%!important;
+    min-width:300px!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    pointer-events:none!important
+  }
+  .fe-photo-stage:before{display:none!important}
+  .fe-photo-stage img{
+    position:absolute!important;
+    right:0!important;
+    bottom:0!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    object-position:right bottom!important;
+    filter:drop-shadow(-16px 20px 28px rgba(18,10,7,.18))!important
+  }
+  .fe-photo-caption{display:none!important}
+}
+@media(min-width:1021px) and (max-width:1280px){
+  .fe-photo-stage{right:-8px!important;width:37%!important;min-width:250px!important}
+}
