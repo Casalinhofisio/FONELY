@@ -74,7 +74,7 @@ function authHTML(){
     '<main class="fe-frame">'+
       '<section class="fe-brand-side">'+
         '<div class="fe-brand-top">'+
-          '<img class="fe-logo" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_11_38.png" alt="Fonely">'+
+          '<img class="fe-logo" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_33_57.png" alt="Fonely">'+
           '<span>SISTEMA PARA FONOAUDIÓLOGOS</span>'+
         '</div>'+
         '<div class="fe-photo-stage" aria-hidden="true"><img src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_00_52.png" alt=""><div class="fe-photo-caption"><small>FONOAUDIOLOGIA</small><b>Uma rotina clínica mais leve.</b></div></div>'+
