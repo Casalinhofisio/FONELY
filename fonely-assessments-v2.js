@@ -819,7 +819,7 @@ function customAssessmentRead(a){
 var PROTOCOL_LIBRARY=[
  {id:'abfw',icon:'📚',name:'ABFW — Linguagem Infantil',meta:'2–7 anos · Fonologia, Vocabulário, Fluência e Pragmática',area:'Linguagem',licensed:true},
  {id:'idv10',icon:'🎙️',name:'IDV-10 — Desvantagem Vocal',meta:'Auto-relato · 10 itens · Voz',area:'Voz'},
- {id:'fois',icon:'🍽️',name:'FOIS — Ingestão Oral',meta:'Nível funcional de ingestão oral',area:'Disfagia'},
+ {id:'adl2',icon:'🧩',name:'ADL-2 — Desenvolvimento da Linguagem',meta:'Linguagem compreensiva, expressiva e resultado global',area:'Linguagem',licensed:true},
  {id:'auditory',icon:'👂',name:'Triagem de Processamento Auditivo',meta:'Escolares · registro clínico de triagem',area:'Audição'}
 ];
 function protocolCards(pid){
@@ -847,9 +847,11 @@ function protocolForm(pid,protocolId,existing){
  var openedFromAssessmentsPage=!!document.querySelector('.fonely-assessment-v3');
  var x=protocolById(protocolId),d=load(),p=d.patients.find(function(q){return q.id===pid;});if(!x||!p)return;
  existing=existing||{};var attachment=existing.protocolAttachment||null,pro=currentProfessional();
- var abfw=x.id==='abfw';
+ var abfw=x.id==='abfw',adl2=x.id==='adl2';
  var body=abfw
  ?'<div class="assessment-protocol-license"><b>ABFW — registro de aplicação</b><p>Registre abaixo os resultados e observações da aplicação. Se desejar, anexe também o documento preenchido.</p></div>'
+ :adl2
+ ?'<div class="assessment-protocol-license"><b>ADL-2 — registro de aplicação</b><p>Registre os resultados obtidos com o instrumento oficial. O Fonely não reproduz itens, figuras ou tabelas normativas da ADL-2.</p></div><div class="assessment-v3-read-grid adl2-score-grid"><label>Linguagem compreensiva — escore bruto<input name="adl2_comp_raw" value="'+esc(existing.adl2&&existing.adl2.compRaw||'')+'" placeholder="Escore bruto"></label><label>Linguagem compreensiva — escore padrão<input name="adl2_comp_std" value="'+esc(existing.adl2&&existing.adl2.compStd||'')+'" placeholder="Escore padrão"></label><label>Linguagem expressiva — escore bruto<input name="adl2_exp_raw" value="'+esc(existing.adl2&&existing.adl2.expRaw||'')+'" placeholder="Escore bruto"></label><label>Linguagem expressiva — escore padrão<input name="adl2_exp_std" value="'+esc(existing.adl2&&existing.adl2.expStd||'')+'" placeholder="Escore padrão"></label><label>Linguagem global — escore bruto<input name="adl2_global_raw" value="'+esc(existing.adl2&&existing.adl2.globalRaw||'')+'" placeholder="Escore bruto"></label><label>Linguagem global — escore padrão<input name="adl2_global_std" value="'+esc(existing.adl2&&existing.adl2.globalStd||'')+'" placeholder="Escore padrão"></label><label>Classificação<input name="adl2_classification" value="'+esc(existing.adl2&&existing.adl2.classification||'')+'" placeholder="Registre conforme o manual oficial"></label></div>'
  :'';
  var w=modal('<div class="assessment-v3-head"><div><small>PROTOCOLOS E TESTES</small><h2>'+esc(x.name)+'</h2><p>'+esc(p.name)+' · '+esc(x.meta)+'</p></div><span>'+esc(x.area)+'</span></div>'+
  '<form id="protocolAssessmentForm"><div class="assessment-v3-top-grid"><label>Data<input type="date" name="date" value="'+esc(existing.date||today())+'" required></label><label>Profissional<input value="'+esc(existing.professional||pro.name)+'" readonly></label><label>Tipo<select name="kind">'+selectOptions(['Avaliação','Reavaliação','Triagem'],existing.kind||'Avaliação')+'</select></label></div>'+body+
