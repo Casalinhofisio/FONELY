@@ -492,10 +492,61 @@ body>#app{font-size:16px!important}
  .sidebar nav button,.sidebar .nav button{min-width:58px!important}
 }
 </style>
+<style id="fonely-force-mobile-real-v3">
+.mobile-bottom-nav,.mobile-more-menu{display:none}
+@media(max-width:720px){
+ .layout>aside{display:none!important}
+ .mobile-bottom-nav{position:fixed!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;left:8px!important;right:8px!important;bottom:calc(8px + env(safe-area-inset-bottom))!important;height:64px!important;padding:5px!important;z-index:1200!important;background:rgba(255,255,255,.98)!important;border:1px solid #eadfd8!important;border-radius:18px!important;box-shadow:0 10px 32px rgba(65,39,29,.16)!important}
+ .mobile-bottom-nav button{border:0!important;background:transparent!important;border-radius:13px!important;color:#8b766c!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;font-size:9px!important;font-weight:700!important}
+ .mobile-bottom-nav button i{font-style:normal!important;font-size:18px!important;line-height:1!important}
+ .mobile-bottom-nav button.active{background:#5a382d!important;color:#fff!important}
+ .mobile-more-menu{position:fixed!important;display:none;grid-template-columns:1fr 1fr!important;gap:8px!important;left:12px!important;right:12px!important;bottom:82px!important;z-index:1199!important;padding:12px!important;background:#fff!important;border:1px solid #eadfd8!important;border-radius:18px!important;box-shadow:0 16px 40px rgba(65,39,29,.18)!important}
+ .mobile-more-menu.open{display:grid!important}
+ .mobile-more-menu button{min-height:48px!important;border:0!important;border-radius:12px!important;background:#f8f2ed!important;color:#4c332a!important;text-align:left!important;padding:10px 12px!important;font-weight:700!important}
+ .mobile-more-menu button i{margin-right:8px!important;font-style:normal!important}
+ .force-agenda-head{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:10px!important;margin-bottom:10px!important}
+ .force-agenda-head small{font-size:8px!important;letter-spacing:1.3px!important;color:#a47e6c!important;font-weight:800!important}
+ .force-agenda-head h2{font-size:21px!important;margin:2px 0 0!important;text-transform:capitalize!important}
+ .force-agenda-head #newAppointment{width:auto!important;min-height:42px!important;padding:0 13px!important;font-size:10px!important}
+ .force-agenda-tabs{display:grid!important;grid-template-columns:1fr 1fr!important;padding:4px!important;margin-bottom:10px!important;background:#eadfd8!important;border-radius:12px!important}
+ .force-agenda-tabs button{height:36px!important;border:0!important;background:transparent!important;border-radius:9px!important;font-weight:800!important;color:#806c62!important}
+ .force-agenda-tabs button.active{background:#fff!important;color:#4b3027!important;box-shadow:0 2px 8px rgba(65,39,29,.07)!important}
+ .force-month-card{background:#fff!important;border:1px solid #eee4de!important;border-radius:18px!important;padding:10px!important;box-shadow:0 5px 18px rgba(65,39,29,.04)!important}
+ .force-month-nav{display:grid!important;grid-template-columns:42px 1fr 42px!important;gap:7px!important;margin-bottom:8px!important}
+ .force-month-nav button{height:38px!important;border:1px solid #eadfd8!important;border-radius:10px!important;background:#fff!important;color:#4c332a!important;font-weight:800!important}
+ .force-month-card .month-weekdays,.force-month-card .month-grid{width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:3px!important}
+ .force-month-card .month-weekdays span{text-align:center!important;font-size:7px!important;font-weight:800!important;padding:5px 0!important;color:#9b857a!important}
+ .force-month-card .month-cell{position:relative!important;min-width:0!important;min-height:47px!important;padding:4px 2px!important;border:1px solid #f0e7e2!important;border-radius:9px!important;background:#fff!important;overflow:hidden!important}
+ .force-month-card .month-cell>b{font-size:11px!important}
+ .force-month-card .month-cell>span{display:none!important}
+ .force-month-card .month-cell.is-today>b{display:inline-grid!important;place-items:center!important;width:21px!important;height:21px!important;border-radius:50%!important;background:#d87555!important;color:#fff!important}
+ .force-month-card .month-cell.is-selected{border:2px solid #6a4436!important;background:#fff9f5!important}
+ .mobile-event-dot{display:block!important;width:5px!important;height:5px!important;border-radius:50%!important;background:#d87555!important;margin:4px auto 0!important}
+ .force-day-list{margin-top:10px!important;padding:13px!important}
+ .force-day-list .panel-title{align-items:center!important;margin-bottom:7px!important}
+ .force-day-list .panel-title h3{font-size:14px!important;text-transform:capitalize!important}
+ .force-day-row{width:100%!important;display:grid!important;grid-template-columns:48px minmax(0,1fr) auto!important;align-items:center!important;gap:9px!important;padding:10px 4px!important;border:0!important;border-bottom:1px solid #eee6e1!important;background:transparent!important;text-align:left!important}
+ .force-day-row time{font-size:12px!important;font-weight:900!important;color:#d16f50!important}
+ .force-day-row span{min-width:0!important}
+ .force-day-row span b,.force-day-row span small{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ .force-day-row span b{font-size:11px!important;color:#412d26!important}
+ .force-day-row span small{font-size:8px!important;color:#8d7970!important;margin-top:2px!important}
+ .force-day-row mark{font-size:7px!important;padding:5px 6px!important;border-radius:999px!important}
+ .force-agenda-next{margin-top:10px!important}
+}
+</style>
+<script>
+document.addEventListener('click',function(e){
+ var b=e.target.closest&&e.target.closest('#mobileMore');
+ var menu=document.getElementById('mobileMoreMenu');
+ if(b&&menu){e.preventDefault();menu.classList.toggle('open');return;}
+ if(menu&&!e.target.closest('.mobile-more-menu'))menu.classList.remove('open');
+});
+</script>
 </head>
 <body>
 <div id="app"></div>
-<script src="fonely-auth.js?v=60"></script>
+<script src="fonely-auth.js?v=61"></script>
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
