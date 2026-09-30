@@ -113,3 +113,13 @@
 #fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn span{display:inline!important;color:#fff!important;font-size:12px!important;font-weight:900!important}
 #fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn b{display:inline!important;color:#fff!important;margin-left:14px!important;font-size:16px!important}
 @media(max-width:600px){#fonelyAssessmentModal .assessment-choice-actions{display:grid!important;grid-template-columns:1fr 1.25fr!important}#fonelyAssessmentModal .assessment-choice-actions button{width:100%!important;min-width:0!important}}
+
+/* ABFW cleanup + protocol save action v16 */
+#fonelyAssessmentModal .assessment-protocol-subtests{display:none!important}
+#fonelyAssessmentModal .protocol-save-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:10px!important;padding-top:18px!important;margin-top:18px!important;border-top:1px solid #eaded7!important}
+#fonelyAssessmentModal .protocol-save-actions>button{appearance:none!important;display:inline-flex!important;position:static!important;align-items:center!important;justify-content:center!important;width:auto!important;height:46px!important;min-height:46px!important;padding:0 20px!important;margin:0!important;border-radius:12px!important;visibility:visible!important;opacity:1!important;text-indent:0!important;white-space:nowrap!important;overflow:visible!important;font:900 12px/1 'DM Sans',sans-serif!important}
+#fonelyAssessmentModal .protocol-save-actions>.soft-btn{min-width:116px!important;border:1px solid #ded2cb!important;background:#fff!important;color:#67544b!important}
+#fonelyAssessmentModal .protocol-save-actions>.protocol-save-btn{min-width:190px!important;border:0!important;background:#5b372a!important;color:#fff!important;box-shadow:0 8px 20px rgba(80,48,37,.17)!important}
+#fonelyAssessmentModal .protocol-save-btn span{display:inline!important;position:static!important;width:auto!important;height:auto!important;color:#fff!important;visibility:visible!important;opacity:1!important;font:900 12px/1 'DM Sans',sans-serif!important}
+#fonelyAssessmentModal .protocol-save-btn b{display:inline!important;position:static!important;width:auto!important;height:auto!important;margin-left:12px!important;color:#fff!important;visibility:visible!important;opacity:1!important;font:900 14px/1 'DM Sans',sans-serif!important}
+@media(max-width:600px){#fonelyAssessmentModal .protocol-save-actions{display:grid!important;grid-template-columns:1fr 1.45fr!important}#fonelyAssessmentModal .protocol-save-actions>button{width:100%!important;min-width:0!important}}
