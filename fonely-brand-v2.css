@@ -24,3 +24,37 @@
 .layout>aside .fonely-official-logo{width:165px!important;height:auto!important}
 .fe-brand-side .fe-logo{width:195px!important;height:auto!important}
 .fe-auth-brand img{width:170px!important;height:auto!important}
+
+
+/* Login light panel — centered, larger brand mark */
+@media(min-width:721px){
+  .fe-auth-brand{
+    width:100%!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    text-align:center!important;
+    margin-left:auto!important;
+    margin-right:auto!important
+  }
+  .fe-auth-brand img{
+    display:block!important;
+    width:215px!important;
+    max-width:215px!important;
+    height:auto!important;
+    margin:0 auto!important;
+    object-position:center!important
+  }
+}
+@media(max-width:720px){
+  .fe-auth-brand{
+    display:flex!important;
+    justify-content:center!important;
+    width:100%!important
+  }
+  .fe-auth-brand img{
+    width:180px!important;
+    max-width:180px!important;
+    margin:0 auto!important
+  }
+}
