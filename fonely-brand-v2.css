@@ -8,7 +8,7 @@
 
 /* dark surfaces */
 .layout>aside .fonely-official-logo{
-  content:var(--fonely-icon-orange)!important;
+  content:var(--fonely-logo-brown)!important;
   object-fit:contain!important;
   filter:none!important;
 }
@@ -28,7 +28,7 @@
 }
 
 /* keep logo proportions consistent across product */
-.layout>aside .fonely-official-logo{width:72px!important;max-width:72px!important;height:auto!important}
+.layout>aside .fonely-official-logo{width:168px!important;max-width:168px!important;height:auto!important}
 .fe-brand-side .fe-logo{width:195px!important;height:auto!important}
 .fe-auth-brand img{width:170px!important;height:auto!important}
 
@@ -82,19 +82,18 @@
 }
 
 
-/* Sidebar brand is icon-only */
+/* Sidebar brand uses the full brown Fonely wordmark */
 .layout>aside .brand{
   display:flex!important;
   align-items:center!important;
   justify-content:flex-start!important;
-  min-height:78px!important;
-  padding:8px 10px 22px!important;
+  min-height:92px!important;
+  padding:10px 10px 22px!important;
 }
-.layout>aside .fonely-sidebar-icon,
 .layout>aside .fonely-official-logo{
-  content:var(--fonely-icon-orange)!important;
-  width:72px!important;
-  max-width:72px!important;
+  content:var(--fonely-logo-brown)!important;
+  width:168px!important;
+  max-width:168px!important;
   height:auto!important;
   object-fit:contain!important;
   object-position:left center!important;
@@ -105,4 +104,22 @@
     width:58px!important;
     max-width:58px!important;
   }
+}
+
+@media(max-width:900px){
+  .layout>aside .fonely-official-logo{
+    content:var(--fonely-logo-brown)!important;
+    width:150px!important;
+    max-width:150px!important;
+  }
+}
+
+/* Login hero remains icon-only */
+.fe-brand-side .fe-logo{
+  content:var(--fonely-icon-brown)!important;
+}
+
+/* Login form keeps the full brown logo */
+.fe-auth-brand img{
+  content:var(--fonely-logo-brown)!important;
 }

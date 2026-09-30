@@ -1,0 +1,205 @@
+/* Fonely App Premium v3 — warm beige shell */
+:root{
+  --fv3-sidebar:#eadbd0;
+  --fv3-sidebar-2:#dfc9bb;
+  --fv3-sidebar-ink:#56382d;
+  --fv3-sidebar-muted:#866c60;
+  --fv3-sidebar-line:rgba(90,56,43,.10);
+  --fv3-active:#d9b9a6;
+  --fv3-active-2:#efdcd0;
+  --fv3-accent:#c87558;
+  --fv3-card:#fffdfb;
+  --fv3-bg:#f7f3ef;
+}
+
+/* Sidebar */
+.layout>aside{
+  background:
+    radial-gradient(circle at 92% 3%,rgba(255,255,255,.54),transparent 25%),
+    radial-gradient(circle at 16% 92%,rgba(196,117,88,.08),transparent 30%),
+    linear-gradient(180deg,var(--fv3-sidebar) 0%,var(--fv3-sidebar-2) 100%)!important;
+  border-right:1px solid var(--fv3-sidebar-line)!important;
+  box-shadow:12px 0 34px rgba(72,45,34,.07)!important;
+  padding:18px 13px 15px!important;
+}
+.layout>aside .brand{
+  margin:0 5px 15px!important;
+  padding:8px 9px 20px!important;
+  border-bottom:1px solid var(--fv3-sidebar-line)!important;
+}
+.layout>aside .fonely-official-logo{
+  width:168px!important;
+  max-width:168px!important;
+  filter:none!important;
+}
+
+/* Navigation */
+.layout nav{
+  gap:5px!important;
+}
+.layout nav button{
+  position:relative!important;
+  min-height:46px!important;
+  padding:6px 9px!important;
+  border:1px solid transparent!important;
+  border-radius:13px!important;
+  color:var(--fv3-sidebar-muted)!important;
+  font-size:11px!important;
+  font-weight:780!important;
+  transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease!important;
+}
+.layout nav button i{
+  width:33px!important;
+  min-width:33px!important;
+  height:33px!important;
+  margin-right:9px!important;
+  border:1px solid rgba(90,56,43,.075)!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.24)!important;
+  color:#6d4a3d!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.36)!important;
+}
+.layout nav button:hover{
+  background:rgba(255,255,255,.28)!important;
+  border-color:rgba(90,56,43,.075)!important;
+  color:#4d3228!important;
+}
+.layout nav button.active{
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.58),rgba(239,220,208,.62))!important;
+  border-color:rgba(102,64,49,.12)!important;
+  color:#40281f!important;
+  box-shadow:
+    0 9px 22px rgba(91,56,43,.07),
+    inset 0 1px 0 rgba(255,255,255,.55)!important;
+}
+.layout nav button.active:before{
+  left:-1px!important;
+  top:11px!important;
+  bottom:11px!important;
+  width:3px!important;
+  border-radius:0 4px 4px 0!important;
+  background:var(--fv3-accent)!important;
+}
+.layout nav button.active i{
+  background:linear-gradient(145deg,rgba(199,117,87,.18),rgba(255,255,255,.42))!important;
+  border-color:rgba(126,76,57,.12)!important;
+  color:#6a4031!important;
+}
+.layout nav em{
+  margin-left:auto!important;
+  padding:4px 7px!important;
+  border:1px solid rgba(135,81,59,.08)!important;
+  border-radius:999px!important;
+  background:rgba(196,117,88,.12)!important;
+  color:#975f49!important;
+  font-size:6px!important;
+  font-weight:900!important;
+  letter-spacing:.055em!important;
+}
+.layout>aside:after{
+  margin:22px 12px 0!important;
+  padding-top:16px!important;
+  border-top:1px solid var(--fv3-sidebar-line)!important;
+  color:#9b7e70!important;
+  font-size:6px!important;
+  letter-spacing:.17em!important;
+}
+
+/* Main canvas */
+body{
+  background:
+    radial-gradient(circle at 94% 0%,rgba(203,127,98,.055),transparent 25%),
+    linear-gradient(180deg,#fbf8f5 0%,var(--fv3-bg) 78%)!important;
+}
+.layout>main{
+  padding-top:27px!important;
+}
+.layout>main>header{
+  margin-bottom:22px!important;
+  padding-bottom:16px!important;
+  border-bottom:1px solid rgba(83,54,42,.075)!important;
+}
+.layout>main>header h1{
+  color:#382821!important;
+}
+.overline{
+  color:#aa6a52!important;
+}
+
+/* Cards and dashboard */
+.panel,
+.fhome-agenda,.fhome-patients,.fhome-alerts,
+.fhome-stat,
+.top-account{
+  border-color:rgba(78,51,40,.075)!important;
+  background:rgba(255,253,251,.94)!important;
+}
+.fhome-welcome{
+  border-color:rgba(78,51,40,.08)!important;
+  background:
+    radial-gradient(circle at 92% 6%,rgba(213,147,120,.10),transparent 26%),
+    linear-gradient(145deg,#fffdfb 0%,#faf3ee 100%)!important;
+  box-shadow:0 12px 30px rgba(69,43,33,.04)!important;
+}
+.fhome-welcome:before{
+  background:linear-gradient(180deg,#d98f71,#b96247)!important;
+}
+.fhome-welcome .primary{
+  background:linear-gradient(135deg,#c47759,#a65a42)!important;
+  box-shadow:0 9px 20px rgba(166,90,66,.18)!important;
+}
+.primary{
+  background:linear-gradient(135deg,#bd6e52,#a45a43)!important;
+}
+.soft-btn,.icon-btn{
+  border-color:rgba(78,51,40,.09)!important;
+  background:#fffdfb!important;
+}
+input,select,textarea{
+  border-color:rgba(78,51,40,.10)!important;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(188,109,80,.38)!important;
+  box-shadow:0 0 0 3px rgba(188,109,80,.08)!important;
+}
+
+/* subtle interaction polish */
+.panel,.fhome-stat,.top-account,.patient,.row,.clinical{
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease!important;
+}
+.patient:hover,.row:hover,.clinical:hover{
+  border-color:rgba(188,109,80,.18)!important;
+  box-shadow:0 9px 24px rgba(70,44,34,.045)!important;
+}
+
+/* Responsive sidebar */
+@media(max-width:900px){
+  .layout>aside{
+    padding:14px 14px 12px!important;
+    background:
+      radial-gradient(circle at 95% 0%,rgba(255,255,255,.52),transparent 28%),
+      linear-gradient(180deg,#eadbd0,#dfc9bb)!important;
+  }
+  .layout>aside .brand{
+    min-height:72px!important;
+    padding:4px 4px 14px!important;
+    margin-bottom:10px!important;
+  }
+  .layout>aside .fonely-official-logo{
+    width:150px!important;
+    max-width:150px!important;
+  }
+  .layout nav{
+    gap:7px!important;
+  }
+  .layout nav button{
+    background:rgba(255,255,255,.18)!important;
+    border-color:rgba(90,56,43,.06)!important;
+  }
+}
+@media(max-width:760px){
+  .layout nav{
+    grid-template-columns:1fr!important;
+  }
+}

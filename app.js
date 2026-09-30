@@ -83,7 +83,7 @@ function canOpenPage(page){
 }
 
 
-function logo(){return '<div class="brand"><img class="fonely-official-logo fonely-sidebar-icon" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_31_34.png" alt="Fonely"></div>';}
+function logo(){return '<div class="brand"><img class="fonely-official-logo" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_08_48.png" alt="Fonely — Sistema para Fonoaudiólogos"></div>';}
 var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe']];
 function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
