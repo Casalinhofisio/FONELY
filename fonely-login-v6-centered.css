@@ -183,3 +183,45 @@
     display:none!important;
   }
 }
+
+
+/* v7 — compact desktop composition for notebook screens */
+@media(min-width:1021px){
+  #fonelyEntry .fe-shell{padding:30px!important}
+  #fonelyEntry .fe-frame{
+    width:min(84vw,1280px)!important;
+    max-width:1280px!important;
+    min-height:min(78vh,720px)!important;
+    grid-template-columns:minmax(0,1.08fr) minmax(420px,.92fr)!important;
+    border-radius:26px!important
+  }
+  #fonelyEntry .fe-brand-side{padding:30px 28px 26px 40px!important}
+  #fonelyEntry .fe-brand-top .fe-logo{width:164px!important;max-width:164px!important}
+  #fonelyEntry .fe-hero{width:57%!important;max-width:455px!important;margin-top:42px!important}
+  #fonelyEntry .fe-hero h1{max-width:450px!important;font-size:clamp(39px,3.25vw,51px)!important}
+  #fonelyEntry .fe-hero>p{max-width:430px!important;font-size:11px!important}
+  #fonelyEntry .fe-benefits{max-width:445px!important;margin-top:18px!important}
+  #fonelyEntry .fe-benefits>div{padding:8px 0!important}
+  #fonelyEntry .fe-suite{max-width:445px!important;margin-top:10px!important}
+  #fonelyEntry .fe-brand-note{width:57%!important;max-width:445px!important}
+  #fonelyEntry .fe-photo-stage{top:82px!important;width:39%!important;min-width:260px!important}
+  #fonelyEntry .fe-auth-side{padding:26px 30px!important}
+  #fonelyEntry .fe-card{width:min(100%,500px)!important;max-width:500px!important;padding:30px 34px 26px!important;border-radius:22px!important}
+  #fonelyEntry .fe-auth-brand{margin-bottom:20px!important}
+  #fonelyEntry .fe-auth-brand img{width:140px!important;max-width:140px!important}
+  #fonelyEntry .fe-card-head h2{font-size:28px!important}
+  #fonelyEntry .fe-login-summary{padding:12px 14px!important;margin-bottom:14px!important}
+  #fonelyEntry .fe-google{min-height:48px!important}
+  #fonelyEntry .fe-tabs{min-height:50px!important;margin-bottom:16px!important}
+  #fonelyEntry .fe-field input{min-height:49px!important}
+  #fonelyEntry .fe-primary{min-height:48px!important}
+}
+@media(min-width:1021px) and (max-height:800px){
+  #fonelyEntry .fe-shell{padding:18px!important}
+  #fonelyEntry .fe-frame{min-height:min(82vh,650px)!important}
+  #fonelyEntry .fe-hero{margin-top:30px!important}
+  #fonelyEntry .fe-hero h1{font-size:clamp(36px,3vw,46px)!important}
+  #fonelyEntry .fe-benefits{margin-top:13px!important}
+  #fonelyEntry .fe-suite{display:none!important}
+  #fonelyEntry .fe-card{padding:24px 30px 20px!important}
+}
