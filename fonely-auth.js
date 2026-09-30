@@ -6,14 +6,14 @@ const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://casalinhofisio.github.io/FONELY/';
 window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
-  'app.js?v=42',
-  'fonely-assessments-v2.js?v=42',
-  'fonely-package-integration-v2.js?v=42',
-  'fonely-full-edit-v1.js?v=42',
-  'fonely-logo.js?v=42',
-  'fonely-caa-library.js?v=42',
-  'fonely-caa-speech.js?v=42',
-  'fonely-caa.js?v=42'
+  'app.js?v=46',
+  'fonely-assessments-v2.js?v=46',
+  'fonely-package-integration-v2.js?v=46',
+  'fonely-full-edit-v1.js?v=46',
+  'fonely-logo.js?v=46',
+  'fonely-caa-library.js?v=46',
+  'fonely-caa-speech.js?v=46',
+  'fonely-caa.js?v=46'
 ];
 
 let sb=null;
@@ -140,12 +140,17 @@ function mountAuth(){
   var w=document.createElement('div');
   w.id='fonelyEntry';
   w.innerHTML=authHTML();
+  w.classList.add('fe-session-pending');
   document.body.appendChild(w);
   document.body.classList.add('fonely-entry-open');
   authMounted=true;
   bindAuth(w);
 }
 
+function revealAuth(){
+  var w=document.getElementById('fonelyEntry');
+  if(w)w.classList.remove('fe-session-pending');
+}
 function setMessage(text,type){
   var n=document.getElementById('feMessage');
   if(!n)return;
@@ -191,6 +196,7 @@ function showReset(email){
 function showRecovery(){
   recoveryMode=true;
   if(!authMounted)mountAuth();
+  revealAuth();
   var w=document.getElementById('fonelyEntry');
   if(!w)return;
   w.querySelectorAll('[data-fe-form]').forEach(function(f){f.classList.remove('active');});
@@ -667,27 +673,14 @@ function bindAuth(w){
   };
 }
 
-// Avoid both problems: no login flash for users with a saved session,
-// and no long splash for users who actually need the login screen.
-var storedSessionHint=false;
-try{
-  var rawSession=localStorage.getItem('sb-apjmkstuffzgfhgcxhvt-auth-token');
-  if(rawSession){
-    var parsedSession=JSON.parse(rawSession);
-    storedSessionHint=!!(parsedSession&&(parsedSession.access_token||(parsedSession.currentSession&&parsedSession.currentSession.access_token)));
-  }
-}catch(e){}
-
-if(!storedSessionHint&&!recoveryMode&&!inviteMode){
-  try{mountAuth();}catch(e){console.error(e);}
-}
+// Mount the access screen immediately but keep it hidden until session state is known.
+// This removes the blocking splash and avoids a login flash for users already signed in.
+try{mountAuth();}catch(e){console.error(e);}
 
 var bootFallbackTimer=setTimeout(function(){
-  if(!appLoaded&&!authMounted){
-    try{
-      mountAuth();
-      setMessage('O carregamento demorou mais que o esperado. Você pode entrar novamente.','error');
-    }catch(e){console.error(e);}
+  if(!appLoaded){
+    revealAuth();
+    setMessage('O carregamento demorou mais que o esperado. Você pode entrar novamente.','error');
   }
 },8000);
 
@@ -707,12 +700,17 @@ try{
     if(event==='SIGNED_OUT'&&!recoveryMode){
       clearTeamLocalCache();
       appLoaded=false;
-      mountAuth();
+      if(!authMounted)mountAuth();
+      revealAuth();
       setTab('login');
       return;
     }
     if(event==='SIGNED_IN'&&session&&session.user&&!recoveryMode){
-      loadApp(session.user);
+      loadApp(session.user).catch(function(err){
+        console.error('Fonely app load error:',err);
+        revealAuth();
+        setMessage('Sua conta entrou, mas o sistema não conseguiu abrir. Tente novamente.','error');
+      });
     }
   });
 
@@ -723,12 +721,13 @@ try{
   }else if(sessionResult.data&&sessionResult.data.session){
     await loadApp(sessionResult.data.session.user);
   }else{
-    mountAuth();
+    revealAuth();
   }
 }catch(err){
   clearTimeout(bootFallbackTimer);
   console.error(err);
-  mountAuth();
+  if(!authMounted)mountAuth();
+  revealAuth();
   setMessage('Não foi possível conectar ao servidor do Fonely agora. Atualize a página e tente novamente.','error');
 }
 })();
