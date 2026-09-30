@@ -192,10 +192,22 @@
  #fonelyEntry .fe-auth-footer,#fonelyEntry .fe-forgot,#fonelyEntry .fe-terms{position:static!important}
 }
 </style>
+<style id="fonely-auth-form-visible">
+@media(min-width:861px){
+ #fonelyEntry .fe-frame{grid-template-columns:minmax(0,1fr) 460px!important}
+ #fonelyEntry .fe-auth-side{min-height:680px!important;padding:34px 40px!important;overflow:visible!important}
+ #fonelyEntry .fe-card{max-width:390px!important;padding:0!important;overflow:visible!important}
+ #fonelyEntry .fe-auth-brand{margin-bottom:16px!important}
+ #fonelyEntry .fe-card-head{margin-bottom:14px!important}
+ #fonelyEntry .fe-google{margin-top:4px!important}
+ #fonelyEntry .fe-form.active{display:block!important;visibility:visible!important;opacity:1!important;max-height:none!important;height:auto!important;overflow:visible!important}
+ #fonelyEntry .fe-trust{margin-top:14px!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
-<script src="fonely-auth.js?v=58"></script>
+<script src="fonely-auth.js?v=59"></script>
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
