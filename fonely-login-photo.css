@@ -324,3 +324,45 @@
 @media(min-width:1021px) and (max-width:1280px){
   .fe-photo-stage{right:-8px!important;width:37%!important;min-width:250px!important}
 }
+
+
+/* v7 — Nath larger and better balanced */
+@media(min-width:1021px){
+  .fe-photo-stage{
+    top:88px!important;
+    right:-28px!important;
+    bottom:-10px!important;
+    width:47%!important;
+    min-width:370px!important
+  }
+
+  .fe-photo-stage img{
+    width:110%!important;
+    height:110%!important;
+    right:-6%!important;
+    bottom:-3%!important;
+    object-fit:contain!important;
+    object-position:right bottom!important
+  }
+
+  .fe-hero{
+    width:51%!important;
+    max-width:500px!important
+  }
+}
+
+@media(min-width:1021px) and (max-width:1280px){
+  .fe-photo-stage{
+    top:100px!important;
+    right:-22px!important;
+    width:43%!important;
+    min-width:305px!important
+  }
+
+  .fe-photo-stage img{
+    width:106%!important;
+    height:106%!important
+  }
+
+  .fe-hero{width:54%!important}
+}
