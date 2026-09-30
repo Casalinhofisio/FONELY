@@ -340,7 +340,7 @@ function openAccountPanel(){
   var isTeamMember=team.isOwner===false;
   var old=document.getElementById('fonelyAccountOverlay');if(old)old.remove();
   var expiry=access.status==='trialing'&&access.trial_ends_at?access.trial_ends_at:access.plan_ends_at;
-  var validity=expiry?accountDate(expiry):(access.plan_tier==='base'?'Sem vencimento':'Sem data definida');
+  var validity=expiry?accountDate(expiry):'Acesso completo';
   var name=profile.full_name||String(user.email||'Profissional').split('@')[0]||'Profissional';
   var joined=profile.created_at?accountDate(profile.created_at):'—';
   var initial=(name||'F').charAt(0).toUpperCase();
@@ -349,18 +349,18 @@ function openAccountPanel(){
     :'<div class="fe-account-photo fallback">'+esc(initial)+'<span class="fe-account-photo-edit">Adicionar foto</span></div>';
   var planBlock=isTeamMember
     ?'<div class="fe-account-plan"><div><span>ACESSO À CLÍNICA</span><b>'+esc(team.role||'Profissional')+'</b></div><mark class="ok">Sem cobrança individual</mark></div>'
-    :'<div class="fe-account-plan"><div><span>PLANO ATUAL</span><b>'+esc(accountPlanLabel(access.plan_tier))+'</b></div><mark class="'+accountStatusClass(access.status)+'">'+esc(accountStatusLabel(access.status))+'</mark></div>';
+    :'<div class="fe-account-plan"><div><span>ACESSO FONELY</span><b>Completo</b></div><mark class="ok">Todos os recursos liberados</mark></div>';
   var grid=isTeamMember
     ?'<div class="fe-account-grid">'+
        '<div><small>VÍNCULO</small><b>Membro da equipe</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado pela clínica':'Conforme o plano da clínica')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>Liberado pela clínica</b></div>'+
        '<div><small>FINANCEIRO GERAL</small><b>'+(team.permissions&&team.permissions.finance?'Liberado pela proprietária':'Sem acesso')+'</b></div>'+
       '</div>'
     :'<div class="fe-account-grid">'+
        '<div><small>VALIDADE / RENOVAÇÃO</small><b>'+esc(validity)+'</b></div>'+
        '<div><small>MEMBRO DESDE</small><b>'+esc(joined)+'</b></div>'+
-       '<div><small>ACESSO AO CAA</small><b>'+(access.plan_tier==='pro'?'Liberado':'Somente no Pro')+'</b></div>'+
+       '<div><small>ACESSO AO CAA</small><b>Liberado</b></div>'+
        '<div><small>CANCELAMENTO</small><b>'+(access.cancel_at_period_end?'Ao fim do período':'Nenhum agendado')+'</b></div>'+
       '</div>';
   var w=document.createElement('div');w.id='fonelyAccountOverlay';w.className='fe-account-overlay';
@@ -501,17 +501,15 @@ async function prepareWorkspace(user){
     }catch(e){console.warn('Fonely: não foi possível carregar a equipe.',e);}
   }
 
-  // Server-loaded plan is the single source of truth. Never elevate access from localStorage.
-  var serverPlan=(accessData.status==='active'||accessData.status==='trialing')&&accessData.plan_tier==='pro'?'pro':'base';
-  accessData.plan_tier=serverPlan;
-  window.FONELY_PLAN_TIER=serverPlan;
+  // Fonely now has one complete access level. Core clinical features are unlocked for everyone.
+  // Team seats remain the only paid expansion and continue to be controlled by team_member_limit.
+  var serverPlan='full';
+  accessData.plan_tier='full';
+  window.FONELY_PLAN_TIER='full';
   window.FonelyEntitlements={
-    plan:serverPlan,
-    isPro:serverPlan==='pro',
-    can:function(feature){
-      var proOnly={caa:true,team:true,advanced_protocols:true};
-      return !proOnly[feature]||serverPlan==='pro';
-    }
+    plan:'full',
+    isPro:true,
+    can:function(feature){ return feature!=='team'||Number(accessData.team_member_limit||0)>0; }
   };
   localStorage.setItem(window.FONELY_PLAN_KEY,window.FONELY_PLAN_TIER);
   window.FonelyTeamMembers=teamMembers;
