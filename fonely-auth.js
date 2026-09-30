@@ -77,7 +77,7 @@ function authHTML(){
           '<img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely">'+
           '<span>SISTEMA PARA FONOAUDIÓLOGOS</span>'+
         '</div>'+
-        '<div class="fe-photo-stage" aria-hidden="true"><img src="assets/Imagem%20do%20ChatGPT%2029%20de%20set.%20de%202026%2C%2023_46_37.jpg" alt=""><div class="fe-photo-caption"><small>FONOAUDIOLOGIA</small><b>Uma rotina clínica mais leve.</b></div></div>'+
+        '<div class="fe-photo-stage" aria-hidden="true"><img src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_00_52.png" alt=""><div class="fe-photo-caption"><small>FONOAUDIOLOGIA</small><b>Uma rotina clínica mais leve.</b></div></div>'+
         '<div class="fe-hero">'+
           '<span class="fe-eyebrow">GESTÃO CLÍNICA PARA FONOAUDIOLOGIA</span>'+
           '<h1>Sua clínica,<br><em>mais organizada.</em></h1>'+
