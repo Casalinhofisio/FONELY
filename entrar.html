@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta name="theme-color" content="#342720">
+<title>Fonely — Sistema para Fonoaudiólogos</title>
+<link rel="icon" type="image/svg+xml" href="fonely-icon.svg?v=6">
+<link rel="apple-touch-icon" href="assets/fonely-icon.webp?v=4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=20">
+<link rel="stylesheet" href="fonely-brand.css?v=2">
+<link rel="stylesheet" href="calendar-v2.css?v=1">
+<link rel="stylesheet" href="fonely-functional.css?v=1">
+<link rel="stylesheet" href="fonely-assessments-v2.css?v=5">
+<link rel="stylesheet" href="fonely-entry-v1.css?v=6">
+<link rel="stylesheet" href="fonely-caa.css?v=11">
+<link rel="stylesheet" href="fonely-billing.css?v=1">
+
+<style>.brand:has(.fonely-official-logo){display:block!important;padding:0 4px 24px!important}.fonely-official-logo{display:block;width:205px;max-width:100%;height:auto;object-fit:contain;object-position:left center}.brandmark{display:none!important}.package-auto-note{display:block;margin-top:7px;color:#8c7971;font-size:11px;font-weight:500;line-height:1.4}.patient-head>.record-actions{margin-left:auto}.patient-head>.record-actions+#schedulePatient{margin-left:0}@media(max-width:720px){.fonely-official-logo{width:190px}.patient-head{flex-wrap:wrap}.patient-head>.record-actions{margin-left:0}}</style>
+<link rel="stylesheet" href="fonely-premium-v4.css?v=7">\n</head>
+<body>
+<div id="app"></div>
+<script>
+(async function(){
+  try{
+    if('serviceWorker' in navigator){
+      var regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(function(r){return r.unregister();}));
+    }
+    if('caches' in window){
+      var keys=await caches.keys();
+      await Promise.all(keys.map(function(k){return caches.delete(k);}));
+    }
+  }catch(e){console.warn('Fonely cache cleanup:',e);}
+})();
+</script>
+<script src="fonely-auth.js?v=48"></script>
+<script src="fonely-billing.js?v=3"></script>
+</body>
+</html>
