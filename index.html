@@ -678,6 +678,35 @@ document.addEventListener('click',function(e){
  .mobile-more-menu{width:78vw!important;min-width:0!important;max-width:340px!important}
 }
 </style>
+<style id="fonely-drawer-width-fix-v6">
+@media(max-width:720px){
+ .mobile-more-menu{
+  width:min(86vw,360px)!important;
+  max-width:360px!important;
+  min-width:0!important;
+  padding:24px 18px 88px!important;
+  overflow-x:hidden!important;
+ }
+ .mobile-menu-head{padding:4px 8px 18px!important}
+ .mobile-menu-head .brand img{width:165px!important;max-width:80%!important}
+ .mobile-menu-head small{margin-top:22px!important}
+ .mobile-more-menu>nav{width:100%!important;overflow:hidden!important}
+ .mobile-more-menu>nav button{
+  width:100%!important;max-width:100%!important;min-width:0!important;
+  min-height:52px!important;padding:7px 10px!important;gap:10px!important;
+  overflow:hidden!important;
+ }
+ .mobile-more-menu>nav button i{width:34px!important;height:34px!important;min-width:34px!important}
+ .mobile-more-menu>nav button span{
+  display:block!important;min-width:0!important;overflow:hidden!important;
+  white-space:nowrap!important;text-overflow:ellipsis!important;font-size:13px!important;
+ }
+ .mobile-menu-fab{height:50px!important;padding:0 18px!important;bottom:calc(18px + env(safe-area-inset-bottom))!important}
+}
+@media(max-width:390px){
+ .mobile-more-menu{width:88vw!important;max-width:none!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
