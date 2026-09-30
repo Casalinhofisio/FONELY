@@ -544,3 +544,75 @@
     padding:30px 30px 24px!important
   }
 }
+
+
+/* v10 — softer warm beige hero */
+.fe-brand-side{
+  background:
+    radial-gradient(circle at 88% 10%,rgba(240,145,106,.16),transparent 27%),
+    linear-gradient(145deg,#efe3d9 0%,#e6d3c5 58%,#dbc0af 100%)!important;
+  color:#3a241c!important;
+}
+
+.fe-brand-side:before,
+.fe-brand-side:after{
+  opacity:.28!important;
+}
+
+.fe-brand-top>span,
+.fe-hero .fe-eyebrow,
+.fe-suite-title,
+.fe-brand-note{
+  color:#875747!important;
+}
+
+.fe-hero h1{
+  color:#3b271f!important;
+}
+
+.fe-hero h1 em,
+.fe-hero h1 strong{
+  color:#c87152!important;
+}
+
+.fe-hero>p{
+  color:#684d42!important;
+}
+
+.fe-benefit,
+.fe-benefits>div,
+.fe-suite,
+.fe-brand-note{
+  border-color:rgba(83,52,42,.14)!important;
+}
+
+.fe-benefit b,
+.fe-benefits b,
+.fe-suite b{
+  color:#3c281f!important;
+}
+
+.fe-benefit p,
+.fe-benefits p,
+.fe-suite span{
+  color:#74594e!important;
+}
+
+.fe-benefit i,
+.fe-benefits i{
+  background:rgba(111,72,57,.10)!important;
+  color:#8a5745!important;
+  border-color:rgba(102,66,52,.10)!important;
+}
+
+.fe-photo-stage img{
+  filter:drop-shadow(-12px 18px 24px rgba(72,45,35,.14))!important;
+}
+
+@media(max-width:1020px){
+  .fe-brand-side{
+    background:
+      radial-gradient(circle at 88% 5%,rgba(240,145,106,.16),transparent 32%),
+      linear-gradient(155deg,#efe4db 0%,#e2cdbf 100%)!important;
+  }
+}
