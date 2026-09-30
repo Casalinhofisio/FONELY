@@ -87,7 +87,21 @@ function authHTML(){
             '<div><i>03</i><span><b>Avaliações e evoluções</b><small>Registros clínicos conectados ao acompanhamento.</small></span></div>'+
             '<div><i>04</i><span><b>Fonely CAA</b><small>Pranchas de comunicação vinculadas ao paciente.</small></span></div>'+
           '</div>'+
-          '<div class="fe-suite"><small>TAMBÉM NO FONELY</small><div><span>Financeiro</span><span>Relatórios</span><span>Equipe</span><span>Documentos</span></div></div>'+
+          '<div class="fe-suite">'+
+            '<small>O QUE VOCÊ TEM NO FONELY</small>'+
+            '<div class="fe-suite-grid">'+
+              '<span><b>Agenda</b><em>Atendimentos, recorrências e visão do dia</em></span>'+
+              '<span><b>Pacientes</b><em>Cadastro, histórico e prontuário</em></span>'+
+              '<span><b>Anamnese</b><em>Registro clínico organizado por paciente</em></span>'+
+              '<span><b>Avaliações</b><em>Protocolos, reavaliações e comparativos</em></span>'+
+              '<span><b>Evoluções</b><em>Registros clínicos por atendimento</em></span>'+
+              '<span><b>Documentos</b><em>Arquivos e documentos vinculados ao paciente</em></span>'+
+              '<span><b>Financeiro</b><em>Recebimentos, pacotes e acompanhamento</em></span>'+
+              '<span><b>Relatórios</b><em>Visão geral da sua rotina clínica</em></span>'+
+              '<span><b>Equipe</b><em>Acessos e permissões para a clínica</em></span>'+
+              '<span><b>Fonely CAA</b><em>Pranchas de comunicação por paciente</em></span>'+
+            '</div>'+
+          '</div>'+
         '</div>'+
         '<div class="fe-product-card">'+
           '<div class="fe-product-top"><div><small>FONELY</small><b>Visão do dia</b></div><span>Hoje</span></div>'+
@@ -102,6 +116,7 @@ function authHTML(){
           '<div class="fe-auth-brand"><img src="fonely-logo-official.svg" alt="Fonely"></div>'+
           '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar sua agenda, pacientes, prontuários, avaliações e Fonely CAA.</p></div>'+
           '<div class="fe-auth-meta"><span><i></i>Seu espaço clínico</span><span><i></i>Dados sincronizados</span><span><i></i>Acesso profissional</span></div>'+
+          '<div class="fe-login-summary"><b>Um único sistema para sua rotina clínica.</b><span>Organize atendimentos, acompanhe pacientes, registre evoluções e centralize as principais informações do consultório.</span></div>'+
           '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
           '<form class="fe-form active" data-fe-form="login">'+
             '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
