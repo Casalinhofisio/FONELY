@@ -74,11 +74,10 @@ function canAccess(key){var t=teamContext();if(t.isOwner!==false)return true;ret
 function currentProfessional(){var a=window.FonelyAccount||{},p=a.profile||{},u=a.user||{},t=a.team||{};return {id:u.id||'',name:t.name||p.full_name||String(u.email||'Profissional').split('@')[0]||'Profissional',email:u.email||p.email||'',role:t.role||'Profissional'};}
 function recordProfessional(x){return x&&((x.professionalName||x.professional)||'')||'';}
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
-function hasProPlan(){return !!(window.FonelyEntitlements&&window.FonelyEntitlements.isPro);}
+function hasProPlan(){return true;}
 function canOpenPage(page){
-  if(page==='equipe'&&!hasProPlan())return false;
   var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
-  if(page==='equipe')return isWorkspaceOwner()&&hasProPlan();
+  if(page==='equipe')return isWorkspaceOwner();
   return map[page]?canAccess(map[page]):true;
 }
 
@@ -89,7 +88,7 @@ function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
   var accountInitial=(accountName||'F').charAt(0).toUpperCase();
-  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):(access.plan_tier==='pro'?'Fonely Pro':'Fonely Básico');
+  var accountPlan=team.isOwner===false?(team.role||'Membro da equipe'):'Fonely completo';
   var avatar=profile.avatar_url
     ?'<span class="top-account-avatar"><img data-profile-avatar src="'+esc(profile.avatar_url)+'" alt=""></span>'
     :'<span class="top-account-avatar fallback" data-profile-avatar-fallback>'+esc(accountInitial)+'</span>';
@@ -391,9 +390,9 @@ function teamPage(){
   if(!isWorkspaceOwner())return shell('<div class="empty"><b>Acesso restrito</b><span>Somente a conta proprietária pode gerenciar a equipe.</span></div>','Equipe','');
   var list=window.FonelyTeamMembers||[],account=window.FonelyAccount||{},access=account.access||{};
   var limit=Math.max(0,Number(access.team_member_limit||0)),used=list.length,remaining=Math.max(0,limit-used),full=limit<=used;
-  var seatText=limit?used+' de '+limit+' vagas usadas':'Seu plano atual não possui vagas de equipe';
+  var seatText=limit?used+' de '+limit+' vagas usadas':'Sem profissionais adicionais contratados';
   var body='<section class="fteam-intro"><div><small>EQUIPE FONELY</small><h2>Um login para cada profissional.</h2><p>Só a conta principal paga o plano. As vagas disponíveis vêm do plano da clínica e cada profissional entra com o próprio e-mail e senha.</p></div><button id="newTeam" class="primary" '+(full?'disabled':'')+'>+ Adicionar profissional</button></section>'+
-    '<div class="fteam-seats"><div><small>VAGAS DO PLANO</small><b>'+esc(seatText)+'</b><span>'+(limit?(remaining+' vaga'+(remaining===1?'':'s')+' disponível'+(remaining===1?'':'is')):'Aumente o plano para liberar acessos adicionais')+'</span></div><div class="fteam-seatbar"><i style="width:'+(limit?Math.min(100,used/Math.max(1,limit)*100):100)+'%"></i></div></div>'+
+    '<div class="fteam-seats"><div><small>VAGAS DO PLANO</small><b>'+esc(seatText)+'</b><span>'+(limit?(remaining+' vaga'+(remaining===1?'':'s')+' disponível'+(remaining===1?'':'is')):'Adicione uma vaga de equipe para liberar outro profissional')+'</span></div><div class="fteam-seatbar"><i style="width:'+(limit?Math.min(100,used/Math.max(1,limit)*100):100)+'%"></i></div></div>'+
     '<article class="panel fteam-panel"><div class="panel-title"><div><small>PROFISSIONAIS</small><h3>'+used+' membro'+(used===1?'':'s')+' adicional'+(used===1?'':'is')+'</h3></div></div>'+
     (list.length?'<div class="fteam-list">'+list.map(function(t){
       var status=t.accepted_at?'Ativo':'Convite enviado';
