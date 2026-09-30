@@ -1,0 +1,185 @@
+/* Fonely login v6 — centered, elegant, transparent portrait */
+@media(min-width:1021px){
+  #fonelyEntry .fe-shell{
+    padding:22px!important;
+  }
+
+  #fonelyEntry .fe-frame{
+    width:min(92vw,1460px)!important;
+    max-width:1460px!important;
+    min-height:min(86vh,850px)!important;
+    grid-template-columns:minmax(0,1.12fr) minmax(470px,.88fr)!important;
+    margin:auto!important;
+    border-radius:30px!important;
+    box-shadow:0 34px 90px rgba(53,34,27,.14)!important;
+  }
+
+  #fonelyEntry .fe-brand-side{
+    padding:34px 34px 30px 48px!important;
+  }
+
+  #fonelyEntry .fe-brand-top{
+    width:100%!important;
+    padding:0!important;
+  }
+
+  #fonelyEntry .fe-brand-top .fe-logo{
+    width:188px!important;
+    max-width:188px!important;
+  }
+
+  #fonelyEntry .fe-hero{
+    width:57%!important;
+    max-width:520px!important;
+    margin-top:54px!important;
+  }
+
+  #fonelyEntry .fe-hero h1{
+    max-width:500px!important;
+    font-size:clamp(45px,3.7vw,58px)!important;
+    line-height:.97!important;
+  }
+
+  #fonelyEntry .fe-hero>p{
+    max-width:480px!important;
+  }
+
+  #fonelyEntry .fe-benefits{
+    max-width:500px!important;
+    margin-top:24px!important;
+  }
+
+  #fonelyEntry .fe-benefits>div{
+    padding:10px 0!important;
+  }
+
+  #fonelyEntry .fe-suite{
+    max-width:500px!important;
+    margin-top:14px!important;
+  }
+
+  #fonelyEntry .fe-brand-note{
+    width:57%!important;
+    max-width:500px!important;
+  }
+
+  /* transparent portrait floats directly on the brown panel */
+  #fonelyEntry .fe-photo-stage{
+    top:94px!important;
+    right:4px!important;
+    bottom:0!important;
+    width:40%!important;
+    min-width:300px!important;
+    overflow:visible!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    pointer-events:none!important;
+  }
+
+  #fonelyEntry .fe-photo-stage:before{
+    content:""!important;
+    position:absolute!important;
+    z-index:1!important;
+    left:-18%!important;
+    right:-2%!important;
+    bottom:0!important;
+    height:34%!important;
+    background:linear-gradient(180deg,transparent 0%,rgba(43,29,24,.18) 52%,rgba(43,29,24,.72) 100%)!important;
+    border-radius:0!important;
+    pointer-events:none!important;
+  }
+
+  #fonelyEntry .fe-photo-stage img{
+    position:absolute!important;
+    z-index:0!important;
+    right:0!important;
+    bottom:0!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    object-position:right bottom!important;
+    filter:none!important;
+  }
+
+  #fonelyEntry .fe-photo-caption{
+    display:none!important;
+  }
+
+  #fonelyEntry .fe-auth-side{
+    padding:34px 38px!important;
+  }
+
+  #fonelyEntry .fe-card{
+    width:min(100%,560px)!important;
+    max-width:560px!important;
+    padding:38px 42px 32px!important;
+    margin:auto!important;
+    border-radius:26px!important;
+  }
+
+  #fonelyEntry .fe-auth-brand{
+    margin-bottom:28px!important;
+  }
+
+  #fonelyEntry .fe-auth-brand img{
+    width:158px!important;
+    max-width:158px!important;
+  }
+
+  #fonelyEntry .fe-card-head h2{
+    font-size:32px!important;
+  }
+
+  #fonelyEntry .fe-login-summary{
+    padding:15px 16px!important;
+  }
+
+  #fonelyEntry .fe-google{
+    min-height:54px!important;
+  }
+
+  #fonelyEntry .fe-tabs{
+    min-height:56px!important;
+  }
+
+  #fonelyEntry .fe-field input{
+    min-height:55px!important;
+  }
+
+  #fonelyEntry .fe-primary{
+    min-height:54px!important;
+  }
+}
+
+@media(min-width:1021px) and (max-width:1280px){
+  #fonelyEntry .fe-frame{
+    width:95vw!important;
+    grid-template-columns:minmax(0,1.06fr) minmax(440px,.94fr)!important;
+  }
+  #fonelyEntry .fe-brand-side{
+    padding-left:34px!important;
+    padding-right:22px!important;
+  }
+  #fonelyEntry .fe-hero{
+    width:60%!important;
+  }
+  #fonelyEntry .fe-photo-stage{
+    width:37%!important;
+    min-width:250px!important;
+    right:0!important;
+  }
+  #fonelyEntry .fe-suite{
+    display:none!important;
+  }
+  #fonelyEntry .fe-card{
+    padding:32px 32px 28px!important;
+  }
+}
+
+@media(max-width:1020px){
+  #fonelyEntry .fe-photo-stage{
+    display:none!important;
+  }
+}
