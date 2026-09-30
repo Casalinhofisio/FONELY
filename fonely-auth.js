@@ -82,12 +82,15 @@ function authHTML(){
           '<span class="fe-eyebrow">GESTÃO CLÍNICA PARA FONOAUDIOLOGIA</span>'+
           '<h1>Sua clínica,<br><em>mais organizada.</em></h1>'+
           '<p>Do primeiro cadastro à evolução clínica: acompanhe sua rotina, seus pacientes e seus registros em um único espaço.</p>'+
-          '<div class="fe-benefits">'+
-            '<div><i>01</i><span><b>Agenda e pacientes</b><small>Atendimentos, recorrências e histórico organizados.</small></span></div>'+
-            '<div><i>02</i><span><b>Prontuário clínico</b><small>Anamnese, documentos e informações por paciente.</small></span></div>'+
-            '<div><i>03</i><span><b>Avaliações e evoluções</b><small>Registros clínicos conectados ao acompanhamento.</small></span></div>'+
-            '<div><i>04</i><span><b>Fonely CAA</b><small>Pranchas de comunicação vinculadas ao paciente.</small></span></div>'+
+          '<div class="fe-benefits fe-all-features">'+
+            '<div><i>01</i><span><b>Agenda e pacientes</b><small>Agenda, recorrências, cadastro e histórico.</small></span></div>'+
+            '<div><i>02</i><span><b>Prontuário e anamnese</b><small>Registros, documentos e informações clínicas.</small></span></div>'+
+            '<div><i>03</i><span><b>Avaliações e evoluções</b><small>Protocolos, reavaliações, evolução e comparativos.</small></span></div>'+
+            '<div><i>04</i><span><b>Financeiro e relatórios</b><small>Recebimentos, pacotes e visão da clínica.</small></span></div>'+
+            '<div><i>05</i><span><b>Fonely CAA</b><small>Pranchas de comunicação vinculadas ao paciente.</small></span></div>'+
+            '<div><i>06</i><span><b>Equipe</b><small>Profissionais e permissões; vagas adicionais à parte.</small></span></div>'+
           '</div>'+
+          '<div class="fe-pricing-strip"><span><small>ANUAL NO PIX</small><b>R$ 199,90</b><em>1 ano de acesso</em></span><strong>ou</strong><span><small>MENSAL RECORRENTE</small><b>R$ 39,90</b><em>por mês</em></span></div>'+
           '<div class="fe-suite">'+
             '<small>O QUE VOCÊ TEM NO FONELY</small>'+
             '<div class="fe-suite-grid">'+
