@@ -74,7 +74,7 @@ function authHTML(){
     '<main class="fe-frame">'+
       '<section class="fe-brand-side">'+
         '<div class="fe-brand-top">'+
-          '<img class="fe-logo" src="fonely-logo-official.svg" alt="Fonely">'+
+          '<img class="fe-logo" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_11_38.png" alt="Fonely">'+
           '<span>SISTEMA PARA FONOAUDIÓLOGOS</span>'+
         '</div>'+
         '<div class="fe-photo-stage" aria-hidden="true"><img src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_00_52.png" alt=""><div class="fe-photo-caption"><small>FONOAUDIOLOGIA</small><b>Uma rotina clínica mais leve.</b></div></div>'+
@@ -114,7 +114,7 @@ function authHTML(){
       '</section>'+
       '<section class="fe-auth-side">'+
         '<aside class="fe-card" id="feCard">'+
-          '<div class="fe-auth-brand"><img src="fonely-logo-official.svg" alt="Fonely"></div>'+
+          '<div class="fe-auth-brand"><img src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_08_48.png" alt="Fonely"></div>'+
           '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar sua agenda, pacientes, prontuários, avaliações e Fonely CAA.</p></div>'+
           '<div class="fe-auth-meta"><span><i></i>Seu espaço clínico</span><span><i></i>Dados sincronizados</span><span><i></i>Acesso profissional</span></div>'+
           '<div class="fe-login-summary"><b>Um único sistema para sua rotina clínica.</b><span>Organize atendimentos, acompanhe pacientes, registre evoluções e centralize as principais informações do consultório.</span></div>'+
