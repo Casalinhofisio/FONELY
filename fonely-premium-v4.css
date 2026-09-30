@@ -29,30 +29,40 @@ body{
 ::selection{background:#ead0c4;color:#3d2c25}
 
 /* shell */
-.layout{grid-template-columns:278px minmax(0,1fr)!important;min-height:100vh!important}
+.layout{grid-template-columns:260px minmax(0,1fr)!important;min-height:100vh!important}
 .layout>aside{
-  width:278px!important;
+  width:260px!important;
   min-height:100vh!important;
-  padding:22px 16px 20px!important;
+  padding:22px 14px 20px!important;
   background:linear-gradient(180deg,var(--pv-sidebar) 0%,var(--pv-sidebar-2) 100%)!important;
   border-right:0!important;
   box-shadow:16px 0 44px rgba(49,31,25,.10)!important;
   color:var(--pv-sidebar-text)!important
 }
 .brand{
-  display:block!important;
-  margin:0 2px 20px!important;
-  padding:16px 16px!important;
-  border-radius:18px!important;
-  background:#fffdf9!important;
-  box-shadow:0 10px 26px rgba(20,12,9,.16)!important
+  display:flex!important;
+  align-items:center!important;
+  min-height:84px!important;
+  margin:0 2px 18px!important;
+  padding:10px 12px 12px!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important
 }
-.fonely-official-logo{width:174px!important;max-width:100%!important}
+.layout>aside .fonely-official-logo{
+  content:url('fonely-logo-sidebar-inverted.svg')!important;
+  display:block!important;
+  width:174px!important;
+  max-width:100%!important;
+  height:auto!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 5px 12px rgba(0,0,0,.16))!important
+}
 .layout nav{display:grid!important;gap:6px!important}
 .layout nav button{
   position:relative!important;
-  min-height:48px!important;
-  padding:11px 13px!important;
+  min-height:46px!important;
+  padding:10px 12px!important;
   border:0!important;
   border-radius:13px!important;
   background:transparent!important;
@@ -370,8 +380,8 @@ input:focus,select:focus,textarea:focus,.text:focus{border-color:#c9866b!importa
 
 /* responsive */
 @media(max-width:1120px){
-  .layout{grid-template-columns:238px minmax(0,1fr)!important}
-  .layout>aside{width:238px!important}
+  .layout{grid-template-columns:224px minmax(0,1fr)!important}
+  .layout>aside{width:224px!important}
   .layout>main{padding:30px 28px 64px!important}
   .fhome-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .fhome-main{grid-template-columns:1fr!important}
