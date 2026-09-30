@@ -343,17 +343,17 @@ html,body{margin:0!important;padding:0!important}
 body>#app{font-size:16px!important}
 </style>
 <script>
-document.addEventListener('DOMContentLoaded',function(){
-  Array.from(document.body.childNodes).forEach(function(n){
-    if(n.nodeType===3 && n.textContent && n.textContent.trim()){ n.remove(); }
-  });
-  var app=document.getElementById('app');
-  if(app){
-    Array.from(app.parentNode.childNodes).forEach(function(n){
-      if(n!==app && n.nodeType===3 && n.textContent && /\\?n/.test(n.textContent.trim())) n.remove();
+(function(){
+  function removeStrayRootText(){
+    Array.from(document.body.childNodes).forEach(function(n){
+      if(n.nodeType===3 && n.textContent && n.textContent.trim()){ n.remove(); }
     });
   }
-});
+  document.addEventListener('DOMContentLoaded',function(){
+    removeStrayRootText();
+    new MutationObserver(removeStrayRootText).observe(document.body,{childList:true});
+  });
+})();
 </script>
 </head>
 <body>
