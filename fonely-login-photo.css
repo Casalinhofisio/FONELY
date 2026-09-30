@@ -170,3 +170,124 @@
 @media(max-width:1020px){
   .fe-photo-stage{display:none!important}
 }
+
+
+/* v5 — larger login composition and portrait shifted right */
+@media(min-width:1021px){
+  .fe-frame{
+    width:min(96vw,1580px)!important;
+    max-width:1580px!important;
+    min-height:min(92vh,920px)!important;
+    grid-template-columns:minmax(0,1.16fr) minmax(500px,.84fr)!important;
+    border-radius:30px!important
+  }
+
+  .fe-brand-side{
+    padding-left:54px!important;
+    padding-right:26px!important
+  }
+
+  .fe-brand-top{
+    padding-top:6px!important
+  }
+
+  .fe-brand-top .fe-logo{
+    width:205px!important;
+    max-width:205px!important
+  }
+
+  .fe-hero{
+    width:55%!important;
+    max-width:540px!important;
+    margin-top:66px!important
+  }
+
+  .fe-hero h1{
+    font-size:clamp(48px,4.15vw,64px)!important
+  }
+
+  .fe-photo-stage{
+    top:112px!important;
+    right:-18px!important;
+    bottom:24px!important;
+    width:39%!important;
+    min-width:300px!important;
+    border-radius:28px 0 0 28px!important;
+    border-right:0!important;
+    background:#29292e!important
+  }
+
+  .fe-photo-stage img{
+    object-position:54% top!important
+  }
+
+  .fe-photo-caption{
+    left:22px!important;
+    right:26px!important;
+    bottom:20px!important
+  }
+
+  .fe-auth-side{
+    padding:32px 34px!important
+  }
+
+  .fe-card{
+    width:min(100%,620px)!important;
+    max-width:620px!important;
+    padding:46px 50px 36px!important;
+    border-radius:28px!important
+  }
+
+  .fe-auth-brand img{
+    width:176px!important;
+    max-width:176px!important
+  }
+
+  .fe-card-head h2{
+    font-size:34px!important
+  }
+
+  .fe-login-summary{
+    padding:17px 18px!important;
+    border-radius:15px!important
+  }
+
+  .fe-google{
+    min-height:60px!important;
+    border-radius:15px!important
+  }
+
+  .fe-tabs{
+    min-height:62px!important;
+    border-radius:15px!important
+  }
+
+  .fe-tabs button{
+    min-height:50px!important
+  }
+
+  .fe-field input{
+    min-height:60px!important;
+    border-radius:14px!important;
+    font-size:13px!important
+  }
+
+  .fe-primary{
+    min-height:58px!important;
+    border-radius:14px!important
+  }
+}
+
+@media(min-width:1021px) and (max-width:1280px){
+  .fe-frame{
+    width:97vw!important;
+    grid-template-columns:minmax(0,1.08fr) minmax(450px,.92fr)!important
+  }
+  .fe-brand-side{padding-left:38px!important}
+  .fe-photo-stage{
+    right:-12px!important;
+    width:37%!important;
+    min-width:245px!important
+  }
+  .fe-card{padding:38px 36px 30px!important}
+}
