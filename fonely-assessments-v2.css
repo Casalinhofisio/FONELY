@@ -68,3 +68,20 @@
 .assessment-protocol-document{display:flex;align-items:center;gap:8px;border:1px dashed #d8c6bb;background:#fffdfb;border-radius:14px;padding:13px;margin:0 0 12px}.assessment-protocol-document>div{flex:1;min-width:0}.assessment-protocol-document b,.assessment-protocol-document span{display:block}.assessment-protocol-document b{font-size:11px}.assessment-protocol-document span{font-size:9px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .assessment-protocol-subtests-read{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:13px;margin-bottom:12px}.assessment-protocol-subtests-read b{font-size:10px}.assessment-protocol-subtests-read span{font-size:10px;color:var(--muted)}
 @media(max-width:760px){.assessment-protocol-grid{grid-template-columns:1fr}.assessment-protocol-card{grid-template-columns:42px minmax(0,1fr) auto}.assessment-protocol-card em{display:none}.assessment-protocol-subtests{grid-template-columns:1fr 1fr}.assessment-protocol-document{align-items:stretch;flex-direction:column}.assessment-protocol-document .soft-btn{width:100%}}
+
+/* Avaliações V4 — ações legíveis e fluxo claro */
+.assessment-choice-head{padding-right:38px!important}
+.assessment-choice-body{display:grid;gap:18px}
+.assessment-choice-label{display:grid!important;gap:7px!important;font-weight:800!important;color:#4c3930!important}
+.assessment-choice-label>span{font-size:12px}
+.assessment-choice-label select{width:100%!important;min-height:48px!important;border:1px solid #dfd1c9!important;border-radius:12px!important;background:#fff!important;padding:0 13px!important;font-size:14px!important;color:#332721!important}
+.assessment-choice-label small{font-size:10px!important;font-weight:600!important;color:#907d73!important}
+.assessment-choice-actions{border-top:1px solid #eee2dc;padding-top:16px!important;margin-top:2px!important}
+.assessment-choice-actions button{min-height:44px!important;padding:0 18px!important;border-radius:12px!important;font-weight:900!important;font-size:12px!important}
+.assessment-continue-btn{min-width:155px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:18px!important;color:#fff!important}
+.assessment-continue-btn span,.assessment-continue-btn b{display:inline!important;color:inherit!important;font-size:12px!important}
+.assessment-step-hint{padding:12px 14px;margin-bottom:10px;border-radius:13px;background:#fbf3ed;border:1px solid #ead9cf}
+.assessment-step-hint b,.assessment-step-hint span{display:block}.assessment-step-hint b{font:900 12px Nunito;color:#65473a}.assessment-step-hint span{font-size:10px;color:#8d786e;margin-top:2px}
+.assessment-model-choice{min-height:76px!important}.assessment-model-choice strong{font-size:10px!important;white-space:nowrap!important}
+.assessment-v3-actions .primary{color:#fff!important}.assessment-v3-actions .primary:empty:before{content:"Continuar"!important}
+@media(max-width:600px){.assessment-choice-actions{display:grid!important;grid-template-columns:1fr 1.3fr}.assessment-choice-actions button{width:100%!important}.assessment-model-choice strong{font-size:0!important}.assessment-model-choice strong:after{content:"→";font-size:15px}}
