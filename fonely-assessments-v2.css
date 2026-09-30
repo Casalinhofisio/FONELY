@@ -94,3 +94,22 @@
 #fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn span{display:inline!important;visibility:visible!important;opacity:1!important;color:#fff!important;font:900 12px/1 'DM Sans',sans-serif!important}
 #fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn b{display:inline!important;margin-left:12px!important;color:#fff!important;font:900 15px/1 'DM Sans',sans-serif!important}
 @media(max-width:600px){#fonelyAssessmentModal .assessment-choice-actions{display:grid!important;grid-template-columns:1fr 1.25fr!important}#fonelyAssessmentModal .assessment-choice-actions button{width:100%!important;min-width:0!important}}
+
+/* Assessment patient chooser final v14 */
+#fonelyAssessmentModal .assessment-v3-modal{overflow:hidden!important}
+#fonelyAssessmentModal .assessment-choice-head{padding:4px 4px 18px!important;margin-bottom:18px!important;border-bottom:1px solid #eaded7!important}
+#fonelyAssessmentModal .assessment-choice-head small{color:#b17056!important;font-size:9px!important;font-weight:900!important;letter-spacing:.15em!important}
+#fonelyAssessmentModal .assessment-choice-head h2{margin:5px 0 5px!important;font-size:28px!important;line-height:1.05!important;color:#46372f!important}
+#fonelyAssessmentModal .assessment-choice-head p{margin:0!important;color:#8b786e!important;font-size:11px!important}
+#fonelyAssessmentModal .assessment-choice-body{display:grid!important;gap:18px!important}
+#fonelyAssessmentModal .assessment-choice-label select{height:50px!important;border:1px solid #e1d6cf!important;border-radius:13px!important;background:#fff!important;padding:0 15px!important;color:#44362e!important;font-size:13px!important;font-weight:800!important;outline:none!important}
+#fonelyAssessmentModal .assessment-choice-label select:focus{border-color:#c98b70!important;box-shadow:0 0 0 3px rgba(201,139,112,.12)!important}
+#fonelyAssessmentModal .assessment-choice-actions{display:flex!important;justify-content:flex-end!important;align-items:center!important;gap:9px!important;padding-top:16px!important;margin-top:0!important;border-top:1px solid #eaded7!important}
+#fonelyAssessmentModal .assessment-choice-actions button{appearance:none!important;position:static!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;height:44px!important;width:auto!important;min-width:116px!important;padding:0 18px!important;margin:0!important;border-radius:12px!important;opacity:1!important;visibility:visible!important;text-indent:0!important;font-size:12px!important;font-weight:900!important;cursor:pointer!important}
+#fonelyAssessmentModal .assessment-choice-actions .soft-btn{border:1px solid #ded2cb!important;background:#fff!important;color:#69564c!important}
+#fonelyAssessmentModal .assessment-choice-actions .soft-btn:hover{background:#f8f3f0!important}
+#fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn{min-width:158px!important;border:1px solid #5b372a!important;background:#5b372a!important;color:#fff!important;box-shadow:0 7px 18px rgba(80,48,37,.16)!important}
+#fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn:hover{background:#4c2d23!important;transform:translateY(-1px)!important}
+#fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn span{display:inline!important;color:#fff!important;font-size:12px!important;font-weight:900!important}
+#fonelyAssessmentModal .assessment-choice-actions .assessment-continue-btn b{display:inline!important;color:#fff!important;margin-left:14px!important;font-size:16px!important}
+@media(max-width:600px){#fonelyAssessmentModal .assessment-choice-actions{display:grid!important;grid-template-columns:1fr 1.25fr!important}#fonelyAssessmentModal .assessment-choice-actions button{width:100%!important;min-width:0!important}}
