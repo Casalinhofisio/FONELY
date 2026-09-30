@@ -1,0 +1,446 @@
+/* Fonely Dashboard Premium v1 — visual only */
+
+/* hero */
+.fhome-welcome{
+  position:relative!important;
+  isolation:isolate!important;
+  min-height:190px!important;
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:32px!important;
+  margin:0 0 22px!important;
+  padding:36px 38px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.06)!important;
+  border-radius:28px!important;
+  background:
+    radial-gradient(circle at 82% 14%,rgba(232,165,136,.18),transparent 24%),
+    radial-gradient(circle at 96% 85%,rgba(255,255,255,.07),transparent 21%),
+    linear-gradient(135deg,#2b201b 0%,#3c2a23 48%,#6b4537 100%)!important;
+  box-shadow:
+    0 28px 64px rgba(57,37,29,.18),
+    inset 0 1px 0 rgba(255,255,255,.05)!important
+}
+.fhome-welcome:before{
+  content:""!important;
+  position:absolute!important;
+  z-index:-1!important;
+  width:330px!important;
+  height:330px!important;
+  right:-120px!important;
+  top:-210px!important;
+  border-radius:50%!important;
+  border:1px solid rgba(255,255,255,.10)!important;
+  box-shadow:0 0 0 42px rgba(255,255,255,.018),0 0 0 84px rgba(255,255,255,.012)!important
+}
+.fhome-welcome:after{
+  content:"FONELY  •  VISÃO CLÍNICA"!important;
+  position:absolute!important;
+  right:36px!important;
+  top:28px!important;
+  width:auto!important;
+  height:auto!important;
+  border:0!important;
+  color:rgba(255,255,255,.35)!important;
+  font:800 7px/1 'DM Sans',sans-serif!important;
+  letter-spacing:.18em!important;
+  white-space:nowrap!important
+}
+.fhome-kicker{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:0 0 10px!important;
+  color:#f2bea7!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.18em!important
+}
+.fhome-kicker:before{
+  content:""!important;
+  width:24px!important;
+  height:1px!important;
+  background:#d48b6f!important
+}
+.fhome-welcome h2{
+  max-width:680px!important;
+  margin:0 0 9px!important;
+  color:#fff!important;
+  font:900 clamp(32px,3.1vw,43px)/1 Nunito,sans-serif!important;
+  letter-spacing:-.055em!important
+}
+.fhome-welcome p{
+  max-width:650px!important;
+  margin:0!important;
+  color:#d9c9c1!important;
+  font-size:12px!important;
+  line-height:1.65!important
+}
+.fhome-welcome .primary{
+  position:relative!important;
+  z-index:2!important;
+  flex:0 0 auto!important;
+  min-height:50px!important;
+  padding:0 20px!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,#fff,#f8eee9)!important;
+  color:#583a2f!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  box-shadow:0 12px 28px rgba(23,13,10,.22)!important
+}
+.fhome-welcome .primary:hover{
+  transform:translateY(-2px)!important;
+  background:#fff!important;
+  box-shadow:0 17px 34px rgba(23,13,10,.27)!important
+}
+
+/* KPI cards */
+.fhome-stats{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:14px!important;
+  margin:0 0 20px!important
+}
+.fhome-stat{
+  position:relative!important;
+  display:block!important;
+  min-height:166px!important;
+  padding:20px 20px 18px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(88,60,49,.085)!important;
+  border-radius:20px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(190,115,86,.055),transparent 31%),
+    #fffdf9!important;
+  text-align:left!important;
+  box-shadow:0 9px 26px rgba(61,39,31,.045)!important;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important
+}
+.fhome-stat:before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:100%!important;
+  height:3px!important;
+  background:linear-gradient(90deg,#c77b5e,#e2ae98)!important;
+  opacity:.72!important
+}
+.fhome-stat:nth-child(2):before{background:linear-gradient(90deg,#678878,#a5b8ad)!important}
+.fhome-stat:nth-child(3):before{background:linear-gradient(90deg,#9d745f,#d2b4a4)!important}
+.fhome-stat:nth-child(4):before{background:linear-gradient(90deg,#b77b58,#dfbd9f)!important}
+.fhome-stat:hover{
+  transform:translateY(-4px)!important;
+  border-color:#d8beb1!important;
+  box-shadow:0 18px 40px rgba(61,39,31,.085)!important
+}
+.fhome-stat i{
+  position:absolute!important;
+  right:18px!important;
+  top:18px!important;
+  display:grid!important;
+  place-items:center!important;
+  width:37px!important;
+  height:37px!important;
+  margin:0!important;
+  border:1px solid rgba(169,93,70,.08)!important;
+  border-radius:12px!important;
+  background:linear-gradient(145deg,#f8e9e1,#f1dbd0)!important;
+  color:#955842!important;
+  font-style:normal!important;
+  font-size:12px!important;
+  font-weight:900!important
+}
+.fhome-stat:nth-child(2) i{
+  background:linear-gradient(145deg,#edf4f0,#dfeae4)!important;
+  color:#557665!important
+}
+.fhome-stat small{
+  display:block!important;
+  padding-right:48px!important;
+  color:#9c887e!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  letter-spacing:.13em!important
+}
+.fhome-stat b{
+  display:block!important;
+  margin:17px 0 2px!important;
+  color:#30231e!important;
+  font:900 33px/1 Nunito,sans-serif!important;
+  letter-spacing:-.05em!important
+}
+.fhome-stat b.money{
+  max-width:80%!important;
+  font-size:23px!important;
+  letter-spacing:-.035em!important
+}
+.fhome-stat span{
+  display:block!important;
+  min-height:17px!important;
+  color:#8e7a70!important;
+  font-size:10px!important;
+  line-height:1.45!important
+}
+.fhome-stat em{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  margin-top:11px!important;
+  color:#9e614a!important;
+  font-size:9px!important;
+  font-style:normal!important;
+  font-weight:850!important
+}
+
+/* main cards */
+.fhome-main{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.52fr) minmax(310px,.72fr)!important;
+  gap:18px!important;
+  margin-bottom:18px!important
+}
+.fhome-agenda,.fhome-patients,.fhome-alerts{
+  position:relative!important;
+  overflow:hidden!important;
+  border:1px solid rgba(88,60,49,.08)!important;
+  border-radius:22px!important;
+  background:#fffdf9!important;
+  box-shadow:0 10px 28px rgba(61,39,31,.045)!important
+}
+.fhome-agenda{min-height:345px!important}
+.fhome-patients{min-height:345px!important}
+.fhome-agenda:before,.fhome-patients:before,.fhome-alerts:before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:100%!important;
+  height:1px!important;
+  background:linear-gradient(90deg,transparent,rgba(190,115,86,.34),transparent)!important
+}
+.fhome-agenda .panel-title,.fhome-patients .panel-title,.fhome-alerts .panel-title{
+  margin-bottom:16px!important;
+  padding-bottom:15px!important;
+  border-bottom:1px solid rgba(89,61,50,.07)!important
+}
+.fhome-agenda .panel-title small,.fhome-patients .panel-title small,.fhome-alerts .panel-title small{
+  color:#a06c58!important
+}
+.fhome-agenda .panel-title h3,.fhome-patients .panel-title h3,.fhome-alerts .panel-title h3{
+  margin-top:4px!important;
+  color:#342620!important;
+  font-size:18px!important
+}
+.fhome-agenda .panel-title button,.fhome-patients .panel-title button{
+  min-height:34px!important;
+  padding:0 11px!important;
+  border:1px solid #eaded7!important;
+  border-radius:10px!important;
+  background:#faf4f0!important;
+  color:#8e5945!important;
+  font-size:9px!important;
+  font-weight:800!important
+}
+
+/* agenda rows */
+.fhome-upcoming{
+  display:grid!important;
+  gap:8px!important
+}
+.fhome-upcoming>button{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:82px 1fr auto!important;
+  align-items:center!important;
+  gap:13px!important;
+  width:100%!important;
+  min-height:62px!important;
+  padding:8px 10px 8px 8px!important;
+  border:1px solid rgba(88,60,49,.075)!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  text-align:left!important;
+  box-shadow:0 3px 10px rgba(61,39,31,.018)!important;
+  transition:.16s ease!important
+}
+.fhome-upcoming>button:hover{
+  transform:translateX(3px)!important;
+  border-color:#dbc4b9!important;
+  background:#fffaf7!important;
+  box-shadow:0 9px 20px rgba(61,39,31,.055)!important
+}
+.fhome-date{
+  min-height:46px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding:0 11px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:linear-gradient(145deg,#f7e7df,#f3ddd2)!important
+}
+.fhome-date b{
+  color:#754838!important;
+  font:900 13px/1.1 Nunito,sans-serif!important
+}
+.fhome-date span{
+  color:#9d7768!important;
+  font-size:8px!important
+}
+.fhome-upcoming strong{
+  color:#3b2c26!important;
+  font-size:11px!important
+}
+.fhome-upcoming small{
+  color:#95827a!important;
+  font-size:8px!important
+}
+.fhome-upcoming mark{
+  padding:5px 8px!important;
+  border-radius:999px!important;
+  font-size:7px!important;
+  font-weight:900!important
+}
+
+/* patient quick access */
+.fhome-patient-list{
+  display:grid!important;
+  gap:8px!important
+}
+.fhome-patient-list>button{
+  display:grid!important;
+  grid-template-columns:42px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:11px!important;
+  width:100%!important;
+  min-height:59px!important;
+  padding:8px 10px!important;
+  border:1px solid rgba(88,60,49,.075)!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  text-align:left!important;
+  transition:.16s ease!important
+}
+.fhome-patient-list>button:hover{
+  transform:translateX(3px)!important;
+  border-color:#dbc4b9!important;
+  background:#fffaf7!important;
+  box-shadow:0 9px 20px rgba(61,39,31,.05)!important
+}
+.fhome-patient-list .avatar{
+  width:39px!important;
+  height:39px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #ecd8ce!important;
+  border-radius:12px!important;
+  background:linear-gradient(145deg,#f6e5dc,#eed6ca)!important;
+  color:#87513d!important;
+  font-size:11px!important;
+  font-weight:900!important
+}
+.fhome-patient-list b{
+  color:#3d2d27!important;
+  font-size:10px!important
+}
+.fhome-patient-list span{
+  overflow:hidden!important;
+  color:#95827a!important;
+  font-size:8px!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important
+}
+.fhome-patient-list strong{
+  display:grid!important;
+  place-items:center!important;
+  width:27px!important;
+  height:27px!important;
+  border-radius:9px!important;
+  background:#f8efea!important;
+  color:#a5664d!important
+}
+
+/* attention */
+.fhome-alerts{
+  margin-bottom:16px!important;
+  background:
+    radial-gradient(circle at 100% 0%,rgba(190,115,86,.045),transparent 25%),
+    #fffdf9!important
+}
+.fhome-alerts .alert{
+  position:relative!important;
+  margin-top:8px!important;
+  padding:13px 14px 13px 16px!important;
+  border:1px solid #e9ded7!important;
+  border-radius:13px!important;
+  background:#fbf6f2!important
+}
+.fhome-alerts .alert:before{
+  content:""!important;
+  position:absolute!important;
+  left:0!important;
+  top:10px!important;
+  bottom:10px!important;
+  width:3px!important;
+  border-radius:0 999px 999px 0!important;
+  background:#779081!important
+}
+.fhome-alerts .alert.warn:before{background:#c47a5e!important}
+.fhome-alerts .alert b{
+  color:#49362e!important;
+  font-size:10px!important
+}
+.fhome-alerts .alert span{
+  color:#8e7b72!important;
+  font-size:9px!important
+}
+
+/* empty states */
+.fhome-agenda .empty,.fhome-patients .empty{
+  min-height:195px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px dashed #dfcec5!important;
+  border-radius:15px!important;
+  background:#fbf7f4!important;
+  text-align:center!important
+}
+.fhome-agenda .empty b,.fhome-patients .empty b{
+  color:#59433a!important;
+  font-size:11px!important
+}
+.fhome-agenda .empty span,.fhome-patients .empty span{
+  max-width:330px!important;
+  margin-top:4px!important;
+  color:#9b887f!important;
+  font-size:9px!important;
+  line-height:1.45!important
+}
+
+/* dashboard responsive */
+@media(max-width:1180px){
+  .fhome-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .fhome-main{grid-template-columns:1fr!important}
+  .fhome-patients{min-height:auto!important}
+}
+@media(max-width:760px){
+  .fhome-welcome{
+    min-height:auto!important;
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    padding:27px 24px!important;
+    border-radius:22px!important
+  }
+  .fhome-welcome:after{display:none!important}
+  .fhome-welcome h2{font-size:31px!important}
+  .fhome-welcome .primary{width:100%!important}
+  .fhome-stats{grid-template-columns:1fr!important}
+  .fhome-stat{min-height:148px!important}
+  .fhome-upcoming>button{grid-template-columns:72px minmax(0,1fr)!important}
+  .fhome-upcoming mark{grid-column:2!important;justify-self:start!important}
+}
