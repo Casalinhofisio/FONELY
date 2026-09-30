@@ -78,14 +78,16 @@ function authHTML(){
           '<span>SISTEMA PARA FONOAUDIÓLOGOS</span>'+
         '</div>'+
         '<div class="fe-hero">'+
-          '<span class="fe-eyebrow">CLÍNICA ORGANIZADA, SEM COMPLICAÇÃO</span>'+
-          '<h1>Seu consultório,<br><em>mais leve.</em></h1>'+
-          '<p>Uma rotina mais simples para acompanhar pacientes, organizar a agenda e registrar cada evolução com clareza.</p>'+
+          '<span class="fe-eyebrow">GESTÃO CLÍNICA PARA FONOAUDIOLOGIA</span>'+
+          '<h1>Sua clínica,<br><em>mais organizada.</em></h1>'+
+          '<p>Do primeiro cadastro à evolução clínica: acompanhe sua rotina, seus pacientes e seus registros em um único espaço.</p>'+
           '<div class="fe-benefits">'+
-            '<div><i>01</i><span><b>Pacientes</b><small>Prontuário e histórico em um só lugar.</small></span></div>'+
-            '<div><i>02</i><span><b>Agenda</b><small>Atendimentos e recorrências organizados.</small></span></div>'+
-            '<div><i>03</i><span><b>Avaliações</b><small>Fluxos pensados para fonoaudiologia.</small></span></div>'+
+            '<div><i>01</i><span><b>Agenda e pacientes</b><small>Atendimentos, recorrências e histórico organizados.</small></span></div>'+
+            '<div><i>02</i><span><b>Prontuário clínico</b><small>Anamnese, documentos e informações por paciente.</small></span></div>'+
+            '<div><i>03</i><span><b>Avaliações e evoluções</b><small>Registros clínicos conectados ao acompanhamento.</small></span></div>'+
+            '<div><i>04</i><span><b>Fonely CAA</b><small>Pranchas de comunicação vinculadas ao paciente.</small></span></div>'+
           '</div>'+
+          '<div class="fe-suite"><small>TAMBÉM NO FONELY</small><div><span>Financeiro</span><span>Relatórios</span><span>Equipe</span><span>Documentos</span></div></div>'+
         '</div>'+
         '<div class="fe-product-card">'+
           '<div class="fe-product-top"><div><small>FONELY</small><b>Visão do dia</b></div><span>Hoje</span></div>'+
@@ -93,12 +95,13 @@ function authHTML(){
           '<div class="fe-product-row"><i></i><span><b>Agenda organizada</b><small>Seus próximos horários em destaque</small></span><strong>→</strong></div>'+
           '<div class="fe-product-row"><i></i><span><b>Prontuário conectado</b><small>Avaliações e evoluções por paciente</small></span><strong>→</strong></div>'+
         '</div>'+
-        '<div class="fe-brand-note">Mais escuta para mais conquistas.</div>'+
+        '<div class="fe-brand-note">Tudo conectado. Mais tempo para atender.</div>'+
       '</section>'+
       '<section class="fe-auth-side">'+
         '<aside class="fe-card" id="feCard">'+
           '<div class="fe-auth-brand"><img src="fonely-logo-official.svg" alt="Fonely"></div>'+
-          '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar seu espaço no Fonely.</p></div>'+
+          '<div class="fe-card-head"><span class="fe-auth-kicker">ACESSO PROFISSIONAL</span><h2 id="feTitle">Bem-vindo de volta</h2><p id="feSubtitle">Entre para acessar sua agenda, pacientes, prontuários, avaliações e Fonely CAA.</p></div>'+
+          '<div class="fe-auth-meta"><span><i></i>Seu espaço clínico</span><span><i></i>Dados sincronizados</span><span><i></i>Acesso profissional</span></div>'+
           '<div class="fe-tabs" id="feTabs"><button class="active" data-fe-tab="login">Entrar</button><button data-fe-tab="signup">Criar conta</button></div>'+
           '<form class="fe-form active" data-fe-form="login">'+
             '<label class="fe-field"><span>E-mail</span><input type="email" name="email" autocomplete="email" placeholder="seuemail@exemplo.com" required></label>'+
