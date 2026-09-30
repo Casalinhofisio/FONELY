@@ -430,6 +430,68 @@ body>#app{font-size:16px!important}
  #fonelyEntry .fe-photo-stage{height:250px!important;width:88%!important}
 }
 </style>
+<style id="fonely-app-mobile-force-v1">
+@media(max-width:720px){
+ body:not(:has(#fonelyEntry)){background:#f7f2ee!important}
+ .layout{display:block!important;min-height:100dvh!important}
+ .sidebar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:68px!important;z-index:1000!important;padding:6px 8px calc(6px + env(safe-area-inset-bottom))!important;background:rgba(255,255,255,.97)!important;border-top:1px solid #eadfd8!important;box-shadow:0 -8px 25px rgba(64,39,29,.08)!important;overflow-x:auto!important;overflow-y:hidden!important;display:flex!important;align-items:center!important}
+ .sidebar .brand,.sidebar .logo,.sidebar>div:first-child:not(.nav){display:none!important}
+ .sidebar nav,.sidebar .nav{display:flex!important;flex-direction:row!important;gap:4px!important;width:max-content!important;min-width:100%!important;align-items:center!important}
+ .sidebar nav button,.sidebar .nav button{min-width:62px!important;height:54px!important;padding:5px 7px!important;border-radius:13px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;font-size:9px!important;white-space:nowrap!important}
+ .sidebar nav button span,.sidebar .nav button span{font-size:18px!important;line-height:1!important}
+ .layout>main,.main{margin:0!important;width:100%!important;max-width:100%!important;padding:12px 12px 88px!important}
+ .topbar,header.topbar,.main>header{position:sticky!important;top:0!important;z-index:40!important;margin:-12px -12px 12px!important;padding:12px 14px!important;min-height:58px!important;background:rgba(247,242,238,.96)!important;backdrop-filter:blur(14px)!important}
+ .topbar h1,.main>header h1{font-size:21px!important;line-height:1.1!important}
+ .header-actions{gap:6px!important}
+ .top-account-copy{display:none!important}
+ .top-account{padding:4px!important;border-radius:50%!important}
+ .panel,.fhome-welcome,.agenda-board,.fonely-full-calendar{border-radius:18px!important}
+ .fhome-welcome{padding:18px!important}
+ .fhome-hero-copy h2{font-size:24px!important;line-height:1.05!important}
+ .fhome-hero-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+ .fhome-hero-actions button{width:100%!important;min-height:44px!important}
+ .fhome-stats{grid-template-columns:1fr 1fr!important;gap:8px!important}
+ .fhome-stat{min-height:100px!important;padding:13px!important;border-radius:16px!important}
+ .fhome-main{grid-template-columns:1fr!important}
+ .agenda-top{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:10px!important}
+ .agenda-nav{display:grid!important;grid-template-columns:42px 1fr 42px!important;gap:7px!important}
+ .agenda-nav button{width:100%!important;height:42px!important}
+ #newAppointment{width:100%!important;min-height:46px!important}
+ .fagenda-stats{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+ .fagenda-stats>div{min-width:0!important;padding:12px!important;border-radius:14px!important}
+ .fagenda-layout{display:grid!important;grid-template-columns:1fr!important;gap:10px!important}
+ .fagenda-next{order:2!important}
+ .agenda-board{padding:10px!important;overflow:hidden!important}
+ .month-weekdays span{font-size:7px!important;padding:6px 0!important}
+ .month-grid{gap:3px!important}
+ .month-grid>*{min-height:60px!important;padding:4px 2px!important;border-radius:9px!important}
+ .month-grid .cal-event,.month-grid [class*="event"]{font-size:7px!important;padding:3px!important;grid-template-columns:1fr!important}
+ .month-grid .cal-event i,.month-grid .cal-event em{display:none!important}
+ .fonely-full-calendar{padding:10px!important}
+ .fullcal-toolbar{gap:8px!important}
+ .fullcal-nav{width:100%!important;display:grid!important;grid-template-columns:40px 1fr 40px!important}
+ .fullcal-nav h2{grid-column:1/-1!important;font-size:19px!important;text-align:center!important}
+ .fullcal-nav button{height:40px!important;padding:0 8px!important}
+ .calendar-legend.top{gap:7px!important;padding:8px!important}
+ .calendar-legend span{font-size:8px!important}
+ .fullcal-weekdays,.fullcal-grid{min-width:0!important;width:100%!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:3px!important}
+ .fullcal-weekdays span{font-size:7px!important;padding:5px 0!important}
+ .fullcal-day{min-height:64px!important;padding:4px 2px!important;border-radius:9px!important}
+ .fullcal-day>b{width:22px!important;height:22px!important;font-size:11px!important;margin-bottom:2px!important}
+ .cal-event{display:block!important;padding:3px!important;border-left-width:2px!important}
+ .cal-event time{font-size:7px!important}
+ .cal-event em,.cal-event i{display:none!important}
+ .fullcal-events>small{font-size:6px!important}
+ .modal,.modal-card,[class*="modal-card"]{max-width:calc(100vw - 20px)!important;max-height:88dvh!important;overflow:auto!important;border-radius:20px!important}
+ button,input,select,textarea{touch-action:manipulation}
+ input,select,textarea{font-size:16px!important;max-width:100%!important}
+}
+@media(max-width:390px){
+ .layout>main,.main{padding-left:9px!important;padding-right:9px!important}
+ .fhome-stats,.fagenda-stats{grid-template-columns:1fr 1fr!important}
+ .sidebar nav button,.sidebar .nav button{min-width:58px!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
