@@ -1,0 +1,373 @@
+/* Fonely Login Premium v5 — visual-only */
+#fonelyEntry{
+  background:
+    radial-gradient(circle at 12% 0%, rgba(192,120,91,.12), transparent 28%),
+    radial-gradient(circle at 100% 100%, rgba(67,43,34,.05), transparent 30%),
+    #f4efe9 !important;
+}
+.fe-shell{
+  min-height:100vh!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:26px!important;
+}
+.fe-frame{
+  width:min(1180px,calc(100vw - 52px))!important;
+  min-height:min(720px,calc(100vh - 52px))!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1.05fr) minmax(420px,.95fr)!important;
+  overflow:hidden!important;
+  border:1px solid rgba(72,49,39,.07)!important;
+  border-radius:30px!important;
+  background:#fffdfa!important;
+  box-shadow:0 34px 90px rgba(53,34,27,.14)!important;
+}
+
+/* left */
+.fe-brand-side{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  padding:42px 48px 40px!important;
+  overflow:hidden!important;
+  color:#fff!important;
+  background:
+    radial-gradient(circle at 88% 10%,rgba(255,255,255,.08),transparent 24%),
+    radial-gradient(circle at 8% 92%,rgba(218,145,115,.08),transparent 28%),
+    linear-gradient(160deg,#2f231d 0%,#3e2c25 50%,#5d3d32 100%)!important;
+}
+.fe-brand-side:before{
+  content:""!important;
+  position:absolute!important;
+  width:360px!important;height:360px!important;
+  right:-170px!important;top:-180px!important;
+  border-radius:50%!important;
+  background:rgba(221,150,120,.14)!important;
+}
+.fe-brand-side:after{
+  content:""!important;
+  position:absolute!important;
+  width:220px!important;height:220px!important;
+  left:-120px!important;bottom:-120px!important;
+  border-radius:50%!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+}
+.fe-brand-top{
+  position:relative!important;
+  z-index:2!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+}
+.fe-brand-top .fe-logo{
+  content:url('fonely-logo-sidebar-inverted.svg')!important;
+  width:170px!important;
+  height:auto!important;
+  filter:none!important;
+}
+.fe-brand-top>span{
+  color:#cdbab1!important;
+  font-size:7px!important;
+  font-weight:800!important;
+  letter-spacing:.18em!important;
+}
+.fe-brand-top>span:before{
+  width:26px!important;
+  background:#bca79d!important;
+}
+.fe-hero{
+  position:relative!important;
+  z-index:2!important;
+  max-width:560px!important;
+  margin-top:82px!important;
+}
+.fe-eyebrow{
+  display:inline-flex!important;
+  align-items:center!important;
+  padding:7px 10px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.045)!important;
+  color:#e8b59f!important;
+  font-size:7px!important;
+  font-weight:850!important;
+  letter-spacing:.14em!important;
+}
+.fe-hero h1{
+  max-width:560px!important;
+  margin:22px 0 18px!important;
+  color:#fff!important;
+  font:900 clamp(46px,4.4vw,62px)/.98 Nunito,sans-serif!important;
+  letter-spacing:-.05em!important;
+}
+.fe-hero h1 em{
+  color:#e49b7d!important;
+  font-style:normal!important;
+}
+.fe-hero>p{
+  max-width:515px!important;
+  margin:0!important;
+  color:#d9c9c1!important;
+  font-size:13px!important;
+  line-height:1.75!important;
+}
+.fe-benefits{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:0!important;
+  margin-top:34px!important;
+}
+.fe-benefits>div{
+  display:grid!important;
+  grid-template-columns:34px 1fr!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:13px 0!important;
+  border:0!important;
+  border-top:1px solid rgba(255,255,255,.08)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.fe-benefits>div:last-child{
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+}
+.fe-benefits i{
+  display:grid!important;
+  place-items:center!important;
+  width:30px!important;height:30px!important;
+  margin:0!important;
+  border-radius:10px!important;
+  background:rgba(229,155,125,.12)!important;
+  color:#f4c0aa!important;
+  font-size:7px!important;
+  font-style:normal!important;
+  font-weight:900!important;
+}
+.fe-benefits span{display:block!important}
+.fe-benefits b{
+  display:block!important;
+  color:#fff!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+.fe-benefits small{
+  display:block!important;
+  margin-top:3px!important;
+  color:#bfaea6!important;
+  font-size:8px!important;
+  line-height:1.45!important;
+}
+
+/* remove fake product dashboard from login */
+.fe-product-card{display:none!important}
+.fe-brand-note{
+  position:relative!important;
+  z-index:2!important;
+  margin-top:auto!important;
+  padding-top:28px!important;
+  color:#a9958c!important;
+  font-size:7px!important;
+  font-weight:800!important;
+  letter-spacing:.15em!important;
+}
+
+/* right */
+.fe-auth-side{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:56px 64px!important;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(190,115,86,.035),transparent 30%),
+    #fffdfa!important;
+}
+.fe-card{
+  width:min(410px,100%)!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.fe-auth-brand{
+  display:flex!important;
+  justify-content:flex-start!important;
+  margin-bottom:32px!important;
+}
+.fe-auth-brand img{
+  width:136px!important;
+  height:auto!important;
+}
+.fe-card-head{
+  margin-bottom:22px!important;
+}
+.fe-auth-kicker{
+  display:block!important;
+  margin-bottom:9px!important;
+  color:#aa6a52!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  letter-spacing:.16em!important;
+}
+.fe-card-head h2,.fe-reset h2,.fe-recovery h2{
+  margin:0 0 8px!important;
+  color:#2f231e!important;
+  font:900 32px/1.04 Nunito,sans-serif!important;
+  letter-spacing:-.04em!important;
+}
+.fe-card-head p,.fe-reset>p,.fe-recovery>p{
+  margin:0!important;
+  color:#8e7b72!important;
+  font-size:11px!important;
+  line-height:1.6!important;
+}
+.fe-tabs{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:4px!important;
+  margin:22px 0 22px!important;
+  padding:4px!important;
+  border:0!important;
+  border-radius:13px!important;
+  background:#efe7e2!important;
+}
+.fe-tabs button{
+  min-height:40px!important;
+  border:0!important;
+  border-radius:9px!important;
+  color:#9a857a!important;
+  background:transparent!important;
+  font-size:10px!important;
+  font-weight:800!important;
+}
+.fe-tabs button.active{
+  background:#fff!important;
+  color:#4a362d!important;
+  box-shadow:0 4px 12px rgba(65,42,34,.07)!important;
+}
+.fe-field{
+  display:block!important;
+  margin-bottom:15px!important;
+}
+.fe-field>span{
+  display:block!important;
+  margin-bottom:7px!important;
+  color:#624f46!important;
+  font-size:8px!important;
+  font-weight:850!important;
+  letter-spacing:.04em!important;
+}
+.fe-field input{
+  width:100%!important;
+  height:52px!important;
+  padding:0 14px!important;
+  border:1px solid #ddcfc6!important;
+  border-radius:12px!important;
+  background:#fff!important;
+  color:#3f3029!important;
+  font-size:12px!important;
+  box-shadow:none!important;
+}
+.fe-field input:focus{
+  border-color:#c27b60!important;
+  box-shadow:0 0 0 4px rgba(185,109,82,.09)!important;
+}
+.fe-field input:-webkit-autofill,
+.fe-field input:-webkit-autofill:hover,
+.fe-field input:-webkit-autofill:focus{
+  -webkit-text-fill-color:#3f3029!important;
+  -webkit-box-shadow:0 0 0 1000px #fff inset!important;
+  transition:background-color 9999s ease-out 0s!important;
+}
+.fe-password{position:relative!important}
+.fe-password input{padding-right:72px!important}
+.fe-show{
+  position:absolute!important;
+  right:8px!important;
+  bottom:8px!important;
+  height:36px!important;
+  padding:0 11px!important;
+  border:0!important;
+  border-radius:9px!important;
+  background:#f5eee9!important;
+  color:#755e53!important;
+  font-size:8px!important;
+  font-weight:800!important;
+}
+.fe-forgot{
+  margin:-1px 0 17px!important;
+  text-align:right!important;
+}
+.fe-forgot button,.fe-back{
+  color:#a4634b!important;
+  font-size:9px!important;
+  font-weight:800!important;
+}
+.fe-primary{
+  width:100%!important;
+  height:52px!important;
+  border:0!important;
+  border-radius:12px!important;
+  background:linear-gradient(135deg,#bd7358,#a85d46)!important;
+  color:#fff!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  box-shadow:0 10px 22px rgba(168,93,70,.20)!important;
+}
+.fe-primary:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 14px 28px rgba(168,93,70,.25)!important;
+}
+.fe-helper{
+  margin:11px 0 0!important;
+  color:#9c8a81!important;
+  font-size:8px!important;
+}
+.fe-trust{
+  margin-top:22px!important;
+  padding-top:16px!important;
+  border-top:1px solid #eee2db!important;
+  color:#9b887e!important;
+  font-size:7px!important;
+}
+.fe-trust i{
+  width:7px!important;height:7px!important;
+  background:#6d927d!important;
+  box-shadow:0 0 0 4px rgba(109,146,125,.10)!important;
+}
+
+@media(max-width:1020px){
+  .fe-frame{
+    width:min(720px,calc(100vw - 28px))!important;
+    min-height:auto!important;
+    grid-template-columns:1fr!important;
+  }
+  .fe-brand-side{display:none!important}
+  .fe-auth-side{
+    min-height:min(720px,calc(100vh - 28px))!important;
+    padding:46px!important;
+  }
+  .fe-card{width:min(430px,100%)!important}
+}
+@media(max-width:680px){
+  .fe-shell{padding:0!important}
+  .fe-frame{
+    width:100%!important;
+    min-height:100vh!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+  }
+  .fe-auth-side{
+    min-height:100vh!important;
+    padding:26px 18px!important;
+    background:#fffdfa!important;
+  }
+  .fe-card{width:100%!important}
+  .fe-auth-brand{margin-bottom:28px!important}
+  .fe-auth-brand img{width:130px!important}
+  .fe-card-head h2,.fe-reset h2,.fe-recovery h2{font-size:29px!important}
+}
