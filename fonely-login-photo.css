@@ -1,0 +1,56 @@
+/* Fonely login — professional portrait integration */
+@media(min-width:1021px){
+  .fe-brand-side{
+    position:relative!important;
+    isolation:isolate!important;
+    overflow:hidden!important
+  }
+  .fe-brand-side:before{
+    content:""!important;
+    position:absolute!important;
+    z-index:-2!important;
+    right:-2%!important;
+    bottom:0!important;
+    width:46%!important;
+    height:69%!important;
+    background:
+      linear-gradient(90deg,rgba(48,33,27,1) 0%,rgba(48,33,27,.30) 24%,rgba(48,33,27,0) 46%),
+      linear-gradient(0deg,rgba(48,33,27,.98) 0%,rgba(48,33,27,.12) 28%,rgba(48,33,27,0) 55%),
+      url("assets/Imagem%20do%20ChatGPT%2029%20de%20set.%20de%202026%2C%2023_46_37.jpg") center 18%/cover no-repeat!important;
+    opacity:.92!important;
+    filter:saturate(.88) contrast(.98)!important;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%)!important;
+    mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%)!important
+  }
+  .fe-brand-side:after{
+    content:"Feito para quem cuida da comunicação todos os dias."!important;
+    position:absolute!important;
+    z-index:2!important;
+    right:4.5%!important;
+    bottom:4.5%!important;
+    width:34%!important;
+    padding:11px 13px!important;
+    border:1px solid rgba(255,255,255,.11)!important;
+    border-radius:12px!important;
+    background:rgba(42,29,24,.52)!important;
+    backdrop-filter:blur(10px)!important;
+    -webkit-backdrop-filter:blur(10px)!important;
+    color:rgba(255,245,240,.86)!important;
+    font-size:7px!important;
+    font-weight:750!important;
+    line-height:1.45!important;
+    letter-spacing:.02em!important;
+    box-shadow:0 12px 30px rgba(17,9,6,.16)!important
+  }
+  .fe-brand-content{
+    position:relative!important;
+    z-index:3!important;
+    width:61%!important
+  }
+  .fe-suite{max-width:96%!important}
+}
+@media(min-width:1021px) and (max-width:1280px){
+  .fe-brand-side:before{width:42%!important;height:62%!important;opacity:.78!important}
+  .fe-brand-side:after{display:none!important}
+  .fe-brand-content{width:67%!important}
+}
