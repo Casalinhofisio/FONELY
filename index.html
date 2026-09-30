@@ -952,5 +952,31 @@ document.addEventListener('DOMContentLoaded',function(){
 .agenda-controlbar .force-month-nav{margin-left:auto!important}
 @media(max-width:720px){.agenda-controlbar{display:grid!important;grid-template-columns:1fr!important}.agenda-controlbar .force-agenda-tabs{width:100%!important}.agenda-controlbar .force-month-nav{width:100%!important;margin:0!important}}
 </style>
+<script id="abfw-remove-legacy-subtests-v19">
+(function(){
+ function cleanABFW(){
+   var root=document.getElementById('fonelyAssessmentModal');
+   if(!root)return;
+   var txt=(root.textContent||'').toLowerCase();
+   if(txt.indexOf('abfw')<0)return;
+   var boxes=[].slice.call(root.querySelectorAll('input[type="checkbox"]'));
+   boxes.forEach(function(box){
+     var el=box.closest('label')||box.parentElement;if(!el)return;
+     var t=(el.textContent||'').trim().toLowerCase();
+     if(['fonologia','vocabulário','vocabulario','fluência','fluencia','pragmática','pragmatica'].indexOf(t)>=0){
+       var group=el.parentElement;
+       if(group){
+         var gt=(group.textContent||'').toLowerCase();
+         if(gt.indexOf('fonologia')>=0&&gt.indexOf('vocabul')>=0&&gt.indexOf('flu')>=0&&gt.indexOf('pragm')>=0){group.remove();return;}
+       }
+       el.remove();
+     }
+   });
+ }
+ new MutationObserver(cleanABFW).observe(document.documentElement,{childList:true,subtree:true});
+ document.addEventListener('click',function(){setTimeout(cleanABFW,0);setTimeout(cleanABFW,100);},true);
+ cleanABFW();
+})();
+</script>
 </body>
 </html>
