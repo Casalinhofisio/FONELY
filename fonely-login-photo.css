@@ -1,87 +1,70 @@
-/* Fonely login — professional portrait integration v3 */
+/* Fonely login portrait v4 — dedicated card, no text overlap */
 @media(min-width:1021px){
   .fe-brand-side{
     position:relative!important;
     isolation:isolate!important;
-    overflow:hidden!important
+    overflow:hidden!important;
+    padding-right:42px!important
   }
 
-  /* portrait becomes part of the composition, not a rectangular photo block */
+  /* disable previous pseudo-image treatment */
   .fe-brand-side:before{
     content:""!important;
     position:absolute!important;
     z-index:0!important;
-    top:0!important;
-    right:-1%!important;
-    bottom:0!important;
-    width:49%!important;
-    height:100%!important;
-    background:
-      linear-gradient(90deg,rgba(43,29,24,.98) 0%,rgba(43,29,24,.72) 10%,rgba(43,29,24,.16) 31%,rgba(43,29,24,0) 48%),
-      linear-gradient(0deg,rgba(43,29,24,.92) 0%,rgba(43,29,24,.16) 22%,rgba(43,29,24,0) 45%),
-      url("assets/Imagem%20do%20ChatGPT%2029%20de%20set.%20de%202026%2C%2023_46_37.jpg") right bottom/auto 94% no-repeat!important;
-    opacity:.94!important;
-    filter:saturate(.86) contrast(.98)!important;
-    -webkit-mask-image:
-      linear-gradient(to right,transparent 0%,rgba(0,0,0,.45) 16%,#000 33%,#000 100%),
-      linear-gradient(to bottom,#000 0%,#000 86%,transparent 100%)!important;
-    -webkit-mask-composite:source-in!important;
-    mask-image:
-      linear-gradient(to right,transparent 0%,rgba(0,0,0,.45) 16%,#000 33%,#000 100%),
-      linear-gradient(to bottom,#000 0%,#000 86%,transparent 100%)!important;
-    mask-composite:intersect!important;
+    width:320px!important;
+    height:320px!important;
+    right:-150px!important;
+    top:-170px!important;
+    border-radius:50%!important;
+    background:rgba(218,145,115,.09)!important;
+    opacity:1!important;
+    filter:none!important;
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
     pointer-events:none!important
   }
-
   .fe-brand-side:after{
     content:""!important;
     position:absolute!important;
-    z-index:1!important;
-    right:0!important;
-    top:0!important;
-    width:42%!important;
-    height:100%!important;
-    background:
-      radial-gradient(circle at 72% 24%,rgba(231,161,130,.10),transparent 28%),
-      linear-gradient(180deg,rgba(255,255,255,.015),transparent 35%)!important;
-    border:0!important;
+    z-index:0!important;
+    width:220px!important;
+    height:220px!important;
+    left:-120px!important;
+    bottom:-120px!important;
+    border-radius:50%!important;
+    border:1px solid rgba(255,255,255,.07)!important;
+    background:transparent!important;
     pointer-events:none!important
   }
 
-  .fe-brand-top,
-  .fe-brand-content,
-  .fe-brand-note{
-    position:relative!important;
-    z-index:3!important
-  }
-
   .fe-brand-top{
-    width:58%!important
-  }
-
-  .fe-brand-content{
-    width:56%!important;
-    max-width:590px!important
+    position:relative!important;
+    z-index:4!important;
+    width:100%!important
   }
 
   .fe-hero{
-    max-width:100%!important;
+    position:relative!important;
+    z-index:3!important;
+    width:56%!important;
+    max-width:525px!important;
     margin-top:62px!important
   }
 
   .fe-hero h1{
-    max-width:520px!important;
-    font-size:clamp(46px,4.1vw,60px)!important;
+    max-width:510px!important;
+    font-size:clamp(44px,3.8vw,57px)!important;
     line-height:.96!important
   }
 
   .fe-hero>p{
-    max-width:500px!important
+    max-width:490px!important
   }
 
   .fe-benefits{
     width:100%!important;
-    max-width:520px!important;
+    max-width:500px!important;
     margin-top:28px!important
   }
 
@@ -91,27 +74,99 @@
 
   .fe-suite{
     width:100%!important;
-    max-width:520px!important
+    max-width:500px!important;
+    margin-top:16px!important
   }
 
   .fe-brand-note{
+    position:relative!important;
+    z-index:3!important;
     width:56%!important;
-    max-width:520px!important
+    max-width:500px!important
+  }
+
+  /* portrait is now a deliberate premium card */
+  .fe-photo-stage{
+    position:absolute!important;
+    z-index:2!important;
+    top:132px!important;
+    right:34px!important;
+    bottom:34px!important;
+    width:35%!important;
+    min-width:245px!important;
+    overflow:hidden!important;
+    border:1px solid rgba(255,255,255,.10)!important;
+    border-radius:26px!important;
+    background:#25262b!important;
+    box-shadow:
+      0 30px 60px rgba(13,7,5,.30),
+      inset 0 1px 0 rgba(255,255,255,.05)!important
+  }
+
+  .fe-photo-stage:before{
+    content:""!important;
+    position:absolute!important;
+    z-index:2!important;
+    inset:0!important;
+    background:
+      linear-gradient(180deg,transparent 52%,rgba(22,15,12,.08) 68%,rgba(22,15,12,.74) 100%),
+      linear-gradient(90deg,rgba(37,27,23,.22),transparent 32%)!important;
+    pointer-events:none!important
+  }
+
+  .fe-photo-stage img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:center top!important;
+    filter:saturate(.92) contrast(1.01)!important
+  }
+
+  .fe-photo-caption{
+    position:absolute!important;
+    z-index:3!important;
+    left:18px!important;
+    right:18px!important;
+    bottom:17px!important;
+    padding:13px 14px!important;
+    border:1px solid rgba(255,255,255,.12)!important;
+    border-radius:14px!important;
+    background:rgba(34,24,20,.58)!important;
+    backdrop-filter:blur(12px)!important;
+    -webkit-backdrop-filter:blur(12px)!important;
+    box-shadow:0 10px 28px rgba(12,6,4,.18)!important
+  }
+
+  .fe-photo-caption small{
+    display:block!important;
+    margin-bottom:4px!important;
+    color:#e6ad95!important;
+    font-size:6px!important;
+    font-weight:900!important;
+    letter-spacing:.16em!important
+  }
+
+  .fe-photo-caption b{
+    display:block!important;
+    color:#fff8f4!important;
+    font-size:10px!important;
+    line-height:1.35!important
   }
 }
 
 @media(min-width:1021px) and (max-width:1280px){
-  .fe-brand-side:before{
-    width:44%!important;
-    background-size:auto 86%!important;
-    opacity:.86!important
+  .fe-brand-side{padding-right:30px!important}
+  .fe-hero{width:59%!important}
+  .fe-photo-stage{
+    right:24px!important;
+    width:32%!important;
+    min-width:220px!important
   }
-  .fe-brand-content{width:61%!important}
-  .fe-brand-top{width:62%!important}
-  .fe-hero h1{font-size:clamp(42px,4vw,54px)!important}
   .fe-suite{display:none!important}
+  .fe-hero h1{font-size:clamp(41px,3.7vw,52px)!important}
 }
 
 @media(max-width:1020px){
-  .fe-brand-side:before,.fe-brand-side:after{display:none!important}
+  .fe-photo-stage{display:none!important}
 }
