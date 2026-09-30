@@ -896,6 +896,21 @@ document.addEventListener('DOMContentLoaded',function(){
  #mobileMoreMenu .mobile-force-links>button.active{background:#573027!important;box-shadow:inset 3px 0 #dc7658!important}
 }
 </style>
+<style id="fonely-patient-agenda-upgrade-v1">
+.patient-manage-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.force-week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px}
+.force-week-day{min-width:0;border:1px solid #eadfd8;border-radius:14px;background:#fff;overflow:hidden}
+.force-week-day>button{width:100%;border:0;background:#f8f3ef;padding:10px 5px;display:flex;flex-direction:column;align-items:center}
+.force-week-day>button small{text-transform:uppercase;font-size:8px}.force-week-day>button b{font-size:18px}
+.force-week-day>div{padding:6px}.force-week-day em{display:block;text-align:center;font-size:9px;color:#9a887f;padding:10px 2px}
+.week-ap{width:100%;border:0;border-radius:8px;background:#f4ece7;margin:3px 0;padding:7px 5px;text-align:left;overflow:hidden}
+.week-ap time,.week-ap span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.week-ap time{font-size:9px;font-weight:900}.week-ap span{font-size:9px}
+@media(max-width:720px){
+ .patient-manage-actions{width:100%;margin-top:8px}.patient-manage-actions button{flex:1;min-width:95px}
+ .force-week-card{overflow-x:auto!important}.force-week-grid{grid-template-columns:repeat(7,110px)!important;min-width:770px!important}
+ .force-week-day{min-height:180px}.force-agenda-tabs button{min-width:105px!important}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
