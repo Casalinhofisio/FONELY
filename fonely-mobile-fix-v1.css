@@ -1,0 +1,112 @@
+/* Fonely Mobile Layout Fix v1
+   Real mobile layouts: no desktop-width cards or sideways dashboard/calendar. */
+
+@media(max-width:720px){
+  html,body{overflow-x:hidden!important}
+  .layout,.layout>main{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+
+  /* dashboard */
+  .fhome-welcome{
+    width:100%!important;
+    min-width:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:16px!important
+  }
+  .fhome-hero-copy,.fhome-hero-actions{width:100%!important;min-width:0!important}
+  .fhome-stats{
+    width:100%!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important
+  }
+  .fhome-stat{
+    width:100%!important;
+    min-width:0!important;
+    min-height:112px!important;
+    padding:14px!important
+  }
+  .fhome-stat b.money{font-size:18px!important}
+  .fhome-main{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    margin-bottom:10px!important
+  }
+  .fhome-agenda,.fhome-patients,.fhome-alerts{
+    width:100%!important;
+    min-width:0!important;
+    min-height:auto!important;
+    padding:14px!important;
+    border-radius:16px!important;
+    overflow:hidden!important
+  }
+  .fhome-agenda .empty,.fhome-patients .empty{min-height:135px!important}
+  .fhome-patient-list>button{
+    width:100%!important;
+    min-width:0!important;
+    grid-template-columns:46px minmax(0,1fr) 24px!important;
+    padding:9px!important
+  }
+  .fhome-patient-list>button>*{min-width:0!important}
+  .fhome-patient-list>button span,
+  .fhome-patient-list>button b{
+    overflow:hidden!important;
+    text-overflow:ellipsis!important
+  }
+
+  /* calendar: real 7-column mobile month instead of 760px desktop canvas */
+  .fonely-full-calendar{
+    width:100%!important;
+    max-width:100%!important;
+    overflow:hidden!important
+  }
+  .fullcal-weekdays,.fullcal-grid{
+    min-width:0!important;
+    width:100%!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important
+  }
+  .fullcal-weekdays>div{
+    min-width:0!important;
+    padding:8px 1px!important;
+    font-size:9px!important;
+    text-align:center!important
+  }
+  .fullcal-grid>div{
+    min-width:0!important;
+    min-height:78px!important;
+    padding:7px 4px!important;
+    border-radius:10px!important
+  }
+  .fullcal-grid .day-number,
+  .fullcal-grid>div>b{
+    font-size:13px!important
+  }
+  .fullcal-grid .calendar-event,
+  .fullcal-grid .fullcal-event,
+  .fullcal-grid .event{
+    width:100%!important;
+    max-width:100%!important;
+    margin-top:4px!important;
+    padding:4px!important;
+    font-size:7px!important;
+    line-height:1.15!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important
+  }
+  .month-weekdays,.month-grid{
+    min-width:0!important;
+    width:100%!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important
+  }
+  .agenda-board{width:100%!important;max-width:100%!important;overflow:hidden!important}
+}
+
+@media(max-width:430px){
+  .layout>main{padding-left:10px!important;padding-right:10px!important}
+  .fhome-stats{grid-template-columns:1fr!important}
+  .fhome-stat{min-height:104px!important}
+  .fullcal-weekdays>div{font-size:8px!important}
+  .fullcal-grid>div{min-height:70px!important;padding:6px 3px!important}
+}
