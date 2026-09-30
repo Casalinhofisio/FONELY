@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="fonely-build" content="2026-09-30-pricing-19990-3990">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="fonely-build" content="2026-09-30-login-compact-final">
 <meta name="theme-color" content="#342720">
 <title>Fonely — Sistema para Fonoaudiólogos</title>
 <link rel="icon" type="image/svg+xml" href="fonely-icon.svg?v=6">
@@ -32,7 +32,34 @@
 <link rel="stylesheet" href="fonely-mobile-fix-v1.css?v=1">
 <link rel="stylesheet" href="fonely-app-premium-v3.css?v=1">
 <link rel="stylesheet" href="fonely-app-premium-v4.css?v=1">
-<link rel="stylesheet" href="fonely-billing.css?v=2">\n</head>
+<link rel="stylesheet" href="fonely-billing.css?v=2">\n<style id="fonely-login-final-size">
+@media (min-width:1021px){
+ #fonelyEntry .fe-shell{padding:34px!important}
+ #fonelyEntry .fe-frame{width:min(80vw,1180px)!important;max-width:1180px!important;min-height:0!important;height:min(76vh,680px)!important;max-height:680px!important;grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr)!important}
+ #fonelyEntry .fe-brand-side{padding:26px 26px 22px 36px!important}
+ #fonelyEntry .fe-brand-top .fe-logo{width:150px!important;max-width:150px!important}
+ #fonelyEntry .fe-hero{margin-top:32px!important;max-width:420px!important}
+ #fonelyEntry .fe-hero h1{font-size:clamp(35px,3vw,46px)!important}
+ #fonelyEntry .fe-hero>p{font-size:10px!important;line-height:1.5!important}
+ #fonelyEntry .fe-benefits{margin-top:12px!important}
+ #fonelyEntry .fe-benefits>div{padding:6px 0!important}
+ #fonelyEntry .fe-suite{display:none!important}
+ #fonelyEntry .fe-photo-stage{top:72px!important;width:38%!important;min-width:230px!important}
+ #fonelyEntry .fe-auth-side{padding:20px 24px!important}
+ #fonelyEntry .fe-card{max-width:460px!important;padding:24px 28px 20px!important;border-radius:20px!important}
+ #fonelyEntry .fe-auth-brand{margin-bottom:14px!important}
+ #fonelyEntry .fe-auth-brand img{width:124px!important;max-width:124px!important}
+ #fonelyEntry .fe-card-head h2{font-size:25px!important}
+ #fonelyEntry .fe-login-summary{padding:10px 12px!important;margin-bottom:10px!important}
+ #fonelyEntry .fe-google{min-height:44px!important}
+ #fonelyEntry .fe-oauth-divider{margin:10px 0!important}
+ #fonelyEntry .fe-tabs{min-height:46px!important;margin-bottom:12px!important}
+ #fonelyEntry .fe-tabs button{min-height:36px!important}
+ #fonelyEntry .fe-field input{min-height:44px!important}
+ #fonelyEntry .fe-primary{min-height:44px!important}
+}
+</style>
+</head>
 <body>
 <div id="app"></div>
 <script src="fonely-auth.js?v=58"></script>
