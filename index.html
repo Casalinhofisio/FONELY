@@ -346,16 +346,8 @@
 }
 
 
-/* preserved: hide-stray-text-node-v1 */
-
-body{font-size:0}
+/* removed obsolete global font-size reset */
 #app,#fonelyEntry{font-size:16px}
-
-
-/* preserved: fonely-stray-n-hardfix */
-
-html,body{margin:0!important;padding:0!important}
-body>#app{font-size:16px!important}
 
 
 /* preserved: fonely-mobile-login-rebuild-v1 */
@@ -1077,7 +1069,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
-  var v='1790947200000';
+  var v='1790948400000';
   document.querySelectorAll('link[rel="stylesheet"]').forEach(function(el){
     try{var u=new URL(el.href);if(u.origin===location.origin){u.searchParams.set('force',v);el.href=u.toString();}}catch(e){}
   });
