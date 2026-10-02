@@ -13,3 +13,25 @@
 #fonelyPlansOverlay .fb-plan button,#fonelyPlansOverlay .fb-summary button{display:flex;align-items:center;justify-content:center;width:auto;min-width:170px;min-height:44px;font:800 13px/1 "DM Sans",sans-serif;color:#fff}
 #fonelyPlansOverlay .fb-summary{font:500 14px/1.4 "DM Sans",sans-serif}
 #fonelyPlansOverlay .fb-summary b,#fonelyPlansOverlay .fb-summary span,#fonelyPlansOverlay .fb-summary strong{font-size:inherit}
+
+/* Annual plan emphasis v4 */
+#fonelyPlansOverlay .fb-plan:first-child{
+  position:relative;
+  border:2px solid #c9795d!important;
+  background:linear-gradient(145deg,#fff8f3 0%,#f8e7dc 100%)!important;
+  box-shadow:0 14px 34px rgba(160,91,65,.14)!important
+}
+#fonelyPlansOverlay .fb-plan:first-child:before{
+  content:"MELHOR VALOR";
+  position:absolute;top:14px;right:14px;
+  padding:6px 10px;border-radius:999px;
+  background:#c9795d;color:#fff;
+  font:800 10px/1 "DM Sans",sans-serif;letter-spacing:.08em
+}
+#fonelyPlansOverlay .fb-plan:first-child>span{color:#a85f48!important;font-weight:900!important}
+#fonelyPlansOverlay .fb-plan:first-child h3{color:#6a3e30!important}
+#fonelyPlansOverlay .fb-plan:first-child [data-payment="annual_pix"]{
+  background:linear-gradient(135deg,#b96b50,#8d4b38)!important;
+  box-shadow:0 9px 20px rgba(141,75,56,.20)!important
+}
+#fonelyPlansOverlay .fb-plan:first-child [data-payment="annual_pix"]:hover{transform:translateY(-1px)!important}
