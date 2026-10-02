@@ -32,10 +32,6 @@ function modal(){
     box.querySelector('#fbContinue').onclick=function(){localStorage.setItem('fonely_selected_payment',kind);alert('Forma de pagamento selecionada. O checkout será aberto quando a integração de pagamento estiver configurada para esta opção.');};
   };});
 }
-function enhance(){
-  var p=document.querySelector('#fonelyAccountOverlay .fe-account-actions');if(!p||p.querySelector('[data-fb-plans]'))return;
-  var b=document.createElement('button');b.type='button';b.className='soft-btn';b.dataset.fbPlans='1';b.textContent='Pagamento e assinatura';b.onclick=modal;p.insertBefore(b,p.firstChild);
-}
-new MutationObserver(enhance).observe(document.documentElement,{childList:true,subtree:true});
+function enhance(){}
 window.FonelyBilling={open:modal,quote:quote,createOrder:order};
 })();
