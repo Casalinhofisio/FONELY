@@ -370,7 +370,7 @@ function openAccountPanel(){
   w.innerHTML='<div class="fe-account-panel">'+
     '<div class="fe-account-top"><div class="fe-account-identity">'+photo+'<div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p><button type="button" class="fe-photo-button" data-account-photo>Alterar foto</button><input type="file" accept="image/jpeg,image/png,image/webp" data-account-photo-input hidden></div></div><button type="button" data-account-close>×</button></div>'+
     planBlock+grid+
-    '<div class="fe-account-actions"><button type="button" class="soft-btn fe-account-password" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
+    '<div class="fe-account-actions"><button type="button" class="soft-btn" data-account-billing>Pagamento e assinatura</button><button type="button" class="soft-btn fe-account-password" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
     '<div class="fe-account-message" data-account-message></div>'+
   '</div>';
   document.body.appendChild(w);
@@ -382,6 +382,8 @@ function openAccountPanel(){
   w.querySelector('.fe-account-photo').onclick=function(){photoInput.click();};
   photoInput.onchange=function(){if(photoInput.files&&photoInput.files[0])uploadProfileAvatar(photoInput.files[0],photoButton,msg);};
 
+  var billing=w.querySelector('[data-account-billing]');
+  billing.onclick=function(){w.remove();setTimeout(function(){if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();},0);};
   var logout=w.querySelector('[data-account-logout]');
   logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';clearTeamLocalCache();await sb.auth.signOut();location.replace(APP_URL);};
   var pass=w.querySelector('[data-account-password]');
