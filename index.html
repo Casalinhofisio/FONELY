@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="fonely-brand.css?v=2">
 <link rel="stylesheet" href="calendar-v2.css?v=1">
 <link rel="stylesheet" href="fonely-functional.css?v=1">
-<link rel="stylesheet" href="fonely-assessments-v2.css?v=14">
+<link rel="stylesheet" href="fonely-assessments-v2.css?v=17">
 <link rel="stylesheet" href="fonely-entry-v1.css?v=6">
 <link rel="stylesheet" href="fonely-caa.css?v=11">
 
@@ -918,7 +918,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
-  var v='1790941200000';
+  var v='1790943000000';
   document.querySelectorAll('link[rel="stylesheet"]').forEach(function(el){
     try{var u=new URL(el.href);if(u.origin===location.origin){u.searchParams.set('force',v);el.href=u.toString();}}catch(e){}
   });
@@ -952,34 +952,6 @@ document.addEventListener('DOMContentLoaded',function(){
 .agenda-controlbar .force-month-nav{margin-left:auto!important}
 @media(max-width:720px){.agenda-controlbar{display:grid!important;grid-template-columns:1fr!important}.agenda-controlbar .force-agenda-tabs{width:100%!important}.agenda-controlbar .force-month-nav{width:100%!important;margin:0!important}}
 </style>
-<script id="abfw-remove-legacy-subtests-v20">
-(function(){
- function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
- function cleanABFW(){
-   var root=document.getElementById('fonelyAssessmentModal');
-   if(!root||norm(root.textContent).indexOf('abfw')<0)return;
-   var wanted=['fonologia','vocabulario','fluencia','pragmatica'];
-   var labels=[].slice.call(root.querySelectorAll('label'));
-   var matched=labels.filter(function(el){var t=norm(el.textContent);return wanted.indexOf(t)>=0&&el.querySelector('input[type="checkbox"]');});
-   if(matched.length){
-     var parents=matched.map(function(el){return el.parentElement;});
-     var same=parents.every(function(p){return p===parents[0];});
-     if(same&&parents[0])parents[0].remove(); else matched.forEach(function(el){el.remove();});
-   }
-   [].slice.call(root.querySelectorAll('div,section')).forEach(function(el){
-     if(!el.isConnected)return;
-     var direct=[].slice.call(el.children);
-     if(direct.length!==4)return;
-     var names=direct.map(function(ch){return norm(ch.textContent);});
-     if(wanted.every(function(x){return names.indexOf(x)>=0;})&&direct.every(function(ch){return !!ch.querySelector('input[type="checkbox"]');}))el.remove();
-   });
- }
- var obs=new MutationObserver(function(){cleanABFW();});
- obs.observe(document.body,{childList:true,subtree:true});
- document.addEventListener('click',function(){setTimeout(cleanABFW,0);setTimeout(cleanABFW,50);setTimeout(cleanABFW,250);},true);
- window.addEventListener('load',cleanABFW);
- cleanABFW();
-})();
-</script>
+
 </body>
 </html>
