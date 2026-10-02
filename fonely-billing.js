@@ -15,6 +15,7 @@ async function order(plan,coupon){
   if(r.error)throw r.error; return r.data;
 }
 function modal(){
+  var accountOverlay=document.getElementById('fonelyAccountOverlay');if(accountOverlay)accountOverlay.remove();
   var old=document.getElementById('fonelyPlansOverlay');if(old)old.remove();
   var w=document.createElement('div');w.id='fonelyPlansOverlay';w.className='fb-overlay';
   w.innerHTML='<div class="fb-panel"><div class="fb-head"><div><small>FONELY COMPLETO</small><h2>Escolha como pagar</h2><p>Todos os recursos do Fonely estão incluídos. Equipe é contratada separadamente.</p></div><button data-fb-close>×</button></div>'+
