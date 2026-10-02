@@ -958,6 +958,36 @@ body>#app{font-size:16px!important}
 #fonelyAccountOverlay .fe-account-actions [data-fb-plans]::before,
 #fonelyAccountOverlay .fe-account-actions [data-fb-plans]::after{content:none!important;display:none!important}
 #fonelyAccountOverlay .fe-account-actions [data-account-logout]{color:#fff!important;min-width:116px!important}
+
+/* account panel polish v2 */
+#fonelyAccountOverlay .fe-account-actions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr auto!important;
+  gap:10px!important;
+  padding-top:20px!important;
+  margin-top:20px!important;
+  border-top:1px solid #eadfd8!important
+}
+#fonelyAccountOverlay .fe-account-actions button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-width:0!important;height:46px!important;padding:0 16px!important;
+  border-radius:13px!important;font-size:12px!important;font-weight:800!important;line-height:1!important;
+  white-space:nowrap!important;opacity:1!important;visibility:visible!important
+}
+#fonelyAccountOverlay .fe-account-actions [data-fb-plans]{
+  background:#f7f2ee!important;border:1px solid #e7d9d1!important;color:#5b4338!important
+}
+#fonelyAccountOverlay .fe-account-actions [data-account-password]{
+  background:#fff!important;border:1px solid #e7d9d1!important;color:#5b4338!important
+}
+#fonelyAccountOverlay .fe-account-actions [data-account-logout]{
+  width:auto!important;min-width:116px!important;background:#51392f!important;border:1px solid #51392f!important;color:#fff!important
+}
+#fonelyAccountOverlay .fe-account-actions button:hover{transform:translateY(-1px)!important}
+@media(max-width:600px){
+ #fonelyAccountOverlay .fe-account-actions{grid-template-columns:1fr!important}
+ #fonelyAccountOverlay .fe-account-actions [data-account-logout]{width:100%!important}
+}
 </style>
 <link rel="stylesheet" href="fonely-premium-v4.css?v=8"><link rel="stylesheet" href="fonely-login-v6.css?v=1">
 <link rel="stylesheet" href="fonely-login-v7.css?v=1">
@@ -1047,7 +1077,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
-  var v='1790946600000';
+  var v='1790947200000';
   document.querySelectorAll('link[rel="stylesheet"]').forEach(function(el){
     try{var u=new URL(el.href);if(u.origin===location.origin){u.searchParams.set('force',v);el.href=u.toString();}}catch(e){}
   });
