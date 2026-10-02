@@ -383,7 +383,7 @@ function openAccountPanel(){
   photoInput.onchange=function(){if(photoInput.files&&photoInput.files[0])uploadProfileAvatar(photoInput.files[0],photoButton,msg);};
 
   var billing=w.querySelector('[data-account-billing]');
-  billing.onclick=function(){w.remove();setTimeout(function(){if(window.FonelyBilling&&window.FonelyBilling.open)window.FonelyBilling.open();},0);};
+  billing.onclick=function(){if(window.FonelyBilling&&window.FonelyBilling.open){window.FonelyBilling.open();}else{return;}w.style.display='none';setTimeout(function(){if(w&&w.parentNode)w.remove();},50);};
   var logout=w.querySelector('[data-account-logout]');
   logout.onclick=async function(){logout.disabled=true;logout.textContent='Saindo...';clearTeamLocalCache();await sb.auth.signOut();location.replace(APP_URL);};
   var pass=w.querySelector('[data-account-password]');
