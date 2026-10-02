@@ -370,7 +370,7 @@ function openAccountPanel(){
   w.innerHTML='<div class="fe-account-panel">'+
     '<div class="fe-account-top"><div class="fe-account-identity">'+photo+'<div><small>MINHA CONTA</small><h2>'+esc(name)+'</h2><p>'+esc(user.email||profile.email||'')+'</p><button type="button" class="fe-photo-button" data-account-photo>Alterar foto</button><input type="file" accept="image/jpeg,image/png,image/webp" data-account-photo-input hidden></div></div><button type="button" data-account-close>×</button></div>'+
     planBlock+grid+
-    '<div class="fe-account-actions"><button type="button" class="soft-btn" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
+    '<div class="fe-account-actions"><button type="button" class="soft-btn fe-account-password" data-account-password>Alterar senha</button><button type="button" class="fe-account-logout" data-account-logout>Sair da conta</button></div>'+
     '<div class="fe-account-message" data-account-message></div>'+
   '</div>';
   document.body.appendChild(w);
