@@ -949,6 +949,15 @@ body>#app{font-size:16px!important}
 .agenda-controlbar .force-month-nav{margin-left:auto!important}
 @media(max-width:720px){.agenda-controlbar{display:grid!important;grid-template-columns:1fr!important}.agenda-controlbar .force-agenda-tabs{width:100%!important}.agenda-controlbar .force-month-nav{width:100%!important;margin:0!important}}
 
+
+/* account action labels hard-fix v1 */
+#fonelyAccountOverlay .fe-account-actions{display:flex!important;justify-content:flex-end!important;align-items:center!important;gap:10px!important}
+#fonelyAccountOverlay .fe-account-actions button{width:auto!important;min-width:max-content!important;height:42px!important;padding:0 18px!important;font-family:'DM Sans',sans-serif!important;font-size:13px!important;font-weight:800!important;line-height:42px!important;text-indent:0!important;color:#5b4338!important}
+#fonelyAccountOverlay .fe-account-actions [data-account-password]::before,
+#fonelyAccountOverlay .fe-account-actions [data-account-password]::after,
+#fonelyAccountOverlay .fe-account-actions [data-fb-plans]::before,
+#fonelyAccountOverlay .fe-account-actions [data-fb-plans]::after{content:none!important;display:none!important}
+#fonelyAccountOverlay .fe-account-actions [data-account-logout]{color:#fff!important;min-width:116px!important}
 </style>
 <link rel="stylesheet" href="fonely-premium-v4.css?v=8"><link rel="stylesheet" href="fonely-login-v6.css?v=1">
 <link rel="stylesheet" href="fonely-login-v7.css?v=1">
@@ -1038,7 +1047,7 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="fonely-billing.js?v=3"></script>
 <script>
 (function(){
-  var v='1790946000000';
+  var v='1790946600000';
   document.querySelectorAll('link[rel="stylesheet"]').forEach(function(el){
     try{var u=new URL(el.href);if(u.origin===location.origin){u.searchParams.set('force',v);el.href=u.toString();}}catch(e){}
   });
