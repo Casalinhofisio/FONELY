@@ -110,3 +110,119 @@
   .fullcal-weekdays>div{font-size:8px!important}
   .fullcal-grid>div{min-height:70px!important;padding:6px 3px!important}
 }
+
+
+/* Fonely mobile interaction polish v2 — mobile only */
+@media(max-width:720px){
+  html{-webkit-text-size-adjust:100%}
+  body{overscroll-behavior-x:none}
+  button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+  button,a,[role="button"]{touch-action:manipulation}
+
+  .layout>main{padding:14px 12px 92px!important}
+  main h1{font-size:28px!important;line-height:1.08!important}
+  main h2{line-height:1.12!important}
+  .card,.panel,.section,.agenda-board,.fonely-assessment-v3{max-width:100%!important}
+
+  /* touch targets */
+  button,.primary,.soft-btn,.ghost-btn,.danger-btn{
+    min-height:44px!important
+  }
+  input,select,textarea{
+    min-height:46px!important;
+    font-size:16px!important;
+    border-radius:12px!important
+  }
+  textarea{min-height:108px!important}
+  button:active,.primary:active,.soft-btn:active,.assessment-protocol-card:active{
+    transform:scale(.985)!important
+  }
+
+  /* top actions */
+  .page-head,.force-agenda-head{
+    align-items:flex-start!important;
+    gap:12px!important
+  }
+  .force-agenda-head{display:grid!important;grid-template-columns:1fr!important}
+  .force-agenda-head .primary{width:100%!important}
+  .agenda-controlbar{gap:8px!important;padding:8px!important}
+  .agenda-controlbar .force-agenda-tabs,
+  .agenda-controlbar .force-month-nav{display:grid!important;grid-template-columns:1fr 1fr!important;width:100%!important;gap:6px!important}
+  .agenda-controlbar .force-month-nav{grid-template-columns:44px 1fr 44px!important}
+  .agenda-controlbar button{min-width:0!important;margin:0!important}
+
+  /* cards/lists */
+  .patient-card,.appointment-card,.assessment-v3-card,
+  .assessment-protocol-card{
+    width:100%!important;
+    min-width:0!important;
+    min-height:62px!important;
+    border-radius:14px!important
+  }
+  .assessment-protocol-grid{grid-template-columns:1fr!important;gap:8px!important}
+  .assessment-protocol-card{padding:14px 12px!important}
+  .assessment-protocol-card span{min-width:0!important;text-align:left!important}
+  .assessment-protocol-card em{display:none!important}
+
+  /* assessment screens */
+  #fonelyAssessmentModal{
+    align-items:flex-end!important;
+    padding:0!important
+  }
+  #fonelyAssessmentModal .assessment-v3-modal{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:94dvh!important;
+    margin:0!important;
+    padding:18px 14px calc(18px + env(safe-area-inset-bottom))!important;
+    border-radius:22px 22px 0 0!important;
+    overflow-y:auto!important
+  }
+  #fonelyAssessmentModal .assessment-v3-head{
+    padding-right:42px!important
+  }
+  #fonelyAssessmentModal .assessment-v3-head h2{
+    font-size:25px!important
+  }
+  #fonelyAssessmentModal .assessment-v3-top-grid,
+  #fonelyAssessmentModal .assessment-v3-grid,
+  #fonelyAssessmentModal .assessment-v3-read-grid,
+  #fonelyAssessmentModal .adl2-score-grid{
+    grid-template-columns:1fr!important
+  }
+  #fonelyAssessmentModal .close{
+    position:sticky!important;
+    top:0!important;
+    float:right!important;
+    z-index:20!important;
+    width:44px!important;
+    min-width:44px!important;
+    height:44px!important
+  }
+  #fonelyAssessmentModal .assessment-protocol-document{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:8px!important
+  }
+  #fonelyAssessmentModal .assessment-protocol-document button{width:100%!important}
+  #fonelyAssessmentModal .protocol-save-actions{
+    position:sticky!important;
+    bottom:0!important;
+    z-index:15!important;
+    display:grid!important;
+    grid-template-columns:.8fr 1.2fr!important;
+    padding:10px 0 calc(4px + env(safe-area-inset-bottom))!important;
+    background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 24%)!important
+  }
+  #fonelyAssessmentModal .protocol-save-actions>button{width:100%!important;min-width:0!important}
+
+  /* dashboard */
+  .fhome-hero-actions{display:grid!important;grid-template-columns:1fr!important;gap:8px!important}
+  .fhome-hero-actions button,.fhome-hero-actions a{width:100%!important}
+}
+
+@media(max-width:430px){
+  .layout>main{padding:12px 10px 92px!important}
+  main h1{font-size:26px!important}
+  #fonelyAssessmentModal .assessment-v3-modal{padding-left:12px!important;padding-right:12px!important}
+}
