@@ -6,14 +6,14 @@ const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
 const APP_URL='https://fonely.com.br/';
 window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
-  'app.js?v=58',
+  'app.js?v=59',
   'fonely-assessments-v2.js?v=21',
   'fonely-package-integration-v2.js?v=46',
   'fonely-full-edit-v1.js?v=46',
   'fonely-logo.js?v=46',
   'fonely-caa-library.js?v=46',
   'fonely-caa-speech.js?v=46',
-  'fonely-caa.js?v=47'
+  'fonely-caa.js?v=48'
 ];
 
 let sb=null;
