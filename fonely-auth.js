@@ -3,7 +3,7 @@
 
 const SUPABASE_URL='https://apjmkstuffzgfhgcxhvt.supabase.co';
 const SUPABASE_KEY='sb_publishable_5sMMkHGcwYcvsNltM2fWmw_m5Znd3z5';
-const APP_URL='https://casalinhofisio.github.io/FONELY/';
+const APP_URL='https://fonely.com.br/';
 window.FONELY_SUPABASE_ANON_KEY=SUPABASE_KEY;
 const APP_SCRIPTS=[
   'app.js?v=56',
