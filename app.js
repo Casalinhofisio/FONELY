@@ -76,14 +76,14 @@ function recordProfessional(x){return x&&((x.professionalName||x.professional)||
 function professionalMetaHTML(x){var n=recordProfessional(x);return n?'<small class="record-professional">Profissional: '+esc(n)+'</small>':'';}
 function hasProPlan(){return true;}
 function canOpenPage(page){
-  var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',financeiro:'finance',relatorios:'reports'};
+  var map={agenda:'agenda',pacientes:'patients',avaliacoes:'assessments',evolucoes:'evolutions',documentos:'documents',caa:'caa',financeiro:'finance',relatorios:'reports'};
   if(page==='equipe')return isWorkspaceOwner();
   return map[page]?canAccess(map[page]):true;
 }
 
 
 function logo(){return '<div class="brand"><img class="fonely-official-logo" src="assets/Imagem%20do%20ChatGPT%2030%20de%20set.%20de%202026%2C%2000_08_48.png" alt="Fonely — Sistema para Fonoaudiólogos"></div>';}
-var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe']];
+var nav=[['inicio','⌂','Início'],['agenda','▣','Agenda'],['pacientes','♡','Pacientes'],['avaliacoes','◇','Avaliações'],['evolucoes','✎','Evoluções'],['documentos','▤','Documentos'],['caa','◉','Fonely CAA'],['financeiro','$','Financeiro'],['relatorios','◫','Relatórios'],['equipe','♙','Equipe']];
 function shell(body,title,action){
   var account=window.FonelyAccount||{},profile=account.profile||{},access=account.access||{},user=account.user||{},team=account.team||{};
   var accountName=profile.full_name||String(user.email||'Meu espaço').split('@')[0]||'Meu espaço';
@@ -112,10 +112,14 @@ function render(){
     }
     state.patient=null;
   }
-  var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;
+  var fn={inicio:home,agenda:agenda,pacientes:patients,avaliacoes:assessmentsPage,evolucoes:evolutionsPage,documentos:documentsPage,caa:caaPage,financeiro:finance,relatorios:reportsPage,equipe:teamPage,academy:academy}[state.page]||home;
   persistUIState();
   app.innerHTML=fn();
   bind();
+}
+function caaPage(){
+  var body='<section class="panel"><div class="panel-title"><div><small>COMUNICAÇÃO AUMENTATIVA E ALTERNATIVA</small><h3>Fonely CAA</h3></div><button id="openCAAFromPage" class="primary" type="button">Abrir pranchas</button></div><p class="muted">Crie, personalize e compartilhe as pranchas de comunicação dos seus pacientes.</p></section>';
+  return shell(body,'Fonely CAA','');
 }
 function restorePatientArea(){
   if(!state.patient||!state.patientArea)return;
@@ -489,6 +493,7 @@ function bindModalRows(){document.querySelectorAll('#modal [data-ap]').forEach(f
 function choosePatientFor(kind){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">SELECIONAR PACIENTE</small><h2>'+esc(kind==='assessment'?'Nova avaliação':'Nova evolução')+'</h2><label>Paciente<select id="choosePatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmChoose">Continuar</button>');document.getElementById('confirmChoose').onclick=function(){var pid=document.getElementById('choosePatient').value;kind==='assessment'?assessmentForm(pid):evolutionForm(pid);};}
 function choosePatientForDocument(){if(!data.patients.length){newPatient(false);return;}modal('<small class="overline">DOCUMENTO</small><h2>Selecionar paciente</h2><label>Paciente<select id="chooseDocPatient">'+patientOptions(data.patients[0].id)+'</select></label><button class="primary" id="confirmDocPatient">Continuar</button>');document.getElementById('confirmDocPatient').onclick=function(){documentForm(document.getElementById('chooseDocPatient').value);};}
 function bind(){
+  var caaBtn=document.getElementById('openCAAFromPage');if(caaBtn)caaBtn.onclick=function(){if(window.FonelyCAA&&window.FonelyCAA.open)window.FonelyCAA.open();};
   document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){var target=b.getAttribute('data-go');if(!canOpenPage(target))return;state.page=target;state.patient=null;state.patientArea=null;render();};});
   document.querySelectorAll('[data-patient]').forEach(function(b){b.onclick=function(){if(!canAccess('patients'))return;state.page='pacientes';state.patient=b.getAttribute('data-patient');state.patientArea=null;persistUIState();var p=patient(state.patient);if(p){app.innerHTML=patientView(p);bind();}};});
   document.querySelectorAll('[data-parea]').forEach(function(b){b.onclick=function(){var p=patient(state.patient),area=b.getAttribute('data-parea');if(!p)return;if(area==='fin'){state.patientArea=null;persistUIState();if(canAccess('finance'))financePatient(p);return;}if(area==='reports'){state.patientArea=null;persistUIState();if(canAccess('reports')){state.page='relatorios';render();}return;}state.patientArea=area;persistUIState();if(area==='anam'&&canAccess('patients'))anamnesis(p);if(area==='assess'&&canAccess('assessments'))assessmentArea(p);if(area==='evol'&&canAccess('evolutions'))evolutionArea(p);if(area==='docs'&&canAccess('documents'))documentsArea(p);};});
