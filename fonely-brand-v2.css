@@ -123,3 +123,29 @@
 .fe-auth-brand img{
   content:var(--fonely-logo-brown)!important;
 }
+
+
+/* Login hero overlap fix — 2026-10-03 */
+@media(min-width:1021px){
+  #fonelyEntry .fe-brand-side .fe-brand-top{
+    margin-bottom:22px!important;
+  }
+  #fonelyEntry .fe-brand-side .fe-brand-top .fe-logo{
+    width:132px!important;
+    max-width:132px!important;
+    height:auto!important;
+  }
+  #fonelyEntry .fe-brand-side .fe-hero{
+    margin-top:34px!important;
+  }
+}
+@media(max-width:1020px){
+  #fonelyEntry .fe-brand-side .fe-brand-top{
+    margin-bottom:14px!important;
+  }
+  #fonelyEntry .fe-brand-side .fe-brand-top .fe-logo{
+    width:92px!important;
+    max-width:92px!important;
+    height:auto!important;
+  }
+}
