@@ -88,7 +88,7 @@ async function fetchBoard(){
   if(!token)throw new Error('Link inválido');
   var ctrl=new AbortController(),timer=setTimeout(function(){ctrl.abort();},8000);
   try{
-    var r=await fetch(API+'?token='+encodeURIComponent(token)+'&_='+Date.now(),{cache:'no-store',signal:ctrl.signal,headers:{'Cache-Control':'no-cache'}});
+    var r=await fetch(API+'?token='+encodeURIComponent(token)+'&_='+Date.now(),{cache:'no-store',signal:ctrl.signal});
     var d=await r.json().catch(function(){return {};});
     if(!r.ok||!d.board)throw new Error(d.error||'Prancha indisponível');
     var oldStamp=state.lastStamp||boardStamp(state.board),newStamp=boardStamp(d.board),changed=!state.board||oldStamp!==newStamp;
